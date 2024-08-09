@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "uint",
+      "source": "@uint/v2.0#143i2n23lxbna1oq",
+      "integrity": "sha512-DHO5gffm6PIolcghB7PemS1RiL8yBA1Qtsbj9ROireGMDfGUvMu1Yv+98SDBJrMdh6lT0i1nGVlKBcOFli4W0w==",
+      "installerVersion": "6.1.1"
+    }
+  ]
+}

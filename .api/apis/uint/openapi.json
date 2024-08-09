@@ -1,0 +1,2428 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Upayment Api Documentation",
+    "description": "Upayment Api Documentation description",
+    "contact": {
+      "name": "Dharmendra Kakde",
+      "url": "https://upayments.com/en/",
+      "email": "kakde.dharmendra@upayments.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://sandboxapi.upayments.com/",
+      "description": "Demo API Server"
+    }
+  ],
+  "paths": {
+    "/api/v1/charge": {
+      "post": {
+        "tags": [
+          "Create Payment Request"
+        ],
+        "summary": "Make charge",
+        "description": "It will return payment link",
+        "operationId": "addCharge",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test charge example request",
+                  "value": {
+                    "order": {
+                      "id": "202210101202210123",
+                      "reference": "202210101",
+                      "description": "Test product",
+                      "currency": "KWD",
+                      "amount": 20
+                    },
+                    "language": "en",
+                    "paymentGateway": {
+                      "src": "knet"
+                    },
+                    "reference": {
+                      "id": "ord_000000101121012121211231212"
+                    },
+                    "customer": {
+                      "uniqueId": "2129879kjbljg76788",
+                      "name": "test",
+                      "email": "test@test.com",
+                      "mobile": "+9651234567"
+                    },
+                    "returnUrl": "https://www.yourwebsite.com/success",
+                    "cancelUrl": "https://www.yourwebsite.com/cancel",
+                    "notificationUrl": "https://www.yourwebsite.com/notification"
+                  }
+                },
+                "ChargeExample": {
+                  "summary": "Charge example request",
+                  "value": {
+                    "order": {
+                      "id": "202210101202210123",
+                      "reference": "202210101",
+                      "description": "Product Description",
+                      "currency": "KWD",
+                      "amount": 20
+                    },
+                    "language": "en",
+                    "paymentGateway": {
+                      "src": "knet"
+                    },
+                    "reference": {
+                      "id": "ord_000000101121012121211231212"
+                    },
+                    "customer": {
+                      "uniqueId": "2129879kjbljg76788",
+                      "name": "test",
+                      "email": "test@test.com",
+                      "mobile": 8866268287
+                    },
+                    "returnUrl": "https://www.yourwebsite.com/success",
+                    "cancelUrl": "https://www.yourwebsite.com/cancel",
+                    "notificationUrl": "https://www.yourwebsite.com/notification"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestChargeResponse": {
+                    "summary": "Test Charge Response",
+                    "value": {
+                      "status": true,
+                      "message": "Payment link generated successfully",
+                      "data": {
+                        "link": "https://kpaytest.com.kw/kpg/PaymentHTTP.htm?param=paymentInit&trandata=d7a5fbcd5cfa0fc30cd7eae91c05811658d155a9eab9561f5aec407f4a70ec54563761894e77aca68be3d9fff4ef6ec60beaa2b120e0581cf8f38e0b1778b32c6f5dc25cc1c46f8ad8286cb7b388f389ed23da27f85a9e0322fdd06f451a55a0996c069db8a3ced0ff434df22b73f8e300d1ae9591875e6f6779c2093bcdfec877cefd96be1c110b16a4dbb5d2d155f846d05bb84e71f750f53ee4549337d28e225d68b5c15958ea8867300abece84f10374dd53fa3e7de39775390afe8954cbc53235eb34820d58e1dcf80d844f903b247db12d06a5ec266b874377fb7b41882164d40c8fc06837cfe7ed4ea5b0d345a1e533cbda2984eccf8be6ee33bdf00e5967c47f463c817eed6200671630302c5ac68e44c0a89e917bc2abef33b8c3ce&tranportalId=151301&responseURL=http://localhost:8000/get-knet-success-response&errorURL=http://localhost:8000/get-knet-error-response"
+                      }
+                    }
+                  },
+                  "ChargeResponse": {
+                    "summary": "Charge Response",
+                    "value": {
+                      "status": true,
+                      "message": "Payment link generated successfully",
+                      "data": {
+                        "link": "https://www.kpay.com.kw/kpg/PaymentHTTP.htm?param=paymentInit&trandata=d7a5fbcd5cfa0fc30cd7eae91c05811658d155a9eab9561f5aec407f4a70ec54563761894e77aca68be3d9fff4ef6ec60beaa2b120e0581cf8f38e0b1778b32c6f5dc25cc1c46f8ad8286cb7b388f389ed23da27f85a9e0322fdd06f451a55a0996c069db8a3ced0ff434df22b73f8e300d1ae9591875e6f6779c2093bcdfec877cefd96be1c110b16a4dbb5d2d155f846d05bb84e71f750f53ee4549337d28e225d68b5c15958ea8867300abece84f10374dd53fa3e7de39775390afe8954cbd59ac9f1ea0f2f44a707ba42be465551ce6a4deac7b37f3a7f80ad93bf51f6f9e24f0eb323f49c3e15ee8709a64a894c44de990bc92f7cc7f29adcbd26f8e2730fc19bbf5b8634f1d30fddb5db92fb62ba30de77886dc1fc4b7c26be695e9fd6&tranportalId=151301&responseURL=http://localhost:8000/get-knet-success-response&errorURL=http://localhost:8000/get-knet-error-response"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthenticated"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auto-deduct": {
+      "post": {
+        "tags": [
+          "Create Auto Deduct Request"
+        ],
+        "summary": "Create Auto Deduct Request",
+        "description": "Create an invoice and auto deduct the payment",
+        "operationId": "AutoDeduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {},
+              "examples": {
+                "AutoDeductExample": {
+                  "summary": "Auto deduct example request",
+                  "value": {
+                    "order": {
+                      "id": "20221010125525515728",
+                      "reference": "202210101",
+                      "description": "Test token",
+                      "currency": "KWD",
+                      "amount": "50.000"
+                    },
+                    "language": "en",
+                    "reference": {
+                      "id": "202210101202210101"
+                    },
+                    "customer": {
+                      "name": "Khalid Hamza",
+                      "email": "khalid.hamza@upayments.com",
+                      "mobile": "94771608",
+                      "uniqueToken": "94771608"
+                    },
+                    "card": {
+                      "token": "9527876950966554"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "SuccessAutoDeductResponse": {
+                    "summary": "Success Auto Deduct Response",
+                    "value": {
+                      "status": true,
+                      "message": "Your payment transaction was successful",
+                      "data": {
+                        "trackId": "20230850102601914084398025340",
+                        "transaction": {
+                          "invoice_id": 5948883,
+                          "track_id": "20230850102601914084398025340",
+                          "amount": "50.000",
+                          "currency": "KWD",
+                          "session_id": "SESSION0002125805315E34487851E4",
+                          "status": "done",
+                          "reference": "202210101202210101",
+                          "payment_id": "YNliFtLPtuU1XsS6ztwbgILMUajZ44b6",
+                          "payment_type": "card",
+                          "order_id": "20221010125525515728",
+                          "result": "CAPTURED",
+                          "transaction_date": "2023-01-26 08:50:16"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "UnauthorizedAutoDeductResponse": {
+                    "summary": "Unauthorized Auto Deduct Response",
+                    "value": {
+                      "message": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "UnprocessableEntityAutoDeductResponse": {
+                    "summary": "Unprocessable Entity Auto Deduct Response",
+                    "value": {
+                      "message": "The selected card.token is invalid.",
+                      "errors": []
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/add-card": {
+      "post": {
+        "tags": [
+          "Cards"
+        ],
+        "summary": "Add card",
+        "description": "Add card",
+        "operationId": "addCard",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test retrieve customer cards example request",
+                  "value": {
+                    "customerUniqueToken": 8866268287,
+                    "returnUrl": "https://upayments.com/en/"
+                  }
+                },
+                "RetrieveCustomerCards": {
+                  "summary": "Test add card example request",
+                  "value": {
+                    "customerUniqueToken": 8866268287,
+                    "returnUrl": "https://upayments.com/en/"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestRetrieveCustomerCardsResponse": {
+                    "summary": "Test Add Card Response",
+                    "value": {
+                      "status": true,
+                      "message": "Data received successfully",
+                      "data": {
+                        "link": "https://sandbox.upayments.com/my-cards?session_id=259728N7127B05l673679224g05202250803k5w5b50Yn8"
+                      }
+                    }
+                  },
+                  "RetrieveCustomerCardsResponse": {
+                    "summary": "Add Card Response",
+                    "value": {
+                      "status": true,
+                      "message": "Card received successfully",
+                      "data": {
+                        "link": "https://sandbox.upayments.com/my-cards?session_id=259728N7127B05l673679224g05202250803k5w5b50Yn8"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/create-token-from-card": {
+      "post": {
+        "tags": [
+          "Save cards (Tokenisation)"
+        ],
+        "summary": "Add cards",
+        "description": "Users can create the token from a Credit/Debit card for a faster checkout process",
+        "operationId": "createTokenFromCard",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test create token from card example request",
+                  "value": {
+                    "card": {
+                      "number": "5123450000000008",
+                      "expiry": {
+                        "month": 1,
+                        "year": 39
+                      },
+                      "securityCode": "100"
+                    },
+                    "customerUniqueToken": 8866268287
+                  }
+                },
+                "CreateTokenFromCard": {
+                  "summary": "Create token from card example request",
+                  "value": {
+                    "card": {
+                      "number": "5123450000000008",
+                      "expiry": {
+                        "month": 1,
+                        "year": 39
+                      },
+                      "securityCode": "100"
+                    },
+                    "customerUniqueToken": 8866268287
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestCreateTokenFromCardResponse": {
+                    "summary": "Test Create Token From Card Response",
+                    "value": {
+                      "status": true,
+                      "message": "Data received successfully",
+                      "data": {
+                        "brand": "MASTERCARD",
+                        "number": "512345xxxxxx0008",
+                        "scheme": "MASTERCARD",
+                        "token": "9635226510514933"
+                      }
+                    }
+                  },
+                  "CreateTokenFromCardResponse": {
+                    "summary": "Charge Response",
+                    "value": {
+                      "status": true,
+                      "message": "Data received successfully",
+                      "data": {
+                        "brand": "MASTERCARD",
+                        "number": "512345xxxxxx0008",
+                        "scheme": "MASTERCARD",
+                        "token": "9635226510514933"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/create-customer-unique-token": {
+      "post": {
+        "tags": [
+          "Token"
+        ],
+        "summary": "Create token",
+        "description": "Users can create customer unique token for saving Credit/Debit cards",
+        "operationId": "createCustomerUniqueToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test create customer unique token example request",
+                  "value": {
+                    "customerUniqueToken": 8866268287
+                  }
+                },
+                "CreateCustomerUniqueToken": {
+                  "summary": "Create customer unique token example request",
+                  "value": {
+                    "customerUniqueToken": 8866268287
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestCreateCustomerUniqueTokenResponse": {
+                    "summary": "Test Create Customer Unique Token Response",
+                    "value": {
+                      "status": true,
+                      "message": "Customer unique token created successfully",
+                      "data": {
+                        "customerUniqueToken": 8866268287
+                      }
+                    }
+                  },
+                  "CreateCustomerUniqueTokenResponse": {
+                    "summary": "Customer Unique Token Response",
+                    "value": {
+                      "status": true,
+                      "message": "Customer unique token created successfully",
+                      "data": {
+                        "customerUniqueToken": 8866268287
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/retrieve-customer-cards": {
+      "post": {
+        "tags": [
+          "Cards"
+        ],
+        "summary": "Retrieve cards",
+        "description": "Retrieve customer cards from token",
+        "operationId": "retrieveCustomerCards",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test retrieve customer cards example request",
+                  "value": {
+                    "customerUniqueToken": 8866268287
+                  }
+                },
+                "RetrieveCustomerCards": {
+                  "summary": "Test retrieve customer cards example request",
+                  "value": {
+                    "customerUniqueToken": 8866268287
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestRetrieveCustomerCardsResponse": {
+                    "summary": "Test Retrieve Customer Cards Response",
+                    "value": {
+                      "status": true,
+                      "message": "Card received successfully",
+                      "data": {
+                        "customerCards": [
+                          {
+                            "brand": "MASTERCARD",
+                            "number": "512345xxxxxx0008",
+                            "scheme": "MASTERCARD",
+                            "token": "9707735648585576"
+                          },
+                          {
+                            "brand": "MASTERCARD",
+                            "number": "512345xxxxxx2513",
+                            "scheme": "MASTERCARD",
+                            "token": "9851918838414013"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "RetrieveCustomerCardsResponse": {
+                    "summary": "Retrieve Customer Cards Response",
+                    "value": {
+                      "status": true,
+                      "message": "Card received successfully",
+                      "data": {
+                        "customerCards": [
+                          {
+                            "brand": "VISA",
+                            "number": "512345xxxxxx8541",
+                            "scheme": "VISA",
+                            "token": "9707735648584178"
+                          },
+                          {
+                            "brand": "MASTERCARD",
+                            "number": "512345xxxxxx2513",
+                            "scheme": "MASTERCARD",
+                            "token": "9851918838412594"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/get-payment-status/{track_id}": {
+      "get": {
+        "tags": [
+          "Check Payment Status"
+        ],
+        "summary": "Get payment status",
+        "operationId": "checkPaymentStatus",
+        "parameters": [
+          {
+            "name": "track_id",
+            "in": "path",
+            "description": "The track_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestGetPaymentStatusResponse": {
+                    "summary": "Test get payment status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Response received successfully",
+                      "data": {
+                        "transaction": {
+                          "order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+                          "refund_order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+                          "payment_id": "100326010000027219",
+                          "result": "CAPTURED",
+                          "payment_type": "knet",
+                          "track_id": "GWdK07j0XPriuCbzimCHh5MmyrZuSd2J",
+                          "transaction_date": "2023-06-17 10:36:43",
+                          "product_details": null,
+                          "reference": "202210101202210101",
+                          "total_paid_non_kwd": "10.000",
+                          "total_price": "10.000",
+                          "currency_type": "KWD",
+                          "status": "done",
+                          "session_id": "cf30065532691b4495cc9690ab487465",
+                          "error_url": "https://error.com",
+                          "success_url": "https://success.com",
+                          "redirect_url": "https://success.com/en/?payment_id=100326010000027219&result=CAPTURED&post_date=0917&tran_id=326010006152380&ref=326010000134&track_id=GWdK07j0XPriuCbzimCHh5MmyrZuSd2J&auth=B03692&order_id=202210101255255144669&requested_order_id=202210101255255144669&refund_order_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12&payment_type=knet&invoice_id=784&transaction_date=2023-09-17 10:09:36&receipt_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+                          "notify_url": "https://webhook-url.com",
+                          "notify_url_called": true,
+                          "notify_url_response": {
+                            "success": true,
+                            "message": "Success",
+                            "data": null
+                          },
+                          "whitelabel": true,
+                          "customer_unique_id": "2129879kjbljg767881",
+                          "merchant_requested_order_id": "202210101255255144669",
+                          "extra_merchants_data": null,
+                          "is_paid_from_knet": true,
+                          "is_paid_from_cc": false,
+                          "is_from_nbk": false,
+                          "customer_extra_data": null,
+                          "created_at": "2023-09-17 16:19:03"
+                        }
+                      }
+                    }
+                  },
+                  "GetPaymentStatusResponse": {
+                    "summary": "Get payment status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Response received successfully",
+                      "data": {
+                        "transaction": {
+                          "order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+                          "refund_order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+                          "payment_id": "100326010000027219",
+                          "result": "CAPTURED",
+                          "payment_type": "cc",
+                          "track_id": "GWdK07j0XPriuCbzimCHh5MmyrZuSd2J",
+                          "transaction_date": "2023-06-17 10:36:43",
+                          "product_details": null,
+                          "reference": "202210101202210101",
+                          "total_paid_non_kwd": "10.000",
+                          "total_price": "10.000",
+                          "currency_type": "KWD",
+                          "status": "done",
+                          "session_id": "cf30065532691b4495cc9690ab487465",
+                          "error_url": "https://error.com",
+                          "success_url": "https://success.com",
+                          "redirect_url": "https://success.com/en/?payment_id=100326010000027219&result=CAPTURED&post_date=0917&tran_id=326010006152380&ref=326010000134&track_id=GWdK07j0XPriuCbzimCHh5MmyrZuSd2J&auth=B03692&order_id=202210101255255144669&requested_order_id=202210101255255144669&refund_order_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12&payment_type=knet&invoice_id=784&transaction_date=2023-09-17 10:09:36&receipt_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+                          "notify_url": "https://webhook-url.com",
+                          "notify_url_called": true,
+                          "notify_url_response": {
+                            "success": true,
+                            "message": "Success",
+                            "data": null
+                          },
+                          "whitelabel": true,
+                          "customer_unique_id": "2129879kjbljg767881",
+                          "merchant_requested_order_id": "202210101255255144669",
+                          "extra_merchants_data": null,
+                          "is_paid_from_knet": true,
+                          "is_paid_from_cc": false,
+                          "is_from_nbk": false,
+                          "customer_extra_data": null,
+                          "created_at": "2023-09-17 16:19:03"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/check-payment-button-status": {
+      "get": {
+        "tags": [
+          "Check Payment Button Availability Status"
+        ],
+        "summary": "Get payment button availability status",
+        "operationId": "PaymentButtonAvailabilityStatus",
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestGetPaymentButtonAvailabilityStatusResponse": {
+                    "summary": "Test get payment availability status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Data received successfully",
+                      "data": {
+                        "payButtons": {
+                          "knet": true,
+                          "credit_card": false,
+                          "samsung_pay": true,
+                          "apple_pay": false
+                        }
+                      }
+                    }
+                  },
+                  "GetPaymentButtonAvailabilityStatusResponse": {
+                    "summary": "Get payment staus availability status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Data received successfully",
+                      "data": {
+                        "payButtons": {
+                          "knet": false,
+                          "credit_card": true,
+                          "samsung_pay": false,
+                          "apple_pay": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/get-deposit-status/{track_id}": {
+      "get": {
+        "tags": [
+          "Check Deposit Status"
+        ],
+        "summary": "Get deposit status",
+        "operationId": "checkDepositStatus",
+        "parameters": [
+          {
+            "name": "track_id",
+            "in": "path",
+            "description": "The track_id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestGetDepositStatusResponse": {
+                    "summary": "Test get deposit status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Response received successfully",
+                      "data": {
+                        "transaction": {
+                          "deposited": "Yes",
+                          "deposited_date": "2024-01-11 17:26:02",
+                          "invoice_url": "https://dev-uinvoice.upayments.com/KP0L1gy9rz"
+                        }
+                      }
+                    }
+                  },
+                  "GetDepositStatusResponse": {
+                    "summary": "Get deposit status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Response received successfully",
+                      "data": {
+                        "transaction": {
+                          "deposited": "Yes",
+                          "deposited_date": "2024-01-11 17:26:02",
+                          "invoice_url": "https://uinvoice.upayments.com/AP0L1gy7yt"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/create-refund": {
+      "post": {
+        "tags": [
+          "Refund"
+        ],
+        "summary": "Single refund",
+        "description": "Single refund from order id",
+        "operationId": "refund",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test refund example request",
+                  "value": {
+                    "orderId": "mv1GZnrG2l16690136171654609019637b2071f3f5e",
+                    "totalPrice": "20",
+                    "customerFirstName": "Test Customer Name",
+                    "customerEmail": "test@upayments.com",
+                    "customerMobileNumber": "8866268288",
+                    "reference": ""
+                  }
+                },
+                "Refund": {
+                  "summary": "Refund example request",
+                  "value": {
+                    "orderId": "mv1GZnrG2l16690136171654609019637b2071f3f5e",
+                    "totalPrice": "20",
+                    "customerFirstName": "Refund Customer Name",
+                    "customerEmail": "refund@upayments.com",
+                    "customerMobileNumber": "8866268287",
+                    "reference": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestRefundResponse": {
+                    "summary": "Test Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund invoice generated successfully",
+                      "data": {
+                        "order_id": "Zl1a64XJx3mv1GZnrG2l1669186990886095754637dc5ae9376aT5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+                        "refund_order_id": "T5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+                        "refund_arn": "20220703102311381995336747819"
+                      }
+                    }
+                  },
+                  "RefundResponse": {
+                    "summary": "Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund invoice generated successfully",
+                      "data": {
+                        "order_id": "Zl1a64XJx3mv1GZnrG2l1669186990886095754637dc5ae9376aT5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+                        "refund_order_id": "T5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+                        "refund_arn": "20220703102311381995336747819"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/check-refund-status/{order_id}": {
+      "get": {
+        "tags": [
+          "Refund"
+        ],
+        "summary": "Get refund status",
+        "operationId": "checkRefundStatus",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "Pass the order id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestGetRefundStatusResponse": {
+                    "summary": "Test to check refund status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Response received successfully",
+                      "data": {
+                        "transaction": {
+                          "is_refunded": true,
+                          "is_refunded_date": "2024-01-11 17:26:02"
+                        }
+                      }
+                    }
+                  },
+                  "GetRefundStatusResponse": {
+                    "summary": "Get refund status example request",
+                    "value": {
+                      "status": true,
+                      "message": "Response received successfully",
+                      "data": {
+                        "transaction": {
+                          "is_refunded": true,
+                          "is_refunded_date": "2024-01-11 17:26:02"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/delete-refund": {
+      "post": {
+        "tags": [
+          "Refund"
+        ],
+        "summary": "Single delete refund",
+        "description": "Single delete refund from order id",
+        "operationId": "delete-refund",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestDeleteRefund": {
+                  "summary": "Test refund example request",
+                  "value": {
+                    "orderId": "k4eJmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+                    "refundOrderId": "pQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa"
+                  }
+                },
+                "DeleteRefund": {
+                  "summary": "Refund example request",
+                  "value": {
+                    "orderId": "JndWmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+                    "refundOrderId": "MnfWVOgvFkaeLckgydR7zPdt6vNiVpNa"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestDeleteRefundResponse": {
+                    "summary": "Test Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund Invoice is delete successfully",
+                      "data": {
+                        "order_id": "k4eJmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+                        "refund_order_id": "pQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa"
+                      }
+                    }
+                  },
+                  "DeleteRefundResponse": {
+                    "summary": "Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund Invoice is delete successfully",
+                      "data": {
+                        "order_id": "JndWmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+                        "refund_order_id": "MnfWVOgvFkaeLckgydR7zPdt6vNiVpNa"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/create-multivendor-refund": {
+      "post": {
+        "tags": [
+          "Refund"
+        ],
+        "summary": "Multi vendor refund",
+        "description": "Multi vendor refund",
+        "operationId": "multi-vendor-refund",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test multi vendor refund example request",
+                  "value": {
+                    "orderId": "202309470620061311821887650932",
+                    "isMultivendorRefund": true,
+                    "refundPayload": [
+                      {
+                        "refundRequestId": "b2JxTEcyeDhEaw==",
+                        "ibanNumber": "IBAN123",
+                        "totalPaid": "10.000",
+                        "refundedAmount": "0",
+                        "remainingLimit": "10",
+                        "amountToRefund": "5",
+                        "merchantType": "vendor"
+                      },
+                      {
+                        "refundRequestId": "TWw1THI1YjhLcQ==",
+                        "ibanNumber": "IBAN456",
+                        "totalPaid": "10.000",
+                        "refundedAmount": "0",
+                        "remainingLimit": "10",
+                        "amountToRefund": "5",
+                        "merchantType": "vendor"
+                      }
+                    ],
+                    "multivendor_refund_end_point": "https://preprod-uinterface.upayments.com/api/v1/create-multivendor-refund"
+                  }
+                },
+                "MultiVendorRefund": {
+                  "summary": "Refund multi vendor example request",
+                  "value": {
+                    "orderId": "202309470620061311821887650933",
+                    "isMultivendorRefund": true,
+                    "refundPayload": [
+                      {
+                        "refundRequestId": "AyJxTEcyeDhEaw==",
+                        "ibanNumber": "IBAN456",
+                        "totalPaid": "10.000",
+                        "refundedAmount": "0",
+                        "remainingLimit": "10",
+                        "amountToRefund": "5",
+                        "merchantType": "vendor"
+                      },
+                      {
+                        "refundRequestId": "K5w1THI1YjhLcQ==",
+                        "ibanNumber": "IBAN789",
+                        "totalPaid": "10.000",
+                        "refundedAmount": "0",
+                        "remainingLimit": "10",
+                        "amountToRefund": "5",
+                        "merchantType": "vendor"
+                      }
+                    ],
+                    "multivendor_refund_end_point": "https://apiv2api.upayments.com/api/v1/create-multivendor-refund"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestMultivendorRefundResponse": {
+                    "summary": "Test Multi Vendor Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund invoice generated successfully",
+                      "data": {
+                        "responseData": {
+                          "generated": [
+                            {
+                              "generatedInvoiceId": "NTZBYTdvWGFkMw==",
+                              "amount": 5,
+                              "orderId": "k4eJmnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc",
+                              "refundOrderId": "DJtbo49JsergKRGZybFO8o41Gw0wKcWc",
+                              "refundArn": "20231025122106623039933917518"
+                            },
+                            {
+                              "generatedInvoiceId": "d05yYXI5b1JHcQ==",
+                              "amount": 5,
+                              "orderId": "k4eJmnNR8pk4eJmnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc1yne8zARsHI1YQI98bzxdtsc5EbLG2Pf",
+                              "refundOrderId": "1yne8zARsHI1YQI98bzxdtsc5EbLG2Pf",
+                              "refundArn": "20231025122106623039933917518"
+                            }
+                          ]
+                        },
+                        "dataTempered": [],
+                        "refundIssue": [],
+                        "insufficientBalance": []
+                      }
+                    }
+                  },
+                  "MultiVendorRefundResponse": {
+                    "summary": "Multi Vendor Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund invoice generated successfully",
+                      "data": {
+                        "responseData": {
+                          "generated": [
+                            {
+                              "generatedInvoiceId": "HNDWPLBNCJRWSGT==",
+                              "amount": 5,
+                              "orderId": "KDm5mnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc",
+                              "refundOrderId": "ZGA8YUQRJ6bBjjGyUfQ12osUxn1WtTzP",
+                              "refundArn": "20231025122106623039933917518"
+                            },
+                            {
+                              "generatedInvoiceId": "Hd02JCrf36SXhD==",
+                              "amount": 5,
+                              "orderId": "KDMCJCk4eJmnNR8pk4eJmnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc1yne8zARsHI1YQI98bzxdtsc5EbLG2Pf",
+                              "refundOrderId": "OZDLDIBQa8LEkuOA5A98DlX3NPsKaE0O",
+                              "refundArn": "20231025122106623039933917518"
+                            }
+                          ]
+                        },
+                        "dataTempered": [],
+                        "refundIssue": [],
+                        "insufficientBalance": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    },
+    "/api/v1/delete-multivendor-refund": {
+      "post": {
+        "tags": [
+          "Refund"
+        ],
+        "summary": "Multi vendor delete refund",
+        "description": "Multi vendor delete refund",
+        "operationId": "delete-multi-vendor-refund",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "examples": {
+                "TestChargeExample": {
+                  "summary": "Test multi vendor refund example request",
+                  "value": {
+                    "generatedInvoiceId": "bHo0SmxubGE2dg==",
+                    "orderId": "k4eJmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+                    "refundOrderId": "HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+                    "refundArn": "20230613132906948529208806612"
+                  }
+                },
+                "MultiVendorDeleteRefund": {
+                  "summary": "Refund multi vendor example request",
+                  "value": {
+                    "generatedInvoiceId": "bHo0SmxubGE2dg==",
+                    "orderId": "ls5JmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+                    "refundOrderId": "DHDHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+                    "refundArn": "20230613132906948529208806613"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "TestMultivendorDeleteRefundResponse": {
+                    "summary": "Test Multi Vendor Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund invoice delete successfully",
+                      "data": {
+                        "order_id": "k4eJmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+                        "refund_order_id": "HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS"
+                      }
+                    }
+                  },
+                  "MultiVendorDeleteRefundResponse": {
+                    "summary": "Multi Vendor Refund Response",
+                    "value": {
+                      "status": true,
+                      "message": "Refund invoice delete successfully",
+                      "data": {
+                        "order_id": "ls5JmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+                        "refund_order_id": "DHDHDwCEVkIzdHmYmvbE1zg3SEytjmWS"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Not a valid API request"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "upayKey": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "examples": {
+      "TestChargeExample": {
+        "summary": "Test charge example request",
+        "value": {
+          "order": {
+            "id": "202210101202210123",
+            "reference": "202210101",
+            "description": "Test product",
+            "currency": "KWD",
+            "amount": 20
+          },
+          "language": "en",
+          "paymentGateway": {
+            "src": "knet"
+          },
+          "reference": {
+            "id": "ord_000000101121012121211231212"
+          },
+          "customer": {
+            "uniqueId": "2129879kjbljg76788",
+            "name": "test",
+            "email": "test@test.com",
+            "mobile": "+9651234567"
+          },
+          "returnUrl": "https://www.yourwebsite.com/success",
+          "cancelUrl": "https://www.yourwebsite.com/cancel",
+          "notificationUrl": "https://www.yourwebsite.com/notification"
+        }
+      },
+      "ChargeExample": {
+        "summary": "Charge example request",
+        "value": {
+          "order": {
+            "id": "202210101202210123",
+            "reference": "202210101",
+            "description": "Product Description",
+            "currency": "KWD",
+            "amount": 20
+          },
+          "language": "en",
+          "paymentGateway": {
+            "src": "knet"
+          },
+          "reference": {
+            "id": "ord_000000101121012121211231212"
+          },
+          "customer": {
+            "uniqueId": "2129879kjbljg76788",
+            "name": "test",
+            "email": "test@test.com",
+            "mobile": 8866268287
+          },
+          "returnUrl": "https://www.yourwebsite.com/success",
+          "cancelUrl": "https://www.yourwebsite.com/cancel",
+          "notificationUrl": "https://www.yourwebsite.com/notification"
+        }
+      },
+      "TestChargeResponse": {
+        "summary": "Test Charge Response",
+        "value": {
+          "status": true,
+          "message": "Payment link generated successfully",
+          "data": {
+            "link": "https://kpaytest.com.kw/kpg/PaymentHTTP.htm?param=paymentInit&trandata=d7a5fbcd5cfa0fc30cd7eae91c05811658d155a9eab9561f5aec407f4a70ec54563761894e77aca68be3d9fff4ef6ec60beaa2b120e0581cf8f38e0b1778b32c6f5dc25cc1c46f8ad8286cb7b388f389ed23da27f85a9e0322fdd06f451a55a0996c069db8a3ced0ff434df22b73f8e300d1ae9591875e6f6779c2093bcdfec877cefd96be1c110b16a4dbb5d2d155f846d05bb84e71f750f53ee4549337d28e225d68b5c15958ea8867300abece84f10374dd53fa3e7de39775390afe8954cbc53235eb34820d58e1dcf80d844f903b247db12d06a5ec266b874377fb7b41882164d40c8fc06837cfe7ed4ea5b0d345a1e533cbda2984eccf8be6ee33bdf00e5967c47f463c817eed6200671630302c5ac68e44c0a89e917bc2abef33b8c3ce&tranportalId=151301&responseURL=http://localhost:8000/get-knet-success-response&errorURL=http://localhost:8000/get-knet-error-response"
+          }
+        }
+      },
+      "ChargeResponse": {
+        "summary": "Charge Response",
+        "value": {
+          "status": true,
+          "message": "Payment link generated successfully",
+          "data": {
+            "link": "https://www.kpay.com.kw/kpg/PaymentHTTP.htm?param=paymentInit&trandata=d7a5fbcd5cfa0fc30cd7eae91c05811658d155a9eab9561f5aec407f4a70ec54563761894e77aca68be3d9fff4ef6ec60beaa2b120e0581cf8f38e0b1778b32c6f5dc25cc1c46f8ad8286cb7b388f389ed23da27f85a9e0322fdd06f451a55a0996c069db8a3ced0ff434df22b73f8e300d1ae9591875e6f6779c2093bcdfec877cefd96be1c110b16a4dbb5d2d155f846d05bb84e71f750f53ee4549337d28e225d68b5c15958ea8867300abece84f10374dd53fa3e7de39775390afe8954cbd59ac9f1ea0f2f44a707ba42be465551ce6a4deac7b37f3a7f80ad93bf51f6f9e24f0eb323f49c3e15ee8709a64a894c44de990bc92f7cc7f29adcbd26f8e2730fc19bbf5b8634f1d30fddb5db92fb62ba30de77886dc1fc4b7c26be695e9fd6&tranportalId=151301&responseURL=http://localhost:8000/get-knet-success-response&errorURL=http://localhost:8000/get-knet-error-response"
+          }
+        }
+      },
+      "AutoDeductExample": {
+        "summary": "Auto deduct example request",
+        "value": {
+          "order": {
+            "id": "20221010125525515728",
+            "reference": "202210101",
+            "description": "Test token",
+            "currency": "KWD",
+            "amount": "50.000"
+          },
+          "language": "en",
+          "reference": {
+            "id": "202210101202210101"
+          },
+          "customer": {
+            "name": "Khalid Hamza",
+            "email": "khalid.hamza@upayments.com",
+            "mobile": "94771608",
+            "uniqueToken": "94771608"
+          },
+          "card": {
+            "token": "9527876950966554"
+          }
+        }
+      },
+      "UnauthorizedAutoDeductResponse": {
+        "summary": "Unauthorized Auto Deduct Response",
+        "value": {
+          "message": "Unauthorized"
+        }
+      },
+      "UnprocessableEntityAutoDeductResponse": {
+        "summary": "Unprocessable Entity Auto Deduct Response",
+        "value": {
+          "message": "The selected card.token is invalid.",
+          "errors": []
+        }
+      },
+      "SuccessAutoDeductResponse": {
+        "summary": "Success Auto Deduct Response",
+        "value": {
+          "status": true,
+          "message": "Your payment transaction was successful",
+          "data": {
+            "trackId": "20230850102601914084398025340",
+            "transaction": {
+              "invoice_id": 5948883,
+              "track_id": "20230850102601914084398025340",
+              "amount": "50.000",
+              "currency": "KWD",
+              "session_id": "SESSION0002125805315E34487851E4",
+              "status": "done",
+              "reference": "202210101202210101",
+              "payment_id": "YNliFtLPtuU1XsS6ztwbgILMUajZ44b6",
+              "payment_type": "card",
+              "order_id": "20221010125525515728",
+              "result": "CAPTURED",
+              "transaction_date": "2023-01-26 08:50:16"
+            }
+          }
+        }
+      },
+      "TestAddCards": {
+        "summary": "Test retrieve customer cards example request",
+        "value": {
+          "customerUniqueToken": 8866268287,
+          "returnUrl": "https://upayments.com/en/"
+        }
+      },
+      "AddCards": {
+        "summary": "Test add card example request",
+        "value": {
+          "customerUniqueToken": 8866268287,
+          "returnUrl": "https://upayments.com/en/"
+        }
+      },
+      "ForbiddenAddCardsResponse": {
+        "summary": "Forbidden Retrieve Customer Cards",
+        "value": {
+          "message": "Not a valid API request."
+        }
+      },
+      "TestAddCardsResponse": {
+        "summary": "Test Add Card Response",
+        "value": {
+          "status": true,
+          "message": "Data received successfully",
+          "data": {
+            "link": "https://sandbox.upayments.com/my-cards?session_id=259728N7127B05l673679224g05202250803k5w5b50Yn8"
+          }
+        }
+      },
+      "AddCardsResponse": {
+        "summary": "Add Card Response",
+        "value": {
+          "status": true,
+          "message": "Card received successfully",
+          "data": {
+            "link": "https://sandbox.upayments.com/my-cards?session_id=259728N7127B05l673679224g05202250803k5w5b50Yn8"
+          }
+        }
+      },
+      "TestCreateTokenFromCard": {
+        "summary": "Test create token from card example request",
+        "value": {
+          "card": {
+            "number": "5123450000000008",
+            "expiry": {
+              "month": 1,
+              "year": 39
+            },
+            "securityCode": "100"
+          },
+          "customerUniqueToken": 8866268287
+        }
+      },
+      "CreateTokenFromCard": {
+        "summary": "Create token from card example request",
+        "value": {
+          "card": {
+            "number": "5123450000000008",
+            "expiry": {
+              "month": 1,
+              "year": 39
+            },
+            "securityCode": "100"
+          },
+          "customerUniqueToken": 8866268287
+        }
+      },
+      "TestCreateTokenFromCardResponse": {
+        "summary": "Test Create Token From Card Response",
+        "value": {
+          "status": true,
+          "message": "Data received successfully",
+          "data": {
+            "brand": "MASTERCARD",
+            "number": "512345xxxxxx0008",
+            "scheme": "MASTERCARD",
+            "token": "9635226510514933"
+          }
+        }
+      },
+      "CreateTokenFromCardResponse": {
+        "summary": "Charge Response",
+        "value": {
+          "status": true,
+          "message": "Data received successfully",
+          "data": {
+            "brand": "MASTERCARD",
+            "number": "512345xxxxxx0008",
+            "scheme": "MASTERCARD",
+            "token": "9635226510514933"
+          }
+        }
+      },
+      "TestCreateCustomerUniqueToken": {
+        "summary": "Test create customer unique token example request",
+        "value": {
+          "customerUniqueToken": 8866268287
+        }
+      },
+      "CreateCustomerUniqueToken": {
+        "summary": "Create customer unique token example request",
+        "value": {
+          "customerUniqueToken": 8866268287
+        }
+      },
+      "TestCreateCustomerUniqueTokenResponse": {
+        "summary": "Test Create Customer Unique Token Response",
+        "value": {
+          "status": true,
+          "message": "Customer unique token created successfully",
+          "data": {
+            "customerUniqueToken": 8866268287
+          }
+        }
+      },
+      "CreateCustomerUniqueTokenResponse": {
+        "summary": "Customer Unique Token Response",
+        "value": {
+          "status": true,
+          "message": "Customer unique token created successfully",
+          "data": {
+            "customerUniqueToken": 8866268287
+          }
+        }
+      },
+      "TestRetrieveCustomerCards": {
+        "summary": "Test retrieve customer cards example request",
+        "value": {
+          "customerUniqueToken": 8866268287
+        }
+      },
+      "RetrieveCustomerCards": {
+        "summary": "Test retrieve customer cards example request",
+        "value": {
+          "customerUniqueToken": 8866268287
+        }
+      },
+      "ForbiddenRetrieveCustomerCardsResponse": {
+        "summary": "Forbidden Retrieve Customer Cards",
+        "value": {
+          "message": "Not a valid API request."
+        }
+      },
+      "TestRetrieveCustomerCardsResponse": {
+        "summary": "Test Retrieve Customer Cards Response",
+        "value": {
+          "status": true,
+          "message": "Card received successfully",
+          "data": {
+            "customerCards": [
+              {
+                "brand": "MASTERCARD",
+                "number": "512345xxxxxx0008",
+                "scheme": "MASTERCARD",
+                "token": "9707735648585576"
+              },
+              {
+                "brand": "MASTERCARD",
+                "number": "512345xxxxxx2513",
+                "scheme": "MASTERCARD",
+                "token": "9851918838414013"
+              }
+            ]
+          }
+        }
+      },
+      "RetrieveCustomerCardsResponse": {
+        "summary": "Retrieve Customer Cards Response",
+        "value": {
+          "status": true,
+          "message": "Card received successfully",
+          "data": {
+            "customerCards": [
+              {
+                "brand": "VISA",
+                "number": "512345xxxxxx8541",
+                "scheme": "VISA",
+                "token": "9707735648584178"
+              },
+              {
+                "brand": "MASTERCARD",
+                "number": "512345xxxxxx2513",
+                "scheme": "MASTERCARD",
+                "token": "9851918838412594"
+              }
+            ]
+          }
+        }
+      },
+      "TestGetPaymentStatusResponse": {
+        "summary": "Test get payment status example request",
+        "value": {
+          "status": true,
+          "message": "Response received successfully",
+          "data": {
+            "transaction": {
+              "order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+              "refund_order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+              "payment_id": "100326010000027219",
+              "result": "CAPTURED",
+              "payment_type": "knet",
+              "track_id": "GWdK07j0XPriuCbzimCHh5MmyrZuSd2J",
+              "transaction_date": "2023-06-17 10:36:43",
+              "product_details": null,
+              "reference": "202210101202210101",
+              "total_paid_non_kwd": "10.000",
+              "total_price": "10.000",
+              "currency_type": "KWD",
+              "status": "done",
+              "session_id": "cf30065532691b4495cc9690ab487465",
+              "error_url": "https://error.com",
+              "success_url": "https://success.com",
+              "redirect_url": "https://success.com/en/?payment_id=100326010000027219&result=CAPTURED&post_date=0917&tran_id=326010006152380&ref=326010000134&track_id=GWdK07j0XPriuCbzimCHh5MmyrZuSd2J&auth=B03692&order_id=202210101255255144669&requested_order_id=202210101255255144669&refund_order_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12&payment_type=knet&invoice_id=784&transaction_date=2023-09-17 10:09:36&receipt_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+              "notify_url": "https://webhook-url.com",
+              "notify_url_called": true,
+              "notify_url_response": {
+                "success": true,
+                "message": "Success",
+                "data": null
+              },
+              "whitelabel": true,
+              "customer_unique_id": "2129879kjbljg767881",
+              "merchant_requested_order_id": "202210101255255144669",
+              "extra_merchants_data": null,
+              "is_paid_from_knet": true,
+              "is_paid_from_cc": false,
+              "is_from_nbk": false,
+              "customer_extra_data": null,
+              "created_at": "2023-09-17 16:19:03"
+            }
+          }
+        }
+      },
+      "GetPaymentStatusResponse": {
+        "summary": "Get payment status example request",
+        "value": {
+          "status": true,
+          "message": "Response received successfully",
+          "data": {
+            "transaction": {
+              "order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+              "refund_order_id": "ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+              "payment_id": "100326010000027219",
+              "result": "CAPTURED",
+              "payment_type": "cc",
+              "track_id": "GWdK07j0XPriuCbzimCHh5MmyrZuSd2J",
+              "transaction_date": "2023-06-17 10:36:43",
+              "product_details": null,
+              "reference": "202210101202210101",
+              "total_paid_non_kwd": "10.000",
+              "total_price": "10.000",
+              "currency_type": "KWD",
+              "status": "done",
+              "session_id": "cf30065532691b4495cc9690ab487465",
+              "error_url": "https://error.com",
+              "success_url": "https://success.com",
+              "redirect_url": "https://success.com/en/?payment_id=100326010000027219&result=CAPTURED&post_date=0917&tran_id=326010006152380&ref=326010000134&track_id=GWdK07j0XPriuCbzimCHh5MmyrZuSd2J&auth=B03692&order_id=202210101255255144669&requested_order_id=202210101255255144669&refund_order_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12&payment_type=knet&invoice_id=784&transaction_date=2023-09-17 10:09:36&receipt_id=ME3OdxVO6m2022101012552551446691694936179696991736506ac732af12",
+              "notify_url": "https://webhook-url.com",
+              "notify_url_called": true,
+              "notify_url_response": {
+                "success": true,
+                "message": "Success",
+                "data": null
+              },
+              "whitelabel": true,
+              "customer_unique_id": "2129879kjbljg767881",
+              "merchant_requested_order_id": "202210101255255144669",
+              "extra_merchants_data": null,
+              "is_paid_from_knet": true,
+              "is_paid_from_cc": false,
+              "is_from_nbk": false,
+              "customer_extra_data": null,
+              "created_at": "2023-09-17 16:19:03"
+            }
+          }
+        }
+      },
+      "TestGetPaymentButtonAvailabilityStatusResponse": {
+        "summary": "Test get payment availability status example request",
+        "value": {
+          "status": true,
+          "message": "Data received successfully",
+          "data": {
+            "payButtons": {
+              "knet": true,
+              "credit_card": false,
+              "samsung_pay": true,
+              "apple_pay": false
+            }
+          }
+        }
+      },
+      "GetPaymentButtonAvailabilityStatusResponse": {
+        "summary": "Get payment staus availability status example request",
+        "value": {
+          "status": true,
+          "message": "Data received successfully",
+          "data": {
+            "payButtons": {
+              "knet": false,
+              "credit_card": true,
+              "samsung_pay": false,
+              "apple_pay": true
+            }
+          }
+        }
+      },
+      "TestGetDepositStatusResponse": {
+        "summary": "Test get deposit status example request",
+        "value": {
+          "status": true,
+          "message": "Response received successfully",
+          "data": {
+            "transaction": {
+              "deposited": "Yes",
+              "deposited_date": "2024-01-11 17:26:02",
+              "invoice_url": "https://dev-uinvoice.upayments.com/KP0L1gy9rz"
+            }
+          }
+        }
+      },
+      "GetDepositStatusResponse": {
+        "summary": "Get deposit status example request",
+        "value": {
+          "status": true,
+          "message": "Response received successfully",
+          "data": {
+            "transaction": {
+              "deposited": "Yes",
+              "deposited_date": "2024-01-11 17:26:02",
+              "invoice_url": "https://uinvoice.upayments.com/AP0L1gy7yt"
+            }
+          }
+        }
+      },
+      "TestRefund": {
+        "summary": "Test refund example request",
+        "value": {
+          "orderId": "mv1GZnrG2l16690136171654609019637b2071f3f5e",
+          "totalPrice": "20",
+          "customerFirstName": "Test Customer Name",
+          "customerEmail": "test@upayments.com",
+          "customerMobileNumber": "8866268288",
+          "reference": ""
+        }
+      },
+      "Refund": {
+        "summary": "Refund example request",
+        "value": {
+          "orderId": "mv1GZnrG2l16690136171654609019637b2071f3f5e",
+          "totalPrice": "20",
+          "customerFirstName": "Refund Customer Name",
+          "customerEmail": "refund@upayments.com",
+          "customerMobileNumber": "8866268287",
+          "reference": ""
+        }
+      },
+      "TestRefundResponse": {
+        "summary": "Test Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund invoice generated successfully",
+          "data": {
+            "order_id": "Zl1a64XJx3mv1GZnrG2l1669186990886095754637dc5ae9376aT5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+            "refund_order_id": "T5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+            "refund_arn": "20220703102311381995336747819"
+          }
+        }
+      },
+      "RefundResponse": {
+        "summary": "Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund invoice generated successfully",
+          "data": {
+            "order_id": "Zl1a64XJx3mv1GZnrG2l1669186990886095754637dc5ae9376aT5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+            "refund_order_id": "T5oHNCFofcxHHMejUcV5BrIheU6WVcg6",
+            "refund_arn": "20220703102311381995336747819"
+          }
+        }
+      },
+      "TestGetRefundStatusResponse": {
+        "summary": "Test to check refund status example request",
+        "value": {
+          "status": true,
+          "message": "Response received successfully",
+          "data": {
+            "transaction": {
+              "is_refunded": true,
+              "is_refunded_date": "2024-01-11 17:26:02"
+            }
+          }
+        }
+      },
+      "GetRefundStatusResponse": {
+        "summary": "Get refund status example request",
+        "value": {
+          "status": true,
+          "message": "Response received successfully",
+          "data": {
+            "transaction": {
+              "is_refunded": true,
+              "is_refunded_date": "2024-01-11 17:26:02"
+            }
+          }
+        }
+      },
+      "TestDeleteRefund": {
+        "summary": "Test refund example request",
+        "value": {
+          "orderId": "k4eJmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+          "refundOrderId": "pQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa"
+        }
+      },
+      "DeleteRefund": {
+        "summary": "Refund example request",
+        "value": {
+          "orderId": "JndWmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+          "refundOrderId": "MnfWVOgvFkaeLckgydR7zPdt6vNiVpNa"
+        }
+      },
+      "TestDeleteRefundResponse": {
+        "summary": "Test Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund Invoice is delete successfully",
+          "data": {
+            "order_id": "k4eJmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+            "refund_order_id": "pQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa"
+          }
+        }
+      },
+      "DeleteRefundResponse": {
+        "summary": "Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund Invoice is delete successfully",
+          "data": {
+            "order_id": "JndWmnNR8pME3OdxVO6m202210101255255144669168767109617317875056497d138ae43fpQ7MVOgvFkaeLckgydR7zPdt6vNiVpNa",
+            "refund_order_id": "MnfWVOgvFkaeLckgydR7zPdt6vNiVpNa"
+          }
+        }
+      },
+      "TestMultivendorRefund": {
+        "summary": "Test multi vendor refund example request",
+        "value": {
+          "orderId": "202309470620061311821887650932",
+          "isMultivendorRefund": true,
+          "refundPayload": [
+            {
+              "refundRequestId": "b2JxTEcyeDhEaw==",
+              "ibanNumber": "IBAN123",
+              "totalPaid": "10.000",
+              "refundedAmount": "0",
+              "remainingLimit": "10",
+              "amountToRefund": "5",
+              "merchantType": "vendor"
+            },
+            {
+              "refundRequestId": "TWw1THI1YjhLcQ==",
+              "ibanNumber": "IBAN456",
+              "totalPaid": "10.000",
+              "refundedAmount": "0",
+              "remainingLimit": "10",
+              "amountToRefund": "5",
+              "merchantType": "vendor"
+            }
+          ],
+          "multivendor_refund_end_point": "https://preprod-uinterface.upayments.com/api/v1/create-multivendor-refund"
+        }
+      },
+      "MultiVendorRefund": {
+        "summary": "Refund multi vendor example request",
+        "value": {
+          "orderId": "202309470620061311821887650933",
+          "isMultivendorRefund": true,
+          "refundPayload": [
+            {
+              "refundRequestId": "AyJxTEcyeDhEaw==",
+              "ibanNumber": "IBAN456",
+              "totalPaid": "10.000",
+              "refundedAmount": "0",
+              "remainingLimit": "10",
+              "amountToRefund": "5",
+              "merchantType": "vendor"
+            },
+            {
+              "refundRequestId": "K5w1THI1YjhLcQ==",
+              "ibanNumber": "IBAN789",
+              "totalPaid": "10.000",
+              "refundedAmount": "0",
+              "remainingLimit": "10",
+              "amountToRefund": "5",
+              "merchantType": "vendor"
+            }
+          ],
+          "multivendor_refund_end_point": "https://apiv2api.upayments.com/api/v1/create-multivendor-refund"
+        }
+      },
+      "TestMultivendorRefundResponse": {
+        "summary": "Test Multi Vendor Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund invoice generated successfully",
+          "data": {
+            "responseData": {
+              "generated": [
+                {
+                  "generatedInvoiceId": "NTZBYTdvWGFkMw==",
+                  "amount": 5,
+                  "orderId": "k4eJmnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc",
+                  "refundOrderId": "DJtbo49JsergKRGZybFO8o41Gw0wKcWc",
+                  "refundArn": "20231025122106623039933917518"
+                },
+                {
+                  "generatedInvoiceId": "d05yYXI5b1JHcQ==",
+                  "amount": 5,
+                  "orderId": "k4eJmnNR8pk4eJmnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc1yne8zARsHI1YQI98bzxdtsc5EbLG2Pf",
+                  "refundOrderId": "1yne8zARsHI1YQI98bzxdtsc5EbLG2Pf",
+                  "refundArn": "20231025122106623039933917518"
+                }
+              ]
+            },
+            "dataTempered": [],
+            "refundIssue": [],
+            "insufficientBalance": []
+          }
+        }
+      },
+      "MultiVendorRefundResponse": {
+        "summary": "Multi Vendor Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund invoice generated successfully",
+          "data": {
+            "responseData": {
+              "generated": [
+                {
+                  "generatedInvoiceId": "HNDWPLBNCJRWSGT==",
+                  "amount": 5,
+                  "orderId": "KDm5mnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc",
+                  "refundOrderId": "ZGA8YUQRJ6bBjjGyUfQ12osUxn1WtTzP",
+                  "refundArn": "20231025122106623039933917518"
+                },
+                {
+                  "generatedInvoiceId": "Hd02JCrf36SXhD==",
+                  "amount": 5,
+                  "orderId": "KDMCJCk4eJmnNR8pk4eJmnNR8pME3OdxVO6m202210101255255144669168734311212841696256492d008a40f3DJtbo49JsergKRGZybFO8o41Gw0wKcWc1yne8zARsHI1YQI98bzxdtsc5EbLG2Pf",
+                  "refundOrderId": "OZDLDIBQa8LEkuOA5A98DlX3NPsKaE0O",
+                  "refundArn": "20231025122106623039933917518"
+                }
+              ]
+            },
+            "dataTempered": [],
+            "refundIssue": [],
+            "insufficientBalance": []
+          }
+        }
+      },
+      "TestMultivendorDeleteRefund": {
+        "summary": "Test multi vendor refund example request",
+        "value": {
+          "generatedInvoiceId": "bHo0SmxubGE2dg==",
+          "orderId": "k4eJmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+          "refundOrderId": "HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+          "refundArn": "20230613132906948529208806612"
+        }
+      },
+      "MultiVendorDeleteRefund": {
+        "summary": "Refund multi vendor example request",
+        "value": {
+          "generatedInvoiceId": "bHo0SmxubGE2dg==",
+          "orderId": "ls5JmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+          "refundOrderId": "DHDHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+          "refundArn": "20230613132906948529208806613"
+        }
+      },
+      "TestMultivendorDeleteRefundResponse": {
+        "summary": "Test Multi Vendor Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund invoice delete successfully",
+          "data": {
+            "order_id": "k4eJmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+            "refund_order_id": "HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS"
+          }
+        }
+      },
+      "MultiVendorDeleteRefundResponse": {
+        "summary": "Multi Vendor Refund Response",
+        "value": {
+          "status": true,
+          "message": "Refund invoice delete successfully",
+          "data": {
+            "order_id": "ls5JmnNR8pME3OdxVO6m20221010125525514466916880191941658236257649d20fa014b0HGHHDwCEVkIzdHmYmvbE1zg3SEytjmWS",
+            "refund_order_id": "DHDHDwCEVkIzdHmYmvbE1zg3SEytjmWS"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "upayKey": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
+}

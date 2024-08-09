@@ -1,0 +1,12 @@
+{
+  "workbench.colorTheme": "Dracula",
+  "tabnine.experimentalAutoImports": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "files.autoSave": "afterDelay",
+  "background.windowBackgrounds": ["./bg.png"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "cSpell.words": ["updatetion"]
+}

@@ -1,0 +1,37 @@
+{ 
+  "category": "66b48dfea606dbaac03a93bd",
+  "propertyName": "Sunny Villa",
+  "squareFeet": "2500",
+  "bathrooms": "3",
+  "bedrooms": "4",
+  "features": ["Swimming Pool", "Gym", "Garden"],
+  "rentType": "Monthly",
+  "residenceType": "Villa",
+  "perNightPrice": 200,
+  "perMonthPrice": 6000,
+  "propertyAbout": "A spacious villa with modern amenities and a beautiful garden.",
+  "address": {
+    "governorate": "Springfield",
+    "area": "Downtown",
+    "block": "B",
+    "street": "Elm Street",
+    "house": "123",
+    "floor": "1",
+    "apartment": "1A"
+  },
+  "paciNo": 123456789,
+  "rules": "No pets allowed. No smoking inside the house.",
+  "discount": 10,
+  "discountCode": "SUMMER2024",
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.006,
+    "coordinates": [40.7128, -74.006],
+    "type": "Point"
+  }
+}
+
+{
+    "videos":"",
+    "images":""
+}

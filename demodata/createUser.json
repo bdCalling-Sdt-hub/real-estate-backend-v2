@@ -1,0 +1,36 @@
+{
+  "name": "EmaJon",
+  "username": "emajon",
+  "email": "ema@jon.com",
+  "password": "Passw0rd!",
+  "phoneCode": "+880",
+  "phoneNumber": "1861218082",
+  "nationality": "Bangladeshi",
+  "gender": "Male",
+  "maritalStatus": "Single",
+  "dateOfBirth": "2003-01-04",
+  "job": "Software Engineer",
+  "monthlyIncome": "Under 800 KD",
+  "documents": {
+    "documentType": "Passport"
+  },
+  "role": "admin",
+  "bankInfo": {
+    "country": "USA",
+    "bankName": "Bank of America",
+    "swiftCode": "BOFAUS3N",
+    "accountHolder": "MD Nazmul Hasan",
+    "accountNumber": "1234567890",
+    "bankAddress": "1234 Elm Street, Springfield, IL, 62701"
+  },
+  "address": "5678 Oak Street, Springfield, IL, 62702",
+  "balance": 150.75,
+  "about": "I am a passionate software engineer with 5 years of experience in full-stack development."
+}
+
+
+{
+  "document":"",
+  "selfie":"",
+  "image":""
+}
