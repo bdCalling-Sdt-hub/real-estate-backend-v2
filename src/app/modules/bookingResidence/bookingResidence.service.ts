@@ -16,7 +16,7 @@ const createBookingResidence = async (
   const residence: IResidence | null = await Residence.findById(
     payload.residence,
   );
-  // .populate(['host', 'residence']); 
+  // .populate(['host', 'residence']);
   if (!residence) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Residence not found');
   }
@@ -50,8 +50,13 @@ const createBookingResidence = async (
 const getAllBookingResidence = async (query: Record<string, any>) => {
   const bookingResidenceModel = new QueryBuilder(
     BookingResidence.find().populate([
-      { path: 'residence' },
-      { path: 'author', select: 'name email _id username phoneNumber image' },
+      {
+        path: 'residence',
+        populate: [
+          { path: 'host', select: 'name email _id username phoneNumber image' },
+        ],
+      },
+      // { path: 'author', select: 'name email _id username phoneNumber image' },
       { path: 'user', select: 'name email _id username phoneNumber image' },
     ]),
     query,
