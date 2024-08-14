@@ -2,7 +2,7 @@ import catchAsync from '../../utils/catchAsync';
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
 import sendResponse from '../../utils/sendResponse';
-import { uploadManyToS3, uploadToS3 } from '../../utils/s3';
+import { deleteFromS3, uploadManyToS3, uploadToS3 } from '../../utils/s3';
 import { UploadedFiles } from '../../interface/common.interface';
 import { otpServices } from '../otp/otp.service';
 import AppError from '../../error/AppError';
@@ -19,41 +19,25 @@ const insertUserIntoDb = catchAsync(async (req: Request, res: Response) => {
     );
   }
 
-  req.body.documents = {
-    selfie: '',
-    documentType: req?.body?.documents?.documentType || '',
-    documents: [
-      {
-        key: '',
-        url: '',
-      },
-    ],
-  };
+  // req.body.documents = {
+  //   selfie: null,
+  //   documentType: req?.body?.documents?.documentType || null,
+  //   documents: [
+  //     {
+  //       key: null,
+  //       url: null,
+  //     },
+  //   ],
+  // };
 
   if (req.files) {
-    const { image, document, selfie } = req.files as UploadedFiles;
+    const { image } = req.files as UploadedFiles;
 
     if (image?.length) {
       req.body.image = await uploadToS3({
         file: image[0],
         fileName: `images/user/profile/${req.body.email}`,
       });
-    }
-
-    if (selfie?.length) {
-      req.body.documents.selfie = await uploadToS3({
-        file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
-      });
-    }
-
-    if (document?.length) {
-      const imgsArray = document.map(image => ({
-        file: image,
-        path: `images/user/documents`,
-      }));
-
-      req.body.documents.documents = await uploadManyToS3(imgsArray);
     }
   }
 
@@ -76,29 +60,19 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (req.files) {
-    const { image, document, selfie } = req.files as UploadedFiles;
+    const { image } = req.files as UploadedFiles;
 
     if (image?.length) {
       req.body.image = await uploadToS3({
         file: image[0],
-        fileName: `images/user/profile/${req.body.email}`,
+        fileName: `images/user/profile/${Math.floor(10000000 + Math.random() * 90000000)}`,
       });
     }
-
-    if (selfie?.length) {
-      req.body.documents.selfie = await uploadToS3({
-        file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
-      });
-    }
-
-    if (document?.length) {
-      const imgsArray = document.map(image => ({
-        file: image,
-        path: `images/user/documents`,
-      }));
-
-      req.body.documents.documents = await uploadManyToS3(imgsArray);
+    if (user?.image) {
+      const url = new URL(user?.image);
+      const pathname = url.pathname;
+      console.log(pathname);
+      await deleteFromS3(pathname);
     }
   }
 
@@ -151,30 +125,22 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
   if (req.files) {
-    const { image, document, selfie } = req.files as UploadedFiles;
+    const { image } = req.files as UploadedFiles;
 
     if (image?.length) {
       req.body.image = await uploadToS3({
         file: image[0],
-        fileName: `images/user/profile/${req.body.email}`,
+        fileName: `images/user/profile/${Math.floor(10000000 + Math.random() * 90000000)}`,
       });
     }
+    //   if (user?.image) {
+    //     const url = new URL(user?.image);
+    //     const pathname = url.pathname;
+    //     console.log(pathname);
+    //    const nn =  await deleteFromS3(pathname);
+    //  console.log(nn);
 
-    if (selfie?.length) {
-      req.body.documents.selfie = await uploadToS3({
-        file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
-      });
-    }
-
-    if (document?.length) {
-      const imgsArray = document.map(image => ({
-        file: image,
-        path: `images/user/documents`,
-      }));
-
-      req.body.documents.documents = await uploadManyToS3(imgsArray);
-    }
+    //   }
   }
 
   const result = await userServices.updateUser(user?._id.toString(), req.body);
@@ -229,6 +195,41 @@ const rejectIdVerificationRequest = catchAsync(
   },
 );
 
+//accept verification request
+const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
+  req.body.documents = {
+    selfie: null,
+    documentType: req?.body?.documents?.documentType || null,
+    documents: [
+      {
+        key: null,
+        url: null,
+      },
+    ],
+  };
+
+  if (req.files) {
+    const { document, selfie } = req.files as UploadedFiles;
+
+    if (selfie?.length) {
+      req.body.documents.selfie = await uploadToS3({
+        file: selfie[0],
+        fileName: `images/user/selfie/${req.body.email}`,
+      });
+    }
+
+    if (document?.length) {
+      const imgsArray = document.map(image => ({
+        file: image,
+        path: `images/user/documents`,
+      }));
+
+      req.body.documents.documents = await uploadManyToS3(imgsArray);
+    }
+  }
+  const result = await userServices.requestIdVerify(req.user.userId, req.body);
+});
+
 export const userControllers = {
   insertUserIntoDb,
   updateUser,
@@ -238,5 +239,6 @@ export const userControllers = {
   deleteMyAccount,
   deleteAccount,
   updateMyProfile,
+  requestIdVerify,
   rejectIdVerificationRequest,
 };

@@ -16,22 +16,28 @@ router.post(
   '/create-user',
   // auth(USER_ROLE.super_admin, USER_ROLE.sub_admin),
   upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'document', maxCount: 5 },
-    { name: 'selfie', maxCount: 1 },
+    { name: 'image', maxCount: 1 }, 
   ]),
   parseData(),
   validateRequest(userZodValidator?.createUserZodSchema),
   userControllers.insertUserIntoDb,
 );
 //update a user
+// router.patch(
+//   '/update/:id',
+//   auth(USER_ROLE.super_admin, USER_ROLE.admin),
+//   upload.fields([
+//     { name: 'image', maxCount: 1 }, 
+//   ]),
+//   parseData(),
+//   userControllers.updateUser,
+// );
+
 router.patch(
   '/update/:id',
   auth(USER_ROLE.super_admin, USER_ROLE.admin),
   upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'document', maxCount: 1 },
-    { name: 'selfie', maxCount: 1 },
+    { name: 'image', maxCount: 1 }, 
   ]),
   parseData(),
   userControllers.updateUser,
@@ -48,9 +54,7 @@ router.patch(
     USER_ROLE.landlord,
   ),
   upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'document', maxCount: 1 },
-    { name: 'selfie', maxCount: 1 },
+    { name: 'image', maxCount: 1 }, 
   ]),
   parseData(),
   userControllers.updateMyProfile,
@@ -93,7 +97,26 @@ router.delete(
 router.patch(
   '/verification-request-reject/:id',
   auth(USER_ROLE.super_admin, USER_ROLE.admin),
+ 
+ 
   userControllers.rejectIdVerificationRequest,
+);
+
+//delete user
+router.patch(
+  '/request-id-verify',
+  auth(
+    USER_ROLE.super_admin,
+    USER_ROLE.admin,
+    USER_ROLE.landlord,
+    USER_ROLE.user,
+  ),
+  upload.fields([
+    { name: 'document', maxCount: 5 },
+    { name: 'selfie', maxCount: 1 },
+  ]),
+  parseData(),
+  userControllers.requestIdVerify,
 );
 
 //reject verification request

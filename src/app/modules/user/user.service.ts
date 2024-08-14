@@ -14,7 +14,7 @@ import { notificationServices } from '../notification/notification.service';
 // Insert sub-admin into the database
 const insertSubAdminIntoDb = async (
   payload: Partial<TUser>,
-): Promise<TUser> => { 
+): Promise<TUser> => {
   const user = await User.isUserExist(payload.email as string);
 
   if (user) {
@@ -72,6 +72,9 @@ const getAllusers = async (query: Record<string, any>) => {
 // Get single user by ID
 const getSingleUser = async (id: string) => {
   const result = await User.findById(id);
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'user not found');
+  }
   return result;
 };
 
@@ -93,19 +96,6 @@ const updateUser = async (
 
   if (result && payload?.image) {
     await deleteFile(user?.image as string);
-  }
-
-  if (payload?.verificationRequest === 'send') {
-    const admin: TUser | null = await User.findOne({ role: 'admin' });
-    if (!admin) {
-      throw new AppError(httpStatus.FORBIDDEN, 'Admin not found');
-    }
-    await notificationServices.insertNotificationIntoDb({
-      receiver: admin._id,
-      refference: result?._id,
-      model_type: 'User',
-      message: `${result?.email} user send verification request`,
-    });
   }
 
   if (payload?.verificationRequest === 'accepted') {
@@ -185,19 +175,34 @@ const deleteMyAccount = async (id: string, password: string) => {
 };
 
 //verification request send
-// const requestIdVerify = async(userId:string)=>{
-//   const result = await User.findByIdAndUpdate(userId, {
-//     verifyRequest: 'send',
-//   },{new :true,});
+const requestIdVerify = async (userId: string, payload: Partial<TUser>) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.BAD_GATEWAY, 'Invalid user');
+  }
+  const admin: TUser | null = await User.findOne({ role: 'admin' });
+  if (!admin) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Admin not found');
+  }
+  payload.verificationRequest = 'send';
 
-//   if(!result){
-//     throw new AppError(httpStatus.BAD_REQUEST,"Request for id verify failed")
-//   }
+  const result = await User.findByIdAndUpdate(userId, payload, { new: true });
 
-//   return result;
-// }
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Request for id verify failed');
+  }
 
-// //verification accept
+  await notificationServices.insertNotificationIntoDb({
+    receiver: admin._id,
+    refference: userId,
+    model_type: 'User',
+    message: `${user?.email} user send verification request`,
+  });
+
+  return result;
+};
+
+//verification accept
 // const acceptIdVerify = async(userId:string)=>{
 //   const result = await User.findByIdAndUpdate(userId, {
 //     isVerified: true,
@@ -291,11 +296,6 @@ const rejectIdVerificationRequest = async (userId: string, payload: any) => {
   return result;
 };
 
-//block user
-// const blockUser = async(userId)=>{
-// }
-//unblock user
-
 export const userServices = {
   insertSubAdminIntoDb,
   getme,
@@ -305,6 +305,6 @@ export const userServices = {
   deleteAccount,
   deleteMyAccount,
   rejectIdVerificationRequest,
-  // requestIdVerify,
+  requestIdVerify,
   // acceptIdVerify,
 };

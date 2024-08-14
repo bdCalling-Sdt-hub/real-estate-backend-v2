@@ -18,11 +18,11 @@ import Residence from '../residence/residence.models';
 // Initiate payment
 const initiatePayment = async (payload: any) => {
   const initiate: any = await getPaymentConfig(payload);
-  if (payload?.paymentType === paymentTypes.Booking_Residence) {
-    const residence = await BookingResidence.findById(payload?.details);
-    payload.residenceAuthority = residence?.author;
+  if (payload?.paymentType === 'BookingResidence') {
+    const residence = await BookingResidence.findById(payload?.bookingId);
+    payload.residenceAuthority = residence?.author; 
   }
-
+ 
   await Payment.create({
     user: payload.user,
     transitionId: initiate?.reference?.id,
@@ -181,7 +181,7 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
   }
 
   // Extract query parameters
-  const { daily, month, sixMonths, year, date } = query;
+  const { daily, week, month, sixMonths, year, date } = query;
 
   // Define match stage for aggregation
   let matchStage: any = {
@@ -195,6 +195,10 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     const today = moment().startOf('day').toDate();
     const tomorrow = moment(today).add(1, 'day').toDate();
     matchStage.createdAt = { $gte: today, $lt: tomorrow };
+  } else if (week) {
+    const startOfWeek = moment().startOf('week').toDate();
+    const endOfWeek = moment(startOfWeek).endOf('week').toDate();
+    matchStage.createdAt = { $gte: startOfWeek, $lt: endOfWeek };
   } else if (month && year) {
     const startDate = moment(`${year}-${month}-01`).startOf('month').toDate();
     const endDate = moment(startDate).endOf('month').toDate();
@@ -226,16 +230,24 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
       _id: {
         year: { $year: '$createdAt' },
         month: { $month: '$createdAt' },
+        week: { $week: '$createdAt' }, // Group by week
       },
       totalIncome: { $sum: '$landlordAmount' },
     },
   });
 
   aggregationPipeline.push({
-    $sort: { '_id.year': 1, '_id.month': 1 },
+    $sort: { '_id.year': 1, '_id.month': 1, '_id.week': 1 },
   });
 
   const result = await Payment.aggregate(aggregationPipeline);
+
+  const weeklyIncome = result.map(item => ({
+    year: item._id.year,
+    month: item._id.month,
+    week: item._id.week,
+    income: item.totalIncome,
+  }));
 
   const monthNames = [
     'Jan',
@@ -251,6 +263,7 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     'Nov',
     'Dec',
   ];
+
   let yearlyIncome = 0;
   const formattedResult = monthNames.map((monthName, index) => {
     const monthData = result.find(item => item._id.month === index + 1);
@@ -277,6 +290,7 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
   ];
 
   const yearlyIncomeObj = { period: 'Yearly', income: yearlyIncome };
+
   const totalIncome = await Payment.aggregate([
     { $match: matchStage },
     { $group: { _id: null, totalIncome: { $sum: '$landlordAmount' } } },
@@ -290,15 +304,17 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     { path: 'user', select: '_id name email image image' },
     { path: 'details', populate: ['residence'] },
   ]);
-  // const totalIncome = Payment.aggregate()
+
   return {
     totalMyIncome: totalIncome.length > 0 ? totalIncome[0].totalIncome : 0,
+    weeklyIncome: weeklyIncome, // Add weekly income
     monthlyIncome: formattedResult,
     halfYearlyIncome: halfYearlyIncome,
     yearlyIncome: yearlyIncomeObj,
     totalTransitions: transitions,
   };
 };
+
 
 const packageIncome = async () => {
   const today = moment().startOf('day').toDate();
@@ -528,7 +544,7 @@ const PercentageIncome = async () => {
             transitionDate: '$transitionDate',
             type: '$type',
             details: '$detailsInfo',
-            residenceAuthority: '$userDetails',
+            residenceAuthority: '$residenceAuthority',
             landlordAmount: '$landlordAmount',
             adminAmount: '$adminAmount',
           },
@@ -547,6 +563,7 @@ const PercentageIncome = async () => {
     },
   ]);
 
+  console.log(result[0]);
   return result.length > 0
     ? result[0]
     : {

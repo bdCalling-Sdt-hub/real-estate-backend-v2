@@ -43,6 +43,7 @@ export const deleteFromS3 = async (key: string) => {
     });
     await s3Client.send(command);
   } catch (error) {
+    console.log(error);
     throw new AppError(httpStatus.BAD_REQUEST, 's3 file delete failed');
   }
 };

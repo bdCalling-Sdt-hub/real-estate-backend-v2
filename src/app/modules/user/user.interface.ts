@@ -30,7 +30,7 @@ export interface TUser {
   dateOfBirth: string;
   job: string;
   monthlyIncome: string;
-  documents: IDocuments;
+  documents?: IDocuments;
   verificationRequest: string;
   image?: string;
   role: 'admin' | 'user' | 'host' | 'super_admin' | 'sub_admin';

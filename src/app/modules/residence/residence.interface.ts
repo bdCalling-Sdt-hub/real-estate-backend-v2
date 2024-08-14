@@ -18,7 +18,7 @@ interface IFile {
 interface map {
   latitude: number;
   longitude: number;
-  coordinates: [number];
+  coordinates?: [number];
   type: { type: string };
 }
 
@@ -30,7 +30,7 @@ export interface IResidence {
   images: IFile[];
   videos: IFile[] | null | [];
   category: ObjectId;
-  propertyName: string;
+  propertyName: string;    
   squareFeet: string;
   bathrooms: string;
   bedrooms: string;
