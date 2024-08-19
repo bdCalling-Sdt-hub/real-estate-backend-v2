@@ -1,10 +1,11 @@
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
+import { IPackage } from '../package/package.interface';
 
 export interface ISubscription {
   _id?: string;
   user: ObjectId;
-  package: ObjectId;
+  package: ObjectId | IPackage ;
   transitionId: string;
   startAt: Date;
   endAt: Date;

@@ -296,6 +296,32 @@ const rejectIdVerificationRequest = async (userId: string, payload: any) => {
   return result;
 };
 
+// const signInWithGoogle = async (payload: Partial<TUser>) => {
+
+//     const user = await User.isUserExist(payload.email as string);
+
+//     if (user) {
+//       throw new AppError(
+//         httpStatus.FORBIDDEN,
+//         'User already exists with this email',
+//       );
+//     }
+
+//     const userExistByUsername = await User.IsUserExistUserName(
+//       payload.username as string,
+//     );
+
+//     if (userExistByUsername) {
+//       throw new AppError(
+//         httpStatus.FORBIDDEN,
+//         'Username already exists. Try another username',
+//       );
+//     }
+//   const result = await User.create(payload);
+//   if (!result) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'User creation Failed');
+//   }
+// };
 export const userServices = {
   insertSubAdminIntoDb,
   getme,

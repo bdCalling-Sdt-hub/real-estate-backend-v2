@@ -6,6 +6,8 @@ import parseData from '../../middleware/parseData';
 import { residenceController } from './residence.controller';
 import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constant';
+import validateRequest from '../../middleware/validateRequest';
+import { residenceValidation } from './residence.validation';
 
 const router = Router();
 const storage = memoryStorage();
@@ -24,7 +26,7 @@ router.post(
     { name: 'videos', maxCount: 3 },
   ]),
   parseData(),
-  // validateRequest(residenceValidation.createResidenceSchema),
+  validateRequest(residenceValidation.createResidenceSchema),
   residenceController.createResidence,
 );
 

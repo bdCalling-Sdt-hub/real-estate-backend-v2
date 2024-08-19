@@ -24,8 +24,7 @@ const getAllAds = async (
 ) => {
  
   const { searchTerm, ...filtersData } = filters;
-
-   console.log(searchTerm);
+ 
 
 
   const pipeline: any[] = [];

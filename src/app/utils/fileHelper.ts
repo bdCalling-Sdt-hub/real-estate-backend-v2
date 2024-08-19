@@ -6,7 +6,7 @@ export const deleteFile = async (path: string) => {
     if (fs.existsSync(`../public/${path}`)) {
       await unlinkSync(`../public/${path}`);
     } else {
-      console.log('not found');
+      console.error('not found');
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {

@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IResidence, IResidenceModel } from './residence.interface';
+import { User } from '../user/user.model';
 
 // Define the Address schema
 const addressSchema = new Schema({
@@ -10,11 +11,17 @@ const addressSchema = new Schema({
   house: { type: String, required: true },
   floor: { type: String, required: true },
   apartment: { type: String, required: true },
+  avenue: { type: String, required: false },
+  additionalDirections: { type: String, required: true },
 });
-
+ 
 // Define the File schema
 const fileSchema = new Schema({
   url: { type: String, required: true },
+  key: { type: String, required: true },
+});
+const featuresList = new Schema({
+  icon: { type: String, required: true },
   key: { type: String, required: true },
 });
 
@@ -42,6 +49,30 @@ const ResidenceSchema = new Schema<IResidence>(
     rules: { type: String, required: true },
     discount: { type: Number, default: 0 },
     discountCode: { type: String },
+     deposit: {
+      type:String,
+     },
+  document: {
+    type:{
+
+      marriageCertificate: {
+        type:Boolean,
+        default:false
+      },
+      salaryCertificate: {
+        type:Boolean,
+        default:false
+      },
+      bankStatement: {
+        type:Boolean,
+        default:false
+      },
+      passport: {
+        type:Boolean,
+        default:false
+      },
+    }
+  },
     location: {
       latitude: Number,
       longitude: Number,
@@ -49,6 +80,7 @@ const ResidenceSchema = new Schema<IResidence>(
       type: { type: String, default: 'Point' },
     },
     host: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    // isBlock: Boolean,
     popularity: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
   },
@@ -56,20 +88,64 @@ const ResidenceSchema = new Schema<IResidence>(
 );
 
 // filter out deleted documents
-ResidenceSchema.pre('find', function (next) {
-  this.find({ isDeleted: { $ne: true } });
+ResidenceSchema.pre('find', async function (next) {
+  this.where({ isDeleted: { $ne: true } })
+    .populate({
+      path: 'host',
+      match: { isDeleted: false, status: { $ne: 'blocked' } },
+    })
+    .where('host')
+    .exists(true);
   next();
 });
 
 ResidenceSchema.pre('findOne', function (next) {
-  this.find({ isDeleted: { $ne: true } });
+  this.where({ isDeleted: { $ne: true } })
+    .populate({
+      path: 'host',
+      match: { isDeleted: false, status: { $ne: 'blocked' } },
+    })
+    .where('host')
+    .exists(true);
   next();
 });
 
 ResidenceSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  this.pipeline().unshift({
+    $lookup: {
+      from: 'users',
+      localField: 'host',
+      foreignField: '_id',
+      as: 'host',
+    },
+  });
+
+  // Add a $match stage to remove documents with null or empty host array
+  this.pipeline().push({
+    $match: {
+      host: { $ne: null },
+      'host.isDeleted': { $ne: true },
+      'host.status': { $ne: 'blocked' },
+      isDeleted: { $ne: true },
+    },
+  });
   next();
 });
+// // filter out deleted documents
+// ResidenceSchema.pre('find', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+
+// ResidenceSchema.pre('findOne', function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+
+// ResidenceSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 
 const Residence = model<IResidence, IResidenceModel>(
   'Residence',

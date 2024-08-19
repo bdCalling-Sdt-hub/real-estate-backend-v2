@@ -26,7 +26,6 @@ class QueryBuilder<T> {
 
   // Range filter
   rangeFilter<K extends keyof T>(field: K, range: string) {
-    console.log(field, range);
     if (range) {
       const [min, max] = range.split('-').map(Number);
       // Check if both min and max are valid numbers

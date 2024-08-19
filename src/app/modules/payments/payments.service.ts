@@ -20,18 +20,34 @@ const initiatePayment = async (payload: any) => {
   const initiate: any = await getPaymentConfig(payload);
   if (payload?.paymentType === 'BookingResidence') {
     const residence = await BookingResidence.findById(payload?.bookingId);
-    payload.residenceAuthority = residence?.author; 
+    payload.residenceAuthority = residence?.author;
   }
- 
-  await Payment.create({
-    user: payload.user,
-    transitionId: initiate?.reference?.id,
-    type: payload.paymentType,
-    details: payload?.bookingId,
-    amount: initiate?.order?.amount,
-    residenceAuthority: payload.residenceAuthority,
-    transitionDate: moment(),
+
+  const haveInPayment = await Payment.findOne({
+    status: 'pending',
+    details: new Types.ObjectId(payload?.bookingId),
+    type: payload?.paymentType,
+    user: new Types.ObjectId(payload?.user),
   });
+
+  if (!haveInPayment) {
+    await Payment.create({
+      user: payload.user,
+      transitionId: initiate?.reference?.id,
+      type: payload.paymentType,
+      details: payload?.bookingId,
+      amount: initiate?.order?.amount,
+      residenceAuthority: payload.residenceAuthority,
+      transitionDate: moment(),
+    });
+  } else {
+    await Payment.findByIdAndUpdate(haveInPayment?._id, {
+      transitionId: initiate?.reference?.id,
+      transitionDate: moment(),
+    });
+  }
+
+  console.log(initiate);
 
   try {
     const res = await fetch('https://sandboxapi.upayments.com/api/v1/charge', {
@@ -39,14 +55,15 @@ const initiatePayment = async (payload: any) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        // Authorization: `Bearer ${config?.payment?.payment_token}`,
         Authorization: `Bearer ${config?.payment?.payment_token}`,
       },
       body: JSON.stringify(initiate),
     });
-
     const data = await res.json();
     return data;
   } catch (err: any) {
+    console.log(err);
     throw new AppError(httpStatus.BAD_REQUEST, err.message);
   }
 };
@@ -55,7 +72,7 @@ const initiatePayment = async (payload: any) => {
 const webhook = async (payload: any) => {
   const status = payload.result === 'CAPTURED' ? 'completed' : 'failed';
   const payment: IPayment | null = await Payment.findOneAndUpdate(
-    { transitionId: payload.tran_id },
+    { transitionId: payload.trn_udf },
     {
       $set: {
         status: status,
@@ -158,7 +175,16 @@ const webhook = async (payload: any) => {
   return payment;
 };
 
-// Get my payments
+//return url
+const returnUrl = async (query: Record<string, any>) => { 
+  const result = await Payment.findOne({ transitionId: query?.trn_udf });
+  console.log('🚀 ~ returnUrl ~ result:', result);
+  if (!result) {
+    throw new AppError(httpStatus.BAD_GATEWAY, 'payment not found!');
+  }
+  return result;
+}; 
+
 const myPayments = async (userId: string) => {
   const payments = await Payment.find({ user: userId }).populate([
     {
@@ -314,7 +340,6 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     totalTransitions: transitions,
   };
 };
-
 
 const packageIncome = async () => {
   const today = moment().startOf('day').toDate();
@@ -563,7 +588,6 @@ const PercentageIncome = async () => {
     },
   ]);
 
-  console.log(result[0]);
   return result.length > 0
     ? result[0]
     : {
@@ -1019,4 +1043,5 @@ export const paymentsService = {
   PercentageStatisticsIncomes,
   calculatePackageNameByIncome,
   topLandlordIncome,
+  returnUrl,
 };

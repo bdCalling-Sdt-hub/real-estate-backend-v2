@@ -26,7 +26,7 @@ const login = async (payload: Tlogin) => {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is Blocked');
   }
 
-  if (!(await User.isPasswordMatched(payload.password, user.password))) {
+  if (!payload?.loginWithGoogle && !(await User.isPasswordMatched(payload.password, user.password))) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }
 
@@ -64,6 +64,7 @@ const changePassword = async (id: string, payload: TchangePassword) => {
   if (!(await User.isPasswordMatched(payload?.oldPassword, user.password))) {
     throw new AppError(httpStatus.FORBIDDEN, 'Old password does not match');
   }
+  
   if (payload?.newPassword !== payload?.confirmPassword) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -154,8 +155,7 @@ const resetPassword = async (token: string, payload: TresetPassword) => {
   } 
   const user = await User.findById(decode?.userId || decode?.id).select(
     'isDeleted verification',
-  );
-  // console.log(user);
+  ); 
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');

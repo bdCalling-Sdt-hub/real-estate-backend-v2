@@ -4,7 +4,7 @@ import { paymentsService } from './payments.service';
 import sendResponse from '../../utils/sendResponse';
 
 const initiatePayment = catchAsync(async (req: Request, res: Response) => {
-  req.body.user = req.user.userId;
+  req.body.user = '66bc3a47b39842d46f1eef7d';
 
   const result = await paymentsService.initiatePayment(req.body);
 
@@ -22,7 +22,17 @@ const webhook = catchAsync(async (req: Request, res: Response) => {
   sendResponse(req, res, {
     statusCode: 200,
     success: true,
-    message: 'Payment successfully',
+    message: 'Payment initiate successfully',
+    data: result,
+  });
+});
+
+const returnUrl = catchAsync(async (req: Request, res: Response) => {
+  const result = await paymentsService.returnUrl(req.query);
+  sendResponse(req, res, {
+    statusCode: 200,
+    success: true,
+    message: 'return url get successfully',
     data: result,
   });
 });
@@ -115,7 +125,6 @@ const calculatePackageNameByIncome = catchAsync(
   },
 );
 
-
 const topLandlordIncome = catchAsync(async (req: Request, res: Response) => {
   const result = await paymentsService.topLandlordIncome();
   sendResponse(req, res, {
@@ -129,6 +138,7 @@ const topLandlordIncome = catchAsync(async (req: Request, res: Response) => {
 export const paymentsController = {
   initiatePayment,
   webhook,
+  returnUrl,
   myIncome,
   myPayments,
   packageIncome,

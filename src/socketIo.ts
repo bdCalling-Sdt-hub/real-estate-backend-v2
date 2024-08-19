@@ -30,7 +30,6 @@ const initializeSocketIO = (server: HttpServer) => {
       //----------------------user token get from front end-------------------------//
       const token =
         socket.handshake.auth?.token || socket.handshake.headers?.token;
-
       //----------------------check Token and return user details-------------------------//
       const user: any = await getUserDetailsFromToken(token);
       if (!user) {
@@ -86,8 +85,7 @@ const initializeSocketIO = (server: HttpServer) => {
               { sender: user?._id, receiver: userId },
               { sender: userId, receiver: user?._id },
             ],
-          }) 
-            .sort({ updatedAt: -1 });
+          }).sort({ updatedAt: -1 });
 
           socket.emit('message', getPreMessage || []);
         } catch (error: any) {

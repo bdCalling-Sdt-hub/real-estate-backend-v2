@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
+import { IBookingResidence } from '../bookingResidence/bookingResidence.interface';
 
 export interface IMessages {
   _id?: ObjectId;
@@ -10,6 +10,8 @@ export interface IMessages {
   chat: ObjectId;
   sender: ObjectId;
   receiver: ObjectId;
+  bookingId:ObjectId|IBookingResidence | null,
+  showButton: boolean; 
 }
 
 export type IMessagesModel = Model<IMessages, Record<string, unknown>>;

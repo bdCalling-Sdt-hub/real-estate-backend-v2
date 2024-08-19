@@ -4,11 +4,13 @@ import { Model } from 'mongoose';
 interface IAddress {
   governorate: string;
   area: string;
-  block: string;
-  street: string;
   house: string;
-  floor: string;
   apartment: string;
+  floor: string;
+  street: string;
+  block: string;
+  avenue:string;
+  additionalDirections:string
 }
 interface IFile {
   url: string;
@@ -30,7 +32,7 @@ export interface IResidence {
   images: IFile[];
   videos: IFile[] | null | [];
   category: ObjectId;
-  propertyName: string;    
+  propertyName: string;
   squareFeet: string;
   bathrooms: string;
   bedrooms: string;
@@ -49,6 +51,13 @@ export interface IResidence {
   host: ObjectId;
   popularity: number;
   isDeleted: boolean;
+  deposit: string;
+  document: {
+    marriageCertificate: boolean;
+    salaryCertificate: boolean;
+    bankStatement: boolean;
+    passport: boolean;
+  };
 }
 
 export type IResidenceModel = Model<IResidence, Record<string, unknown>>;

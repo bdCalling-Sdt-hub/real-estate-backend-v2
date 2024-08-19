@@ -42,6 +42,8 @@ const createResidence = catchAsync(async (req: Request, res: Response) => {
     message: 'Residence created successfully',
     data: result,
   });
+  
+
 });
 
 const getAllResidence = catchAsync(async (req: Request, res: Response) => { 

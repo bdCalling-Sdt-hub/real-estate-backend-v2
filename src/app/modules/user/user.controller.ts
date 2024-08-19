@@ -70,8 +70,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     }
     if (user?.image) {
       const url = new URL(user?.image);
-      const pathname = url.pathname;
-      console.log(pathname);
+      const pathname = url.pathname; 
       await deleteFromS3(pathname);
     }
   }
@@ -135,16 +134,13 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     }
     //   if (user?.image) {
     //     const url = new URL(user?.image);
-    //     const pathname = url.pathname;
-    //     console.log(pathname);
-    //    const nn =  await deleteFromS3(pathname);
-    //  console.log(nn);
+    //     const pathname = url.pathname; 
+    //    const nn =  await deleteFromS3(pathname); 
 
     //   }
   }
 
-  const result = await userServices.updateUser(user?._id.toString(), req.body);
-  console.log(result);
+  const result = await userServices.updateUser(user?._id.toString(), req.body); 
   sendResponse(req, res, {
     statusCode: 200,
     success: true,

@@ -22,6 +22,7 @@ router.post(
 
 //web hooks
 router.post('/webhooks', paymentsController.webhook);
+router.get('/return/:tranId', paymentsController.returnUrl);
 router.get(
   '/my-payments',
   auth(

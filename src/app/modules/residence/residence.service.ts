@@ -13,6 +13,11 @@ import { changeLanguage } from 'i18next';
 const createResidence = async (
   payload: Partial<IResidence>,
 ): Promise<IResidence | null> => {
+
+  if (!payload?.host) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
+  }
+  
   if (!payload?.images) {
     throw new AppError(httpStatus.BAD_REQUEST, 'images is required');
   }
@@ -28,8 +33,7 @@ const createResidence = async (
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
 const getAllResidence = async (query: Record<string, any>) => {
-  const allResidence: any[] = [];
-  console.log(query);
+  const allResidence: any[] = []; 
   const ResidenceModel = new QueryBuilder(
     Residence.find().populate([
       { path: 'category', select: 'name _id' },
@@ -54,10 +58,10 @@ const getAllResidence = async (query: Record<string, any>) => {
   if (data) {
     await Promise.all(
       data.map(async residence => {
-        const avgRating = await calculateAverageRatingForResidence(
+        const review: any = await calculateAverageRatingForResidence(
           residence._id as Types.ObjectId,
         );
-        allResidence.push({ ...residence?.toObject(), avgRating });
+        allResidence.push({ ...residence?.toObject(), ...review });
       }),
     );
   }
