@@ -35,7 +35,7 @@ const addressSchema = z.object({
   street: z.string({ required_error: 'street is required' }).min(1),
   house: z.string({ required_error: 'house is required' }).min(1),
   floor: z.string({ required_error: 'floor is required' }).optional(),
-  state: z.string({ required_error: 'state is required' }).min(1),
+  // state: z.string({ required_error: 'state is required' }).min(1),
 });
 
 // Define the Zod schema for the residence

@@ -13,11 +13,10 @@ import { changeLanguage } from 'i18next';
 const createResidence = async (
   payload: Partial<IResidence>,
 ): Promise<IResidence | null> => {
-
   if (!payload?.host) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
   }
-  
+
   if (!payload?.images) {
     throw new AppError(httpStatus.BAD_REQUEST, 'images is required');
   }
@@ -33,7 +32,8 @@ const createResidence = async (
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
 const getAllResidence = async (query: Record<string, any>) => {
-  const allResidence: any[] = []; 
+  const allResidence: any[] = [];
+  // const features = query.features ? query.features.split(',') : [];
   const ResidenceModel = new QueryBuilder(
     Residence.find().populate([
       { path: 'category', select: 'name _id' },
@@ -47,27 +47,27 @@ const getAllResidence = async (query: Record<string, any>) => {
     .search(residenceSearchableFields)
     .filter()
     .paginate()
-    .rangeFilter('perMonthPrice', query.perMonthPrice)
-    .rangeFilter('perNightPrice', query.perNightPrice)
+    .rangeFilter('rent', query.rent)
+    .arrayFilter('features', query?.features)
     .sort()
     .fields();
 
   const data = await ResidenceModel.modelQuery;
   const meta = await ResidenceModel.countTotal();
 
-  if (data) {
-    await Promise.all(
-      data.map(async residence => {
-        const review: any = await calculateAverageRatingForResidence(
-          residence._id as Types.ObjectId,
-        );
-        allResidence.push({ ...residence?.toObject(), ...review });
-      }),
-    );
-  }
+  // if (data?.length > 0) {
+  //   await Promise.all(
+  //     data.map(async residence => {
+  //       const review: any = await calculateAverageRatingForResidence(
+  //         residence?._id?.toString() as string,
+  //       );
+  //       allResidence.push({ ...residence?.toObject(), ...review });
+  //     }),
+  //   );
+  // }
 
   return {
-    allResidence,
+    allResidence: data,
     meta,
   };
 };
@@ -82,11 +82,11 @@ const getResidenceById = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Oops! Residence not found');
   }
 
-  const avgRating = await calculateAverageRatingForResidence(
-    result?._id as Types.ObjectId,
-  );
+  // const avgRating = await calculateAverageRatingForResidence(
+  //   result?._id?.toString() as string,
+  // );
 
-  return { ...result.toObject(), avgRating };
+  return result;
 };
 
 const updateResidence = async (id: string, payload: Partial<IResidence>) => {

@@ -10,11 +10,12 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { deleteManyFromS3 } from '../../utils/s3';
 import { sendEmail } from '../../utils/mailSender';
 import { notificationServices } from '../notification/notification.service';
+import { generateRandomString } from './user.utils';
 
 // Insert sub-admin into the database
 const insertSubAdminIntoDb = async (
   payload: Partial<TUser>,
-): Promise<TUser> => {
+): Promise<TUser> => { 
   const user = await User.isUserExist(payload.email as string);
 
   if (user) {
@@ -35,7 +36,27 @@ const insertSubAdminIntoDb = async (
     );
   }
 
+
   const result = await User.create(payload);
+
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'user creating failed');
+  }
+
+  await sendEmail(
+    result?.email,
+    'New User Created - REAL-STATE',
+    `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #4CAF50;">Create a account in Real-State</h2>
+      <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
+        <p style="font-size: 16px;">A your account has been created with the following credentials:</p>
+        <p style="font-size: 16px;"><strong>Email:</strong> ${result?.email}</p>
+        <p style="font-size: 16px;"><strong>Password:</strong> ${payload.password}</p>
+        <p style="font-size: 14px; color: #666;">Please advise the user to log in and change their password immediately.</p>
+      </div>
+    </div>`,
+  );
+  
   return result;
 };
 

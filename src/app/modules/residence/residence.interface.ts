@@ -1,5 +1,4 @@
-import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 
 interface IAddress {
   governorate: string;
@@ -9,8 +8,8 @@ interface IAddress {
   floor: string;
   street: string;
   block: string;
-  avenue:string;
-  additionalDirections:string
+  avenue: string;
+  additionalDirections: string;
 }
 interface IFile {
   url: string;
@@ -28,7 +27,7 @@ export interface IResidence {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   toObject: any;
   _id?: ObjectId;
-  avgRating?: number | null;
+  averageRating: number | null;
   images: IFile[];
   videos: IFile[] | null | [];
   category: ObjectId;
@@ -36,28 +35,31 @@ export interface IResidence {
   squareFeet: string;
   bathrooms: string;
   bedrooms: string;
+  residenceType: string;
+  propertyAbout: string;
   features: string[];
   rentType: string;
-  location: map;
-  residenceType: string;
-  perNightPrice: number;
-  perMonthPrice: number;
-  propertyAbout: string;
-  address: IAddress;
-  paciNo: number;
-  rules: string;
-  discount: number;
-  discountCode: string;
-  host: ObjectId;
-  popularity: number;
-  isDeleted: boolean;
+  paymentType: string;
   deposit: string;
+  rent: number;
   document: {
     marriageCertificate: boolean;
     salaryCertificate: boolean;
     bankStatement: boolean;
     passport: boolean;
   };
+  location: map;
+  address: IAddress;
+  discount: number;
+  discountCode: string;
+  host: ObjectId;
+  isDeleted: boolean;
+  // popularity: number;
+
+  // perNightPrice: number;
+  // perMonthPrice: number;
+  // paciNo: number;
+  // rules: string;
 }
 
 export type IResidenceModel = Model<IResidence, Record<string, unknown>>;

@@ -10,6 +10,43 @@ import { User } from './user.model';
 import httpStatus from 'http-status';
 
 // Create user
+const insertUserByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const user = await User.isUserExist(req.body.email as string);
+  if (user) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User already exists with this email',
+    );
+  }
+
+  if (req.files) {
+    const { image } = req.files as UploadedFiles;
+
+    if (image?.length) {
+      req.body.image = await uploadToS3({
+        file: image[0],
+        fileName: `images/user/profile/${req.body.email}`,
+      });
+    }
+  }
+
+  req.body.verification = {
+    otp: 0,
+    expiresAt: new Date(),
+    status: true,
+  };
+
+  const result = await userServices.insertSubAdminIntoDb(req.body);
+
+  sendResponse(req, res, {
+    statusCode: 200,
+    success: true,
+    message: 'User created successfully',
+    data: result,
+  });
+});
+
+// Create user
 const insertUserIntoDb = catchAsync(async (req: Request, res: Response) => {
   const user = await User.isUserExist(req.body.email as string);
   if (user) {
@@ -70,7 +107,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     }
     if (user?.image) {
       const url = new URL(user?.image);
-      const pathname = url.pathname; 
+      const pathname = url.pathname;
       await deleteFromS3(pathname);
     }
   }
@@ -134,13 +171,13 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     }
     //   if (user?.image) {
     //     const url = new URL(user?.image);
-    //     const pathname = url.pathname; 
-    //    const nn =  await deleteFromS3(pathname); 
+    //     const pathname = url.pathname;
+    //    const nn =  await deleteFromS3(pathname);
 
     //   }
   }
 
-  const result = await userServices.updateUser(user?._id.toString(), req.body); 
+  const result = await userServices.updateUser(user?._id.toString(), req.body);
   sendResponse(req, res, {
     statusCode: 200,
     success: true,
@@ -237,4 +274,5 @@ export const userControllers = {
   updateMyProfile,
   requestIdVerify,
   rejectIdVerificationRequest,
+  insertUserByAdmin,
 };

@@ -5,10 +5,15 @@ interface IResult {
   totalReview: number;
 }
 export const calculateAverageRatingForResidence = async (
-  residenceId: Types.ObjectId,
+  residenceId: string,
 ): Promise<IResult | null> => {
   const result = await Review.aggregate([
-    { $match: { residence: residenceId, isDeleted: { $ne: true } } }, // Match the residence and filter out deleted reviews
+    {
+      $match: {
+        residence: new Types.ObjectId(residenceId),
+        isDeleted: { $ne: true },
+      },
+    }, // Match the residence and filter out deleted reviews
     {
       $group: {
         _id: '$residence',

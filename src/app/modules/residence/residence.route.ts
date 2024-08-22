@@ -19,14 +19,14 @@ router.post(
     USER_ROLE.admin,
     USER_ROLE.sub_admin,
     USER_ROLE.super_admin,
-    USER_ROLE.landlord,
+    USER_ROLE.landlord, 
   ),
   upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'videos', maxCount: 3 },
   ]),
   parseData(),
-  validateRequest(residenceValidation.createResidenceSchema),
+  // validateRequest(residenceValidation.createResidenceSchema),
   residenceController.createResidence,
 );
 

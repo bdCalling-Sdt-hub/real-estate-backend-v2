@@ -14,6 +14,6 @@ export interface IPayment {
   isDeleted: boolean;
   transitionDate: Date;
   residenceAuthority?: ObjectId;
-  adminAmount: number;
-  landlordAmount: number;
+  // adminAmount: number;
+  // landlordAmount: number;
 }

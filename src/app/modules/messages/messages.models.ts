@@ -1,14 +1,13 @@
 import { Schema, Types, model } from 'mongoose';
-import { IMessages, IMessagesModel } from './messages.interface';
-import { isPaymentLinkStatus } from './messages.constants';
+import { IMessages, IMessagesModel } from './messages.interface'; 
 
 const messageSchema = new Schema<IMessages>(
   {
-    id: {
-      type: String,
-      require: true,
-      unique: true,
-    },
+    // id: {
+    //   type: String,
+    //   require: true,
+    //   unique: true,
+    // },
     text: {
       type: String,
       default: '',
@@ -31,15 +30,15 @@ const messageSchema = new Schema<IMessages>(
       required: true,
       ref: 'User',
     },
-    bookingId:{
+    bookingId: {
       type: Types.ObjectId || null,
-      required: true,
+      required: false,
       ref: 'User',
-      default: null
+      default: null,
     },
-    showButton:{
-      type:Boolean, 
-      default:false
+    showButton: {
+      type: Boolean,
+      default: false,
     },
     // isPaymentLink: {
     //   type: String,

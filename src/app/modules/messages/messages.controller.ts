@@ -27,27 +27,6 @@ const createMessages = catchAsync(async (req: Request, res: Response) => {
 
   const result = await messagesService.createMessages(req.body);
 
-  //@ts-ignore
-  const io = global.socketio;
-
-  if (io) {
-    const senderMessage = 'new-message::' + result.chat.toString();
-
-    io.emit(senderMessage, result);
-
-    // //----------------------ChatList------------------------//
-    const ChatListSender = await chatService.getMyChatList(
-      result?.sender.toString(),
-    );
-    const ChatListReceiver = await chatService.getMyChatList(
-      result?.receiver.toString(),
-    );
- 
-    const senderChat = 'chat-list::' + result.sender.toString();
-    const receiverChat = 'chat-list::' + result.receiver.toString();
-    io.emit(receiverChat, ChatListSender);
-    io.emit(senderChat, ChatListReceiver);
-  }
 
   sendResponse(req, res, {
     statusCode: 200,

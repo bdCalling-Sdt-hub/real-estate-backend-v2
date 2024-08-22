@@ -17,7 +17,7 @@ const createAds = catchAsync(async (req: Request, res: Response) => {
 
     req.body.banner = bannerUrl;
   }
-  const result = await adsService.createAd(req.body);
+  const result = await adsService.createAd(req.body, req.user.userId);
 
   sendResponse(req, res, {
     statusCode: httpStatus.OK,
@@ -28,8 +28,8 @@ const createAds = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllAds = catchAsync(async (req: Request, res: Response) => {
-   const filters = pick(req.query, adsFilterableFields);
-   const paginationOptions = pick(req.query, paginationFields);
+  const filters = pick(req.query, adsFilterableFields);
+  const paginationOptions = pick(req.query, paginationFields);
   const result = await adsService.getAllAds(filters, paginationOptions);
 
   sendResponse(req, res, {

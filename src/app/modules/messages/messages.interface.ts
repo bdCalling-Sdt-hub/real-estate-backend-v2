@@ -10,7 +10,7 @@ export interface IMessages {
   chat: ObjectId;
   sender: ObjectId;
   receiver: ObjectId;
-  bookingId:ObjectId|IBookingResidence | null,
+  bookingId:ObjectId | IBookingResidence,
   showButton: boolean; 
 }
 

@@ -8,13 +8,32 @@ import { uploadToS3 } from '../../utils/s3';
 import { SortOrder } from 'mongoose';
 import { paginationHelper } from '../../helpers/pagination.helpers';
 import { adsSearchableFields } from './ads.constants';
+import { paymentsService } from '../payments/payments.service';
+import moment from 'moment';
 
-const createAd = async (payload: Partial<IAds>): Promise<IAds> => {
-  const result = Ads.create(payload);
+const createAd = async (payload: Partial<IAds>, userId: string) => {
+  const startDate = new Date();
+  const endDate = new Date(startDate);
+  payload?.month
+    ? endDate.setMonth(endDate.getMonth() + parseInt(payload?.month))
+    : endDate.setMonth(endDate.getMonth() + 1);
+
+  payload.startAt = startDate;
+  payload.expireAt = endDate;
+  payload.price = payload.month ? 2 * parseInt(payload?.month) : 2;
+
+  const result: IAds | null = await Ads.create(payload);
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Ad creation failed');
   }
-  return result;
+
+  const paymentLink = await paymentsService.initiatePayment({
+    user: userId,
+    bookingId: result?._id,
+    paymentType: 'Ads',
+  });
+
+  return { ads: result, paymentLink: paymentLink?.data?.link };
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,39 +41,81 @@ const getAllAds = async (
   filters: IFilter,
   paginationOptions: IPaginationOption,
 ) => {
- 
   const { searchTerm, ...filtersData } = filters;
- 
-
-
   const pipeline: any[] = [];
 
-  // Match stage for basic conditions
+  // Aggregation to populate referenced fields
+  pipeline.push({
+    $lookup: {
+      from: 'residences',
+      localField: 'property',
+      foreignField: '_id',
+      as: 'property',
+    },
+  });
+
+  pipeline.push({ $unwind: '$property' });
+
+  pipeline.push({
+    $lookup: {
+      from: 'users',
+      localField: 'property.host',
+      foreignField: '_id',
+      as: 'property.host',
+    },
+  });
+
+  pipeline.push({
+    $lookup: {
+      from: 'categories',
+      localField: 'property.category',
+      foreignField: '_id',
+      as: 'property.category',
+    },
+  });
+
+  pipeline.push({ $unwind: '$property.host' });
+  pipeline.push({ $unwind: '$property.category' });
+
   let matchStage: any = {};
 
+  // Add search term conditions to matchStage
   if (searchTerm) {
     matchStage.$or = adsSearchableFields.map(field => ({
       [field]: { $regex: searchTerm, $options: 'i' },
     }));
   }
 
-  // Merge filtersData into matchStage
-  if (Object.keys(filtersData).length > 0) {
-    const filteredKeys = Object.keys(filtersData).filter(
-      key => !key.includes('.'),
-    );
+  // Add filtersData to matchStage
+  const nonNestedFilters: any = {};
+  const nestedFilters: any = {};
 
-    // Creating a new object with filtered keys
-    const filteredObject: any = {};
-    filteredKeys.forEach(key => {
-      filteredObject[key] = filtersData[key];
-    });
+  Object.keys(filtersData).forEach(key => {
+    if (key.includes('.')) {
+      nestedFilters[key] = filtersData[key];
+    } else {
+      nonNestedFilters[key] = filtersData[key];
+    }
+  });
 
-    matchStage = { ...matchStage, ...filteredObject };
+  // Merge non-nested filters into matchStage
+  matchStage = { ...matchStage, ...nonNestedFilters };
+
+  // Add $match stage early in the pipeline if applicable
+  if (Object.keys(matchStage).length > 0) {
+    pipeline.push({ $match: matchStage });
   }
 
-  // Add initial $match stage to pipeline
-  pipeline.push({ $match: matchStage });
+  // Add nested filters after lookup and unwind
+  if (Object.keys(nestedFilters).length > 0) {
+    Object.keys(nestedFilters).forEach(key => {
+      pipeline.push({
+        $match: {
+          [key]: { $regex: nestedFilters[key], $options: 'i' },
+        },
+      });
+    });
+  }
 
   // Sorting and pagination
   const { page, limit, skip, sortBy, sortOrder } =
@@ -65,79 +126,26 @@ const getAllAds = async (
     sortConditions[sortBy] = sortOrder === 'desc' ? -1 : 1;
   }
 
-  // Aggregation to populate referenced fields
-  pipeline.push({
-    $lookup: {
-      from: 'residences', // Name of the Residence collection
-      localField: 'property',
-      foreignField: '_id',
-      as: 'property',
-    },
-  });
-
-  // Unwind property array
-  pipeline.push({ $unwind: '$property' });
-
-  // Populate host and category fields within property
-  pipeline.push({
-    $lookup: {
-      from: 'users', // Assuming 'users' is the collection name for hosts
-      localField: 'property.host',
-      foreignField: '_id',
-      as: 'property.host',
-    },
-  });
-
-  pipeline.push({
-    $lookup: {
-      from: 'categories', // Assuming 'categories' is the collection name for categories
-      localField: 'property.category',
-      foreignField: '_id',
-      as: 'property.category',
-    },
-  });
-
-  // Unwind populated fields to filter on them
-  pipeline.push({ $unwind: '$property.host' });
-  pipeline.push({ $unwind: '$property.category' });
-
-  if (Object.keys(filtersData).length > 0) {
-    const filteredKeys = Object.keys(filtersData).filter(key =>
-      key.includes('.'),
-    );
-
-    const filteredObject: FiltersData = {};
-    filteredKeys.forEach(key => {
-      if (filtersData[key]) {
-        filteredObject[key] = filtersData[key];
-      }
-    });
-
-    if (Object.keys(filteredObject).length > 0) {
-      Object.keys(filteredObject).forEach(key => {
-        const value = filteredObject[key];
-        pipeline.push({
-          $match: {
-            [key]: { $regex: value, $options: 'i' },
-          },
-        });
-      });
-    }
-  }
-
-  // Execute aggregation pipeline
-  const totalData = (await Ads.aggregate(pipeline)).length;
+  // Add sorting, skipping, and limiting at the end
   pipeline.push({ $sort: sortConditions });
   pipeline.push({ $skip: skip });
   pipeline.push({ $limit: limit });
+ 
 
+  // Execute the aggregation pipeline
   const results = await Ads.aggregate(pipeline);
+  const totalData = results.length;
 
   return {
     meta: { page, limit, total: totalData },
     data: results,
   };
 };
+
+// const getAllAds = async(filters: IFilter,
+//   paginationOptions: IPaginationOption,)=>{
+
+// }
 
 const getAdsById = async (id: string): Promise<IAds> => {
   const result = await Ads.findById(id).populate('property');

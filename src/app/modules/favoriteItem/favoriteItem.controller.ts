@@ -40,12 +40,9 @@ const getFavoriteItemById = catchAsync(async (req: Request, res: Response) => {
 const getMyFavoriteItems = catchAsync(async (req: Request, res: Response) => {
   req.query.user = req.user.userId;
 
-  const filters = pick(req.query, favoriteItemFilterableFields); 
-  const paginationOptions = pick(req.query, paginationFields);  
-  const result = await favoriteItemService.getMyFavoriteItems(
-    filters,
-    paginationOptions,
-  );
+  // const filters = pick(req.query, favoriteItemFilterableFields); 
+  // const paginationOptions = pick(req.query, paginationFields);  
+  const result = await favoriteItemService.getAllFavoriteItem(req.query);
   sendResponse(req, res, {
     statusCode: 200,
     success: true,

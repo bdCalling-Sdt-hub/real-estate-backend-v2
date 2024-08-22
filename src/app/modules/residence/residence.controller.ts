@@ -5,10 +5,13 @@ import { ResidenceService } from './residence.service';
 import sendResponse from '../../utils/sendResponse';
 import { uploadManyToS3 } from '../../utils/s3';
 import { UploadedFiles } from '../../interface/common.interface';
+import { USER_ROLE } from '../user/user.constant';
 
 const createResidence = catchAsync(async (req: Request, res: Response) => { 
 
-  req.body.host = req.user?.userId;
+  if(req.user.role !== USER_ROLE.admin){
+    req.body.host = req.user?.userId;
+  }
   
   if (req?.files) {
     const { images, videos } = req.files as UploadedFiles;

@@ -1,6 +1,7 @@
 // import { ObjectId } from 'mongoose';
 // import { ObjectId } from 'mongodb';
 import { Model, Schema } from 'mongoose';
+import { IResidence } from '../residence/residence.interface';
 
 export interface IAds {
   _id?: string;
@@ -10,8 +11,10 @@ export interface IAds {
   expireAt: Date | string;
   status: boolean;
   tranId: string;
-  property: Schema.Types.ObjectId;
+  property: Schema.Types.ObjectId | IResidence;
   isDeleted: boolean;
+  paymentLink?: string;
+  month?: string;
 }
 
 export type IAdsModel = Model<IAds, Record<string, unknown>>;

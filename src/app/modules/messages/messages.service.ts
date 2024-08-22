@@ -5,6 +5,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { deleteFromS3 } from '../../utils/s3';
 import { IMessages } from './messages.interface';
 import Chat from '../chat/chat.models';
+import { chatService } from '../chat/chat.service';
 
 // const createMessages = async (payload: IMessages) => {
 
@@ -51,6 +52,30 @@ const createMessages = async (payload: IMessages) => {
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Message creation failed');
   }
+
+  //@ts-ignore
+  const io = global.socketio;
+
+  if (io) {
+    const senderMessage = 'new-message::' + result.chat.toString();
+
+    io.emit(senderMessage, result);
+
+    // //----------------------ChatList------------------------//
+    const ChatListSender = await chatService.getMyChatList(
+      result?.sender.toString(),
+    );
+    const ChatListReceiver = await chatService.getMyChatList(
+      result?.receiver.toString(),
+    );
+ 
+    const senderChat = 'chat-list::' + result.sender.toString();
+    const receiverChat = 'chat-list::' + result.receiver.toString();
+    io.emit(receiverChat, ChatListSender);
+    io.emit(senderChat, ChatListReceiver);
+  }
+
+
   return result;
 };
 

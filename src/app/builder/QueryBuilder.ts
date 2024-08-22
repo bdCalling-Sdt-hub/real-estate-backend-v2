@@ -43,6 +43,18 @@ class QueryBuilder<T> {
     return this;
   }
 
+  //array filter
+  arrayFilter<K extends keyof T>(field: K, values: string) {
+    const newValues = values ? values.split(',') : [] 
+    if (newValues && newValues.length > 0) {
+      const filter: any = {
+        [field]: { $all: newValues } as any,
+      };
+      this.modelQuery = this.modelQuery.find(filter);
+    }
+    return this;
+  }
+
   // Popularity sorting
   sortByPopularity() {
     this.modelQuery = this.modelQuery.sort({ popularity: -1 });

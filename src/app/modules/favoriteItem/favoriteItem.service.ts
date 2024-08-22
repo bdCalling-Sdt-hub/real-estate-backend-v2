@@ -47,7 +47,7 @@ const getAllFavoriteItem = async (query: Record<string, any>) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.map(async (items: any) => {
         const avgRating = await calculateAverageRatingForResidence(
-          items?.residence?._id as Types.ObjectId,
+          items?.residence?._id,
         );
         allFavoriteItems.push({ ...items?.toObject(), avgRating }); // Use toObject() to get a plain object
       }),
@@ -71,12 +71,9 @@ const getFavoriteItemById = async (id: string) => {
 };
 
 const getMyFavoriteItems = async (
-  filters: IFilter,
-  paginationOptions: IPaginationOption,
+  filters: IFilter, 
 ) => {
   const { searchTerm, user, ...filtersData } = filters;
-  console.log('🚀 ~ user:', user);
-  console.log('🚀 ~ filtersData:', filtersData);
   const andCondition = [];
 
   if (searchTerm) {
@@ -92,28 +89,16 @@ const getMyFavoriteItems = async (
   }
 
   if (Object.entries(filtersData).length) {
-    let custom = [{ $eq: ['$_id', '$$id'] }];
+    let userId = [{ $eq: ['$_id', '$$id'] }];
     const addition = Object.entries(filtersData)?.map(([field, value]) => ({
       $eq: [`$${field}`, `${value}`],
     }));
-    const newArray = [...custom, ...addition];
-    // andCondition.push(...addition);
+    const newArray = [...userId, ...addition];
     andCondition.push({
       $and: newArray,
     });
-    console.log(andCondition);
-  }
-
-  // Sorting and pagination
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePagination(paginationOptions);
-
-  const sortConditions: { [key: string]: 1 | -1 } = {};
-
-  if (sortBy && sortOrder) {
-    sortConditions[sortBy] = sortOrder === 'asc' ? 1 : -1;
-  }
-
+  } 
+  
   // Aggregation pipeline
   const result = await FavoriteItem.aggregate([
     { $match: { user: new Types.ObjectId(user) } },
@@ -133,18 +118,11 @@ const getMyFavoriteItems = async (
         as: 'residenceDate',
       },
     },
-  ]);
-  console.log('🚀 ~ result:', result);
-
-  // if (!result.length) {
-  //   throw new AppError(httpStatus.NOT_FOUND, 'oops! favorite items not found.');
-  // }
-
-  // Count total documents for pagination meta
-
-  // Optional: calculate average ratings and attach them
+  ]); 
+  const filterData = result.filter(data => data.residenceDate.length > 0);
+ 
   const allFavoriteItems = await Promise.all(
-    result.map(async items => {
+    filterData.map(async items => {
       const avgRating = await calculateAverageRatingForResidence(
         items.residence._id,
       );
@@ -152,14 +130,7 @@ const getMyFavoriteItems = async (
     }),
   );
 
-  return {
-    allFavoriteItems,
-    meta: {
-      page,
-      limit,
-      total: 0,
-    },
-  };
+  return allFavoriteItems;
 };
 
 const updateFavoriteItem = async (

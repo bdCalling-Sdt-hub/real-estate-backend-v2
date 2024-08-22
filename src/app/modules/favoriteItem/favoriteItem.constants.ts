@@ -1,5 +1,22 @@
-export const favoriteItemSearchableFields = ['propertyName', 'propertyAbout'];
+export const favoriteItemSearchableFields = [
+  'propertyName',
+  'squareFeet',
+  'bathrooms',
+  'bedrooms',
+  'features',
+  'rentType',
+  'propertyAbout',
+  'address.governorate',
+  'address.area',
+  'address.block',
+  'address.street',
+  'address.house',
+  'address.floor',
+  'address.apartment',
+];
+
 export const favoriteItemFilterableFields = [
+  '_id',
   'propertyName',
   'squareFeet',
   'bathrooms',
@@ -7,8 +24,6 @@ export const favoriteItemFilterableFields = [
   'features',
   'rentType',
   'ype',
-  // 'perNightPrice',
-  // 'perMonthPrice',
   'propertyAbout',
   'address.governorate',
   'address.area',

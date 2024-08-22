@@ -46,20 +46,20 @@ const paymentSchema = new Schema<IPayment>(
       ref: 'User',
       required: false,
     },
-    landlordAmount: {
-      type: Number,
-      required: true,
-      default: function () {
-        return this.amount * 0.9;
-      },
-    },
-    adminAmount: {
-      type: Number,
-      required: true,
-      default: function () {
-        return this.amount * 0.1;
-      },
-    },
+    // landlordAmount: {
+    //   type: Number,
+    //   required: true,
+    //   default: function () {
+    //     return this.amount * 0.9;
+    //   },
+    // },
+    // adminAmount: {
+    //   type: Number,
+    //   required: true,
+    //   default: function () {
+    //     return this.amount * 0.1;
+    //   },
+    // },
     
   },
   {

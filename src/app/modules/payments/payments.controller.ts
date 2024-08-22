@@ -4,7 +4,7 @@ import { paymentsService } from './payments.service';
 import sendResponse from '../../utils/sendResponse';
 
 const initiatePayment = catchAsync(async (req: Request, res: Response) => {
-  req.body.user = '66bc3a47b39842d46f1eef7d';
+  req.body.user = req?.user?.userId;
 
   const result = await paymentsService.initiatePayment(req.body);
 
@@ -135,6 +135,17 @@ const topLandlordIncome = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const allTransitions = catchAsync(async (req: Request, res: Response) => {
+  const result = await paymentsService.allTransitions(req.query);
+  sendResponse(req, res, {
+    statusCode: 200,
+    success: true,
+    message: 'all transitions get successfully',
+    data: result,
+  });
+});
+ 
+
 export const paymentsController = {
   initiatePayment,
   webhook,
@@ -147,5 +158,6 @@ export const paymentsController = {
   PackagesStatisticsIncomes,
   PercentageStatisticsIncomes,
   calculatePackageNameByIncome,
+  allTransitions, 
   topLandlordIncome,
 };

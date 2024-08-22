@@ -9,6 +9,8 @@ import { IResidence } from '../residence/residence.interface';
 import Review from '../review/review.models';
 import { notificationServices } from '../notification/notification.service';
 import { User } from '../user/user.model';
+import { messagesController } from '../messages/messages.controller';
+import { messagesService } from '../messages/messages.service';
 
 const createBookingResidence = async (
   payload: IBookingResidence,
@@ -16,7 +18,7 @@ const createBookingResidence = async (
   const residence: IResidence | null = await Residence.findById(
     payload.residence,
   );
-  // .populate(['host', 'residence']); 
+  // .populate(['host', 'residence']);
   if (!residence) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Residence not found');
   }
@@ -24,7 +26,6 @@ const createBookingResidence = async (
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   payload.author = residence?.host?._id;
-
   const result: IBookingResidence | null =
     await BookingResidence.create(payload);
   if (!result) {
@@ -58,6 +59,7 @@ const getAllBookingResidence = async (query: Record<string, any>) => {
   )
     .search(['name'])
     .filter()
+    .populateFields('residence')
     .paginate()
     .sort()
     .fields();
@@ -139,12 +141,28 @@ const approvedBooking = async (id: string) => {
   const result = await BookingResidence.findByIdAndUpdate(
     id,
     {
-      $set: {
-        status: 'approved',
-      },
+      status: 'approved',
     },
     { new: true },
   );
+
+  // {
+  //   guest: { child: 2, adult: 1 },
+  //   _id: new ObjectId('66c17ff97ac39461c5aae1c7'),
+  //   user: new ObjectId('66bc3a47b39842d46f1eef7d'),
+  //   residence: new ObjectId('66b49d136e97ef48d41c5670'),
+  //   startDate: 2024-08-01T00:00:00.000Z,
+  //   endDate: 2024-08-07T00:00:00.000Z,
+  //   totalPrice: 500,
+  //   author: new ObjectId('66b467b0a606dbaac03a9101'),
+  //   discount: 10,
+  //   status: 'approved',
+  //   isPaid: false,
+  //   isDeleted: false,
+  //   createdAt: 2024-08-18T05:00:41.867Z,
+  //   updatedAt: 2024-08-19T06:46:43.431Z,
+  //   __v: 0
+  // }
 
   if (!result) {
     throw new AppError(
@@ -152,6 +170,15 @@ const approvedBooking = async (id: string) => {
       'Residence Booking approving failed',
     );
   }
+  await messagesService.createMessages({
+    text: 'To proceed with your booking, please pay the service fee of 10 KWD. Once the payment is made, you will receive the booking payment link.',
+    sender: result.author,
+    receiver: result?.user,
+    //@ts-ignore
+    bookingId: result?._id,
+    showButton: true,
+  });
+
   await notificationServices?.insertNotificationIntoDb({
     receiver: result?.user,
     refference: result?._id,
@@ -159,6 +186,7 @@ const approvedBooking = async (id: string) => {
     message: 'You Booking is approved',
     description: `Your booking request has been approved by the residence author`,
   });
+
   return result;
 };
 
