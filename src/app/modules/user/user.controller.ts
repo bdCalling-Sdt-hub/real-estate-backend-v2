@@ -232,7 +232,7 @@ const rejectIdVerificationRequest = catchAsync(
 const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
   req.body.documents = {
     selfie: null,
-    documentType: req?.body?.documents?.documentType || null,
+    documentType: req?.body?.documentType || null,
     documents: [
       {
         key: null,
