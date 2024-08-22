@@ -27,31 +27,6 @@ const createMessages = catchAsync(async (req: Request, res: Response) => {
 
   const result = await messagesService.createMessages(req.body);
 
-  //@ts-ignore
-  const io = global.socketio;
-  
-if(io){
-  const senderMessage = 'new-message::' + result.chat.toString();
-  const receiverMessage = 'new-message::' + result.chat.toString();
-
-  io.emit(senderMessage, result);
-  io.emit(receiverMessage, result);
-
-  // //----------------------ChatList------------------------//
-  const ChatListSender = await chatService.getMyChatList(
-    result?.sender.toString(),
-  );
-  const ChatListReceiver = await chatService.getMyChatList(
-    result?.receiver.toString(),
-  );
-
-  const senderChat = 'chat-list::' + result.sender.toString();
-  const receiverChat = 'chat-list::' + result.receiver.toString();
-  io.emit(receiverChat, ChatListSender);
-  io.emit(senderChat, ChatListReceiver);
-
-}
-
 
   sendResponse(req, res, {
     statusCode: 200,
@@ -120,12 +95,10 @@ const updateMessages = catchAsync(async (req: Request, res: Response) => {
 
 //seen messages
 const seenMessage = catchAsync(async (req: Request, res: Response) => {
-
-  const chatList:IChat|null = await Chat.findById( req.params.chatId);
+  const chatList: IChat | null = await Chat.findById(req.params.chatId);
   if (!chatList) {
     throw new AppError(httpStatus.BAD_REQUEST, 'chat id is not valid');
   }
-
 
   const result = await messagesService.seenMessage(
     req.user.userId,
@@ -146,14 +119,13 @@ const seenMessage = catchAsync(async (req: Request, res: Response) => {
   io.emit(user1Chat, ChatListUser1);
   io.emit(user2Chat, ChatListUser2);
 
-
   sendResponse(req, res, {
     statusCode: 200,
     success: true,
     message: 'Message seen successfully',
     data: result,
   });
-})
+});
 // Delete message
 const deleteMessages = catchAsync(async (req: Request, res: Response) => {
   const result = await messagesService.deleteMessages(req.params.id);

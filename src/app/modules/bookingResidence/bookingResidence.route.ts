@@ -74,7 +74,7 @@ router.get(
 
 router.get(
   '/',
-  auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
+  // auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
   BookingResidenceController.getAllBookingResidence,
 );
 

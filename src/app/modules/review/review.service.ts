@@ -5,12 +5,27 @@ import Review from './review.models';
 import { IReview } from './review.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { deleteManyFromS3 } from '../../utils/s3';
+import Residence from '../residence/residence.models';
+import { calculateAverageRatingForResidence } from '../residence/residence.utils';
 
 const createReview = async (payload: IReview) => {
-  const result = await Review.create(payload);
+  const result: IReview | null = await Review.create(payload);
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Review creation failed');
   }
+
+  const avgRating = await calculateAverageRatingForResidence(
+    result?.residence?.toString() as string,
+  );
+
+  await Residence.findByIdAndUpdate(
+    result?.residence,
+    {
+      averageRating: avgRating,
+    },
+    { new: true, timestamps: false },
+  );
+
   return result;
 };
 
@@ -71,7 +86,9 @@ const deleteReview = async (id: string) => {
   const deleteKeys: string[] = [];
 
   if (result?.images) {
-    result?.images?.forEach((image) => deleteKeys.push(`images/comments/${image?.key}`));
+    result?.images?.forEach(image =>
+      deleteKeys.push(`images/comments/${image?.key}`),
+    );
   }
 
   if (deleteKeys.length) {

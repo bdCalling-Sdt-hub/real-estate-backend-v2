@@ -35,7 +35,7 @@ const addressSchema = z.object({
   street: z.string({ required_error: 'street is required' }).min(1),
   house: z.string({ required_error: 'house is required' }).min(1),
   floor: z.string({ required_error: 'floor is required' }).optional(),
-  state: z.string({ required_error: 'state is required' }).min(1),
+  // state: z.string({ required_error: 'state is required' }).min(1),
 });
 
 // Define the Zod schema for the residence
@@ -58,9 +58,9 @@ const createResidenceSchema = z.object({
     squareFeet: z.string({ required_error: 'property size is required' }),
     bathrooms: z.string({ required_error: 'bathrooms is required' }),
     bedrooms: z.string({ required_error: 'bedrooms is required' }),
+    residenceType: z.string({ required_error: 'residence type is required' }),
     features: z.array(z.string()),
     rentType: z.string({ required_error: 'rent type is required' }),
-    residenceType: z.string({ required_error: 'residence type is required' }),
     perNightPrice: z.number({ required_error: 'per night price is required' }),
     perMonthPrice: z.number({ required_error: 'per month price is required' }),
     propertyAbout: z.string({ required_error: 'property about is required' }),

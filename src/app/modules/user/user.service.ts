@@ -10,6 +10,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { deleteManyFromS3 } from '../../utils/s3';
 import { sendEmail } from '../../utils/mailSender';
 import { notificationServices } from '../notification/notification.service';
+import { generateRandomString } from './user.utils';
 
 // Insert sub-admin into the database
 const insertSubAdminIntoDb = async (
@@ -35,7 +36,27 @@ const insertSubAdminIntoDb = async (
     );
   }
 
+
   const result = await User.create(payload);
+
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'user creating failed');
+  }
+
+  await sendEmail(
+    result?.email,
+    'New User Created - REAL-STATE',
+    `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #4CAF50;">Create a account in Real-State</h2>
+      <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
+        <p style="font-size: 16px;">A your account has been created with the following credentials:</p>
+        <p style="font-size: 16px;"><strong>Email:</strong> ${result?.email}</p>
+        <p style="font-size: 16px;"><strong>Password:</strong> ${payload.password}</p>
+        <p style="font-size: 14px; color: #666;">Please advise the user to log in and change their password immediately.</p>
+      </div>
+    </div>`,
+  );
+  
   return result;
 };
 
@@ -72,6 +93,9 @@ const getAllusers = async (query: Record<string, any>) => {
 // Get single user by ID
 const getSingleUser = async (id: string) => {
   const result = await User.findById(id);
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'user not found');
+  }
   return result;
 };
 
@@ -93,19 +117,6 @@ const updateUser = async (
 
   if (result && payload?.image) {
     await deleteFile(user?.image as string);
-  }
-
-  if (payload?.verificationRequest === 'send') {
-    const admin: TUser | null = await User.findOne({ role: 'admin' });
-    if (!admin) {
-      throw new AppError(httpStatus.FORBIDDEN, 'Admin not found');
-    }
-    await notificationServices.insertNotificationIntoDb({
-      receiver: admin._id,
-      refference: result?._id,
-      model_type: 'User',
-      message: `${result?.email} user send verification request`,
-    });
   }
 
   if (payload?.verificationRequest === 'accepted') {
@@ -185,19 +196,34 @@ const deleteMyAccount = async (id: string, password: string) => {
 };
 
 //verification request send
-// const requestIdVerify = async(userId:string)=>{
-//   const result = await User.findByIdAndUpdate(userId, {
-//     verifyRequest: 'send',
-//   },{new :true,});
+const requestIdVerify = async (userId: string, payload: Partial<TUser>) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.BAD_GATEWAY, 'Invalid user');
+  }
+  const admin: TUser | null = await User.findOne({ role: 'admin' });
+  if (!admin) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Admin not found');
+  }
+  payload.verificationRequest = 'send';
 
-//   if(!result){
-//     throw new AppError(httpStatus.BAD_REQUEST,"Request for id verify failed")
-//   }
+  const result = await User.findByIdAndUpdate(userId, payload, { new: true });
 
-//   return result;
-// }
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Request for id verify failed');
+  }
 
-// //verification accept
+  await notificationServices.insertNotificationIntoDb({
+    receiver: admin._id,
+    refference: userId,
+    model_type: 'User',
+    message: `${user?.email} user send verification request`,
+  });
+
+  return result;
+};
+
+//verification accept
 // const acceptIdVerify = async(userId:string)=>{
 //   const result = await User.findByIdAndUpdate(userId, {
 //     isVerified: true,
@@ -291,11 +317,32 @@ const rejectIdVerificationRequest = async (userId: string, payload: any) => {
   return result;
 };
 
-//block user
-// const blockUser = async(userId)=>{
-// }
-//unblock user
+// const signInWithGoogle = async (payload: Partial<TUser>) => {
 
+//     const user = await User.isUserExist(payload.email as string);
+
+//     if (user) {
+//       throw new AppError(
+//         httpStatus.FORBIDDEN,
+//         'User already exists with this email',
+//       );
+//     }
+
+//     const userExistByUsername = await User.IsUserExistUserName(
+//       payload.username as string,
+//     );
+
+//     if (userExistByUsername) {
+//       throw new AppError(
+//         httpStatus.FORBIDDEN,
+//         'Username already exists. Try another username',
+//       );
+//     }
+//   const result = await User.create(payload);
+//   if (!result) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'User creation Failed');
+//   }
+// };
 export const userServices = {
   insertSubAdminIntoDb,
   getme,
@@ -305,6 +352,6 @@ export const userServices = {
   deleteAccount,
   deleteMyAccount,
   rejectIdVerificationRequest,
-  // requestIdVerify,
+  requestIdVerify,
   // acceptIdVerify,
 };

@@ -2,8 +2,12 @@ import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import { favoriteItemService } from './favoriteItem.service';
 import sendResponse from '../../utils/sendResponse';
+import pick from '../../utils/pick';
+import { paginationFields } from '../../../constants/pagination';
+import { favoriteItemFilterableFields } from './favoriteItem.constants';
 
 const createFavoriteItem = catchAsync(async (req: Request, res: Response) => {
+  req.body.user = req.user.userId;
   const result = await favoriteItemService.createFavoriteItem(req.body);
   sendResponse(req, res, {
     statusCode: 200,
@@ -34,7 +38,11 @@ const getFavoriteItemById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyFavoriteItems = catchAsync(async (req: Request, res: Response) => {
-  const result = await favoriteItemService.getMyFavoriteItems(req.user?.userId);
+  req.query.user = req.user.userId;
+
+  // const filters = pick(req.query, favoriteItemFilterableFields); 
+  // const paginationOptions = pick(req.query, paginationFields);  
+  const result = await favoriteItemService.getAllFavoriteItem(req.query);
   sendResponse(req, res, {
     statusCode: 200,
     success: true,

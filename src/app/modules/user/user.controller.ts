@@ -2,12 +2,49 @@ import catchAsync from '../../utils/catchAsync';
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
 import sendResponse from '../../utils/sendResponse';
-import { uploadManyToS3, uploadToS3 } from '../../utils/s3';
+import { deleteFromS3, uploadManyToS3, uploadToS3 } from '../../utils/s3';
 import { UploadedFiles } from '../../interface/common.interface';
 import { otpServices } from '../otp/otp.service';
 import AppError from '../../error/AppError';
 import { User } from './user.model';
 import httpStatus from 'http-status';
+
+// Create user
+const insertUserByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const user = await User.isUserExist(req.body.email as string);
+  if (user) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User already exists with this email',
+    );
+  }
+
+  if (req.files) {
+    const { image } = req.files as UploadedFiles;
+
+    if (image?.length) {
+      req.body.image = await uploadToS3({
+        file: image[0],
+        fileName: `images/user/profile/${req.body.email}`,
+      });
+    }
+  }
+
+  req.body.verification = {
+    otp: 0,
+    expiresAt: new Date(),
+    status: true,
+  };
+
+  const result = await userServices.insertSubAdminIntoDb(req.body);
+
+  sendResponse(req, res, {
+    statusCode: 200,
+    success: true,
+    message: 'User created successfully',
+    data: result,
+  });
+});
 
 // Create user
 const insertUserIntoDb = catchAsync(async (req: Request, res: Response) => {
@@ -19,41 +56,25 @@ const insertUserIntoDb = catchAsync(async (req: Request, res: Response) => {
     );
   }
 
-  req.body.documents = {
-    selfie: '',
-    documentType: req?.body?.documents?.documentType || '',
-    documents: [
-      {
-        key: '',
-        url: '',
-      },
-    ],
-  };
+  // req.body.documents = {
+  //   selfie: null,
+  //   documentType: req?.body?.documents?.documentType || null,
+  //   documents: [
+  //     {
+  //       key: null,
+  //       url: null,
+  //     },
+  //   ],
+  // };
 
   if (req.files) {
-    const { image, document, selfie } = req.files as UploadedFiles;
+    const { image } = req.files as UploadedFiles;
 
     if (image?.length) {
       req.body.image = await uploadToS3({
         file: image[0],
         fileName: `images/user/profile/${req.body.email}`,
       });
-    }
-
-    if (selfie?.length) {
-      req.body.documents.selfie = await uploadToS3({
-        file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
-      });
-    }
-
-    if (document?.length) {
-      const imgsArray = document.map(image => ({
-        file: image,
-        path: `images/user/documents`,
-      }));
-
-      req.body.documents.documents = await uploadManyToS3(imgsArray);
     }
   }
 
@@ -76,29 +97,18 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (req.files) {
-    const { image, document, selfie } = req.files as UploadedFiles;
+    const { image } = req.files as UploadedFiles;
 
     if (image?.length) {
       req.body.image = await uploadToS3({
         file: image[0],
-        fileName: `images/user/profile/${req.body.email}`,
+        fileName: `images/user/profile/${Math.floor(10000000 + Math.random() * 90000000)}`,
       });
     }
-
-    if (selfie?.length) {
-      req.body.documents.selfie = await uploadToS3({
-        file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
-      });
-    }
-
-    if (document?.length) {
-      const imgsArray = document.map(image => ({
-        file: image,
-        path: `images/user/documents`,
-      }));
-
-      req.body.documents.documents = await uploadManyToS3(imgsArray);
+    if (user?.image) {
+      const url = new URL(user?.image);
+      const pathname = url.pathname;
+      await deleteFromS3(pathname);
     }
   }
 
@@ -151,34 +161,23 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
   if (req.files) {
-    const { image, document, selfie } = req.files as UploadedFiles;
+    const { image } = req.files as UploadedFiles;
 
     if (image?.length) {
       req.body.image = await uploadToS3({
         file: image[0],
-        fileName: `images/user/profile/${req.body.email}`,
+        fileName: `images/user/profile/${Math.floor(10000000 + Math.random() * 90000000)}`,
       });
     }
+    //   if (user?.image) {
+    //     const url = new URL(user?.image);
+    //     const pathname = url.pathname;
+    //    const nn =  await deleteFromS3(pathname);
 
-    if (selfie?.length) {
-      req.body.documents.selfie = await uploadToS3({
-        file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
-      });
-    }
-
-    if (document?.length) {
-      const imgsArray = document.map(image => ({
-        file: image,
-        path: `images/user/documents`,
-      }));
-
-      req.body.documents.documents = await uploadManyToS3(imgsArray);
-    }
+    //   }
   }
 
   const result = await userServices.updateUser(user?._id.toString(), req.body);
-  console.log(result);
   sendResponse(req, res, {
     statusCode: 200,
     success: true,
@@ -229,6 +228,41 @@ const rejectIdVerificationRequest = catchAsync(
   },
 );
 
+//accept verification request
+const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
+  req.body.documents = {
+    selfie: null,
+    documentType: req?.body?.documents?.documentType || null,
+    documents: [
+      {
+        key: null,
+        url: null,
+      },
+    ],
+  };
+
+  if (req.files) {
+    const { document, selfie } = req.files as UploadedFiles;
+
+    if (selfie?.length) {
+      req.body.documents.selfie = await uploadToS3({
+        file: selfie[0],
+        fileName: `images/user/selfie/${req.body.email}`,
+      });
+    }
+
+    if (document?.length) {
+      const imgsArray = document.map(image => ({
+        file: image,
+        path: `images/user/documents`,
+      }));
+
+      req.body.documents.documents = await uploadManyToS3(imgsArray);
+    }
+  }
+  const result = await userServices.requestIdVerify(req.user.userId, req.body);
+});
+
 export const userControllers = {
   insertUserIntoDb,
   updateUser,
@@ -238,5 +272,7 @@ export const userControllers = {
   deleteMyAccount,
   deleteAccount,
   updateMyProfile,
+  requestIdVerify,
   rejectIdVerificationRequest,
+  insertUserByAdmin,
 };

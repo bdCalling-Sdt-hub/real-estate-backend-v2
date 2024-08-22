@@ -12,6 +12,9 @@ import { chatService } from './app/modules/chat/chat.service';
 import AppError from './app/error/AppError';
 import httpStatus from 'http-status';
 import { TUser } from './app/modules/user/user.interface';
+import { IChat } from './app/modules/chat/chat.interface';
+import Chat from './app/modules/chat/chat.models';
+import { Types } from 'mongoose';
 
 const initializeSocketIO = (server: HttpServer) => {
   const io = new Server(server, {
@@ -30,7 +33,6 @@ const initializeSocketIO = (server: HttpServer) => {
       //----------------------user token get from front end-------------------------//
       const token =
         socket.handshake.auth?.token || socket.handshake.headers?.token;
-
       //----------------------check Token and return user details-------------------------//
       const user: any = await getUserDetailsFromToken(token);
       if (!user) {
@@ -86,8 +88,7 @@ const initializeSocketIO = (server: HttpServer) => {
               { sender: user?._id, receiver: userId },
               { sender: userId, receiver: user?._id },
             ],
-          }) 
-            .sort({ updatedAt: -1 });
+          }).sort({ updatedAt: -1 });
 
           socket.emit('message', getPreMessage || []);
         } catch (error: any) {
@@ -118,6 +119,109 @@ const initializeSocketIO = (server: HttpServer) => {
         }
       });
 
+      //----------------------seen message-----------------------//
+      socket.on('seen', async ({ chatId }, callback) => {
+        if (!chatId) {
+          callback({
+            success: false,
+            message: 'chatId id is required',
+          });
+          io.emit('io-error', {
+            success: false,
+            message: 'chatId id is required',
+          });
+        }
+
+        try {
+          const chatList: IChat | null = await Chat.findById(chatId);
+          if (!chatList) {
+            callback({
+              success: false,
+              message: 'chat id is not valid',
+            });
+            io.emit('io-error', {
+              success: false,
+              message: 'chat id is not valid',
+            });
+            throw new AppError(httpStatus.BAD_REQUEST, 'chat id is not valid');
+          }
+
+          const messageIdList = await Message.aggregate([
+            {
+              $match: {
+                chat: new Types.ObjectId(chatId),
+                seen: false,
+                sender: { $ne: new Types.ObjectId(user?._id) },
+              },
+            },
+            { $group: { _id: null, ids: { $push: '$_id' } } },
+            { $project: { _id: 0, ids: 1 } },
+          ]);
+          console.log('🚀 ~ socket.on ~ messageIdList:', messageIdList);
+          const unseenMessageIdList =
+            messageIdList.length > 0 ? messageIdList[0].ids : [];
+
+          const updateMessages = await Message.updateMany(
+            { _id: { $in: unseenMessageIdList } },
+            { $set: { seen: true } },
+          );
+
+          const user1 = chatList.participants[0];
+          const user2 = chatList.participants[1];
+          // //----------------------ChatList------------------------//
+          const ChatListUser1 = await chatService.getMyChatList(
+            user1.toString(),
+          );
+
+          const ChatListUser2 = await chatService.getMyChatList(
+            user2.toString(),
+          );
+
+          const user1Chat = 'chat-list::' + user1;
+
+          const user2Chat = 'chat-list::' + user2;
+
+          io.emit(user1Chat, ChatListUser1);
+          io.emit(user2Chat, ChatListUser2);
+          // const messages = await Message.find({
+          //   sender: senderId,
+          //   receiver: user?._id,
+          //   seen: false,
+          // });
+
+          // const messageArr: string[] = [];
+          // messages.forEach(message => messageArr.push(message._id.toString()));
+
+          // if (messageArr.length > 0) {
+          //   await Message.updateMany(
+          //     {
+          //       _id: { $in: messageArr },
+          //     },
+          //     { $set: { seen: true } },
+          //   );
+          // }
+
+          // //----------------------ChatList------------------------//
+          // const ChatListSender = await chatService.getMyChatList(
+          //   user?._id.toString(),
+          // );
+
+          // const ChatListReceiver = await chatService.getMyChatList(senderId);
+
+          // const senderChat = 'chat-list::' + user?._id.toString();
+          // const receiverChat = 'chat-list::' + senderId;
+
+          // io.emit(senderChat, ChatListSender);
+          // io.emit(receiverChat, ChatListReceiver);
+        } catch (error: any) {
+          callback({
+            success: false,
+            message: error.message,
+          });
+          console.error('Error in seen event:', error);
+          socket.emit('error', { message: error.message });
+        }
+      });
       //----------------------new messages------------------------//
 
       // socket.on('new message', async (data, callback) => {
@@ -231,6 +335,7 @@ const initializeSocketIO = (server: HttpServer) => {
       //-----------------------Disconnect------------------------//
       socket.on('disconnect', () => {
         onlineUser.delete(user?._id?.toString());
+        io.emit('onlineUser', Array.from(onlineUser));
         console.log('disconnect user ', socket.id);
       });
     } catch (error) {

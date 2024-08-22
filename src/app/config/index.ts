@@ -18,10 +18,14 @@ const payment = {
   payment_api_key: process.env.PAYMENT_API_KEY,
   payment_api_secret: process.env.PAYMENT_API_KEY_SECRET,
   payment_token: process.env.PAYMENT_TOKEN,
+  returnUrl: process.env.PAYMENT_RETURN_URL,
+  cancelUrl: process.env.PAYMENT_CANCEL_URL,
+  notificationUrl: process.env.PAYMENT_NOTIFICATION_URL,
 };
 export default {
   NODE_ENV: process.env.NODE_ENV,
   port: process.env.PORT,
+  server_url: process.env.SERVER_URL,
   ip: process.env.IP,
   database_url: process.env.DATABASE_URL,
   bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,

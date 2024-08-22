@@ -26,7 +26,6 @@ class QueryBuilder<T> {
 
   // Range filter
   rangeFilter<K extends keyof T>(field: K, range: string) {
-    console.log(field, range);
     if (range) {
       const [min, max] = range.split('-').map(Number);
       // Check if both min and max are valid numbers
@@ -40,6 +39,18 @@ class QueryBuilder<T> {
         //@ts-ignore
         console.warn(`Invalid range value for field ${field}: ${range}`);
       }
+    }
+    return this;
+  }
+
+  //array filter
+  arrayFilter<K extends keyof T>(field: K, values: string) {
+    const newValues = values ? values.split(',') : [] 
+    if (newValues && newValues.length > 0) {
+      const filter: any = {
+        [field]: { $all: newValues } as any,
+      };
+      this.modelQuery = this.modelQuery.find(filter);
     }
     return this;
   }

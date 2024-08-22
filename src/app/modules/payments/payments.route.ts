@@ -22,6 +22,7 @@ router.post(
 
 //web hooks
 router.post('/webhooks', paymentsController.webhook);
+router.get('/return', paymentsController.returnUrl);
 router.get(
   '/my-payments',
   auth(
@@ -80,8 +81,13 @@ router.get(
 );
 router.get(
   '/top-landlord-income',
-  auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
+  // auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
   paymentsController.topLandlordIncome,
+);
+router.get(
+  '/all-transitions',
+  auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
+  paymentsController.allTransitions,
 );
 
 export const paymentsRoutes = router;

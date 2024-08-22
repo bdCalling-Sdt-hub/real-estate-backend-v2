@@ -6,9 +6,9 @@ interface IDocument {
 }
 
 interface IDocuments {
-  selfie: string;
-  documentType: string;
-  documents: IDocument[];
+  selfie: string | null;
+  documentType: string | null;
+  documents: IDocument[] | null;
 }
 
 export interface TUser {
@@ -30,7 +30,7 @@ export interface TUser {
   dateOfBirth: string;
   job: string;
   monthlyIncome: string;
-  documents: IDocuments;
+  documents?: IDocuments | null;
   verificationRequest: string;
   image?: string;
   role: 'admin' | 'user' | 'host' | 'super_admin' | 'sub_admin';

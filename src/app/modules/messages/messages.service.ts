@@ -5,6 +5,32 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { deleteFromS3 } from '../../utils/s3';
 import { IMessages } from './messages.interface';
 import Chat from '../chat/chat.models';
+import { chatService } from '../chat/chat.service';
+
+// const createMessages = async (payload: IMessages) => {
+
+// const alreadyExists = await Chat.findOne({
+//   participants: { $all: [payload.sender, payload.receiver] },
+// }).populate(['participants']);
+
+// if (!alreadyExists) {
+
+//   const chatList = await Chat.create({
+//     participants: [payload.sender, payload.receiver],
+//   });
+//   //@ts-ignore
+//   payload.chat = chatList._id;
+// } else {
+//   //@ts-ignore
+//   payload.chat = alreadyExists._id;
+// }
+
+// const result = await Message.create(payload);
+// if (!result) {
+//   throw new AppError(httpStatus.BAD_REQUEST, 'Message creation failed');
+// }
+// return result;
+// };
 
 const createMessages = async (payload: IMessages) => {
   const alreadyExists = await Chat.findOne({
@@ -15,8 +41,10 @@ const createMessages = async (payload: IMessages) => {
     const chatList = await Chat.create({
       participants: [payload.sender, payload.receiver],
     });
+    //@ts-ignore
     payload.chat = chatList?._id;
   } else {
+    //@ts-ignore
     payload.chat = alreadyExists?._id;
   }
 
@@ -24,6 +52,30 @@ const createMessages = async (payload: IMessages) => {
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Message creation failed');
   }
+
+  //@ts-ignore
+  const io = global.socketio;
+
+  if (io) {
+    const senderMessage = 'new-message::' + result.chat.toString();
+
+    io.emit(senderMessage, result);
+
+    // //----------------------ChatList------------------------//
+    const ChatListSender = await chatService.getMyChatList(
+      result?.sender.toString(),
+    );
+    const ChatListReceiver = await chatService.getMyChatList(
+      result?.receiver.toString(),
+    );
+ 
+    const senderChat = 'chat-list::' + result.sender.toString();
+    const receiverChat = 'chat-list::' + result.receiver.toString();
+    io.emit(receiverChat, ChatListSender);
+    io.emit(senderChat, ChatListReceiver);
+  }
+
+
   return result;
 };
 
@@ -33,16 +85,20 @@ const getAllMessages = async (query: Record<string, any>) => {
   const MessageModel = new QueryBuilder(
     Message.find().populate([
       {
-        path: 'senderId',
+        path: 'sender',
         select: 'name email image role _id phoneNumber username',
       },
       {
-        path: 'receiverId',
+        path: 'receiver',
         select: 'name email image role _id phoneNumber username',
       },
     ]),
     query,
-  );
+  )
+    .filter()
+    // .paginate()
+    .sort()
+    .fields();
 
   const data = await MessageModel.modelQuery;
   const meta = await MessageModel.countTotal();
@@ -71,11 +127,11 @@ const getMessagesByChatId = async (chatId: string) => {
 const getMessagesById = async (id: string) => {
   const result = await Message.findById(id).populate([
     {
-      path: 'senderId',
+      path: 'sender',
       select: 'name email image role _id phoneNumber username',
     },
     {
-      path: 'receiverId',
+      path: 'receiver',
       select: 'name email image role _id phoneNumber username',
     },
   ]);
@@ -107,7 +163,7 @@ const seenMessage = async (userId: string, chatId: string) => {
   const messageIdList = await Message.aggregate([
     {
       $match: {
-        chat:  chatId,
+        chat: chatId,
         seen: false,
         sender: { $ne: userId },
       },
@@ -124,7 +180,6 @@ const seenMessage = async (userId: string, chatId: string) => {
   );
   return updateMessages;
 };
-
 
 export const messagesService = {
   createMessages,

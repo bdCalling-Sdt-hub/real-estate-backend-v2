@@ -4,6 +4,7 @@ export type QueryObject = {
 };
 
 export type Tlogin = {
+  loginWithGoogle:boolean;
   email: string;
   password: string;
 };

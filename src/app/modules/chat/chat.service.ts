@@ -49,7 +49,7 @@ const getMyChatList = async (userId: string) => {
     const unreadMessageCount = await Message.countDocuments({
       chat: chatId,
       seen: false,
-      sender: { $ne: chatId },
+      sender: { $ne: userId },
     });
 
     if (message) {

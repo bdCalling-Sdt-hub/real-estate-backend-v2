@@ -14,24 +14,40 @@ import Ads from '../ads/ads.models';
 import { Types } from 'mongoose';
 import { User } from '../user/user.model';
 import Residence from '../residence/residence.models';
+import Message from '../messages/messages.models';
+import { messagesService } from '../messages/messages.service';
 
 // Initiate payment
 const initiatePayment = async (payload: any) => {
   const initiate: any = await getPaymentConfig(payload);
-  if (payload?.paymentType === paymentTypes.Booking_Residence) {
-    const residence = await BookingResidence.findById(payload?.details);
+  if (payload?.paymentType === 'BookingResidence') {
+    const residence = await BookingResidence.findById(payload?.bookingId);
     payload.residenceAuthority = residence?.author;
   }
 
-  await Payment.create({
-    user: payload.user,
-    transitionId: initiate?.reference?.id,
-    type: payload.paymentType,
-    details: payload?.bookingId,
-    amount: initiate?.order?.amount,
-    residenceAuthority: payload.residenceAuthority,
-    transitionDate: moment(),
+  const haveInPayment = await Payment.findOne({
+    status: 'pending',
+    details: new Types.ObjectId(payload?.bookingId),
+    type: payload?.paymentType,
+    user: new Types.ObjectId(payload?.user),
   });
+
+  if (!haveInPayment) {
+    await Payment.create({
+      user: payload.user,
+      transitionId: initiate?.reference?.id,
+      type: payload.paymentType,
+      details: payload?.bookingId,
+      amount: initiate?.order?.amount,
+      residenceAuthority: payload.residenceAuthority,
+      transitionDate: moment(),
+    });
+  } else {
+    await Payment.findByIdAndUpdate(haveInPayment?._id, {
+      transitionId: initiate?.reference?.id,
+      transitionDate: moment(),
+    });
+  }
 
   try {
     const res = await fetch('https://sandboxapi.upayments.com/api/v1/charge', {
@@ -39,14 +55,15 @@ const initiatePayment = async (payload: any) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        // Authorization: `Bearer ${config?.payment?.payment_token}`,
         Authorization: `Bearer ${config?.payment?.payment_token}`,
       },
       body: JSON.stringify(initiate),
     });
-
     const data = await res.json();
     return data;
   } catch (err: any) {
+    console.error(err);
     throw new AppError(httpStatus.BAD_REQUEST, err.message);
   }
 };
@@ -55,7 +72,7 @@ const initiatePayment = async (payload: any) => {
 const webhook = async (payload: any) => {
   const status = payload.result === 'CAPTURED' ? 'completed' : 'failed';
   const payment: IPayment | null = await Payment.findOneAndUpdate(
-    { transitionId: payload.tran_id },
+    { transitionId: payload.trn_udf },
     {
       $set: {
         status: status,
@@ -83,14 +100,14 @@ const webhook = async (payload: any) => {
 
     await User.findByIdAndUpdate(
       booking?.author,
-      { $inc: { balance: payment?.landlordAmount } },
+      { $inc: { balance: payment?.amount } },
       { new: true, timestamps: false },
     );
-    await Residence.findByIdAndUpdate(
-      booking?.residence,
-      { $inc: { popularity: 1 } },
-      { new: true, timestamps: false },
-    );
+    // await Residence.findByIdAndUpdate(
+    //   booking?.residence,
+    //   { $inc: { popularity: 1 } },
+    //   { new: true, timestamps: false },
+    // );
 
     //  await notificationServices?.insertNotificationIntoDb({
     //    receiverId: someReceiverId,
@@ -150,7 +167,7 @@ const webhook = async (payload: any) => {
     }
 
     await Ads.findByIdAndUpdate(payment?.details?._id, {
-      isPaid: payload.result === 'CAPTURED' ? true : false,
+      status: payload.result === 'CAPTURED' ? true : false,
       tranId: payment?.transitionId,
     });
   }
@@ -158,7 +175,39 @@ const webhook = async (payload: any) => {
   return payment;
 };
 
-// Get my payments
+//return url
+const returnUrl = async (query: Record<string, any>) => {
+  const result = await Payment.findOne({ transitionId: query?.trn_udf });
+
+  if (!result) {
+    throw new AppError(httpStatus.BAD_GATEWAY, 'payment not found!');
+  }
+  if (result?.status === 'completed') {
+    const messages = await Message.findOneAndUpdate(
+      {
+        bookingId: new Types.ObjectId(result?.details),
+        sender: new Types.ObjectId(result?.residenceAuthority),
+        receiver: new Types.ObjectId(result?.user),
+        showButton: true,
+      },
+      { showButton: false },
+      { new: true },
+    );
+
+    if (messages) {
+      await messagesService.createMessages({
+        text: 'Your payment has been successfully completed. You can now communicate with the landlord.',
+        //@ts-ignore
+        sender: result.residenceAuthority,
+        //@ts-ignore
+        receiver: result?.user,
+      });
+    }
+  }
+
+  return result;
+};
+
 const myPayments = async (userId: string) => {
   const payments = await Payment.find({ user: userId }).populate([
     {
@@ -181,7 +230,7 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
   }
 
   // Extract query parameters
-  const { daily, month, sixMonths, year, date } = query;
+  const { daily, week, month, sixMonths, year, date } = query;
 
   // Define match stage for aggregation
   let matchStage: any = {
@@ -195,6 +244,10 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     const today = moment().startOf('day').toDate();
     const tomorrow = moment(today).add(1, 'day').toDate();
     matchStage.createdAt = { $gte: today, $lt: tomorrow };
+  } else if (week) {
+    const startOfWeek = moment().startOf('week').toDate();
+    const endOfWeek = moment(startOfWeek).endOf('week').toDate();
+    matchStage.createdAt = { $gte: startOfWeek, $lt: endOfWeek };
   } else if (month && year) {
     const startDate = moment(`${year}-${month}-01`).startOf('month').toDate();
     const endDate = moment(startDate).endOf('month').toDate();
@@ -226,16 +279,24 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
       _id: {
         year: { $year: '$createdAt' },
         month: { $month: '$createdAt' },
+        week: { $week: '$createdAt' }, // Group by week
       },
       totalIncome: { $sum: '$landlordAmount' },
     },
   });
 
   aggregationPipeline.push({
-    $sort: { '_id.year': 1, '_id.month': 1 },
+    $sort: { '_id.year': 1, '_id.month': 1, '_id.week': 1 },
   });
 
   const result = await Payment.aggregate(aggregationPipeline);
+
+  const weeklyIncome = result.map(item => ({
+    year: item._id.year,
+    month: item._id.month,
+    week: item._id.week,
+    income: item.totalIncome,
+  }));
 
   const monthNames = [
     'Jan',
@@ -251,6 +312,7 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     'Nov',
     'Dec',
   ];
+
   let yearlyIncome = 0;
   const formattedResult = monthNames.map((monthName, index) => {
     const monthData = result.find(item => item._id.month === index + 1);
@@ -277,6 +339,7 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
   ];
 
   const yearlyIncomeObj = { period: 'Yearly', income: yearlyIncome };
+
   const totalIncome = await Payment.aggregate([
     { $match: matchStage },
     { $group: { _id: null, totalIncome: { $sum: '$landlordAmount' } } },
@@ -290,9 +353,10 @@ const myIncome = async (userId: string, query: Record<string, any>) => {
     { path: 'user', select: '_id name email image image' },
     { path: 'details', populate: ['residence'] },
   ]);
-  // const totalIncome = Payment.aggregate()
+
   return {
     totalMyIncome: totalIncome.length > 0 ? totalIncome[0].totalIncome : 0,
+    weeklyIncome: weeklyIncome, // Add weekly income
     monthlyIncome: formattedResult,
     halfYearlyIncome: halfYearlyIncome,
     yearlyIncome: yearlyIncomeObj,
@@ -529,7 +593,7 @@ const PercentageIncome = async () => {
             transitionDate: '$transitionDate',
             type: '$type',
             details: '$detailsInfo',
-            residenceAuthority: '$userDetails',
+            residenceAuthority: '$residenceAuthority',
             landlordAmount: '$landlordAmount',
             adminAmount: '$adminAmount',
           },
@@ -940,17 +1004,18 @@ const calculatePackageNameByIncome = async (query: Record<string, any>) => {
 };
 
 const topLandlordIncome = async () => {
-  const result = await Payment.aggregate([
+  const result = await BookingResidence.aggregate([
     {
       $match: {
-        type: paymentTypes.Booking_Residence,
-        status: 'completed',
+        isPaid: true,
+        // status: 'approved',
+        // isDeleted: { $ne: true }
       },
     },
     {
       $group: {
-        _id: '$residenceAuthority',
-        totalIncome: { $sum: '$landlordAmount' },
+        _id: '$author',
+        totalIncome: { $sum: '$totalPrice' },
         totalTransactions: { $sum: 1 },
       },
     },
@@ -965,31 +1030,375 @@ const topLandlordIncome = async () => {
         from: 'users',
         localField: '_id',
         foreignField: '_id',
-        as: 'residenceAuthorityDetails',
+        as: 'authorDetails',
       },
     },
     {
-      $unwind: '$residenceAuthorityDetails',
+      $unwind: '$authorDetails',
     },
 
     {
       $project: {
         _id: 0,
         author: {
-          name: '$residenceAuthorityDetails.name',
-          email: '$residenceAuthorityDetails.email',
-          image: '$residenceAuthorityDetails.image',
-          role: '$residenceAuthorityDetails.role',
-          phoneNumber: '$residenceAuthorityDetails.phoneNumber',
-          address: '$residenceAuthorityDetails.address',
+          name: '$authorDetails.name',
+          email: '$authorDetails.email',
+          image: '$authorDetails.image',
+          role: '$authorDetails.role',
+          phoneNumber: '$authorDetails.phoneNumber',
+          address: '$authorDetails.address',
         },
         totalIncome: 1,
         totalTransactions: 1,
       },
     },
-  ]);
+  ]); 
+  // const result = await Payment.aggregate([
+  //   {
+  //     $match: {
+  //       type: paymentTypes.Booking_Residence,
+  //       status: 'completed',
+  //     },
+  //   },
+  //   {
+  //     $group: {
+  //       _id: '$residenceAuthority',
+  //       totalIncome: { $sum: '$landlordAmount' },
+  //       totalTransactions: { $sum: 1 },
+  //     },
+  //   },
+  //   {
+  //     $sort: { totalIncome: -1 },
+  //   },
+  //   {
+  //     $limit: 15,
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'users',
+  //       localField: '_id',
+  //       foreignField: '_id',
+  //       as: 'residenceAuthorityDetails',
+  //     },
+  //   },
+  //   {
+  //     $unwind: '$residenceAuthorityDetails',
+  //   },
+
+  //   {
+  //     $project: {
+  //       _id: 0,
+  //       author: {
+  //         name: '$residenceAuthorityDetails.name',
+  //         email: '$residenceAuthorityDetails.email',
+  //         image: '$residenceAuthorityDetails.image',
+  //         role: '$residenceAuthorityDetails.role',
+  //         phoneNumber: '$residenceAuthorityDetails.phoneNumber',
+  //         address: '$residenceAuthorityDetails.address',
+  //       },
+  //       totalIncome: 1,
+  //       totalTransactions: 1,
+  //     },
+  //   },
+  // ]);
 
   return result;
+};
+
+//all percentage transitions
+
+const allTransitions = async (query: Record<string, any>) => {
+  const today = moment().startOf('day').toDate();
+  const tomorrow = moment(today).endOf('day').toDate();
+
+  const matchStage = {
+    status: 'completed',
+    type: query?.type,
+  };
+
+  if (!query.type) {
+    delete matchStage.type;
+  }
+
+  const result = await Payment.aggregate([
+    {
+      $match: {
+        ...matchStage,
+      },
+    },
+    {
+      $addFields: {
+        isToday: {
+          $and: [
+            { $gte: ['$transitionDate', today] },
+            { $lt: ['$transitionDate', tomorrow] },
+          ],
+        },
+      },
+    },
+    // Lookup to populate the "user" field
+    {
+      $lookup: {
+        from: 'users',
+        let: { userId: '$user' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ['$_id', '$$userId'] },
+            },
+          },
+          {
+            $project: {
+              role: 1,
+              email: 1,
+              name: 1,
+              username: 1,
+              _id: 1,
+              phoneNumber: 1,
+            },
+          },
+        ],
+        as: 'userInfo',
+      },
+    },
+    {
+      $unwind: {
+        path: '$userInfo',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // Lookup for BookingResidence details
+    {
+      $lookup: {
+        from: 'bookingresidences',
+        let: { detailsId: '$details' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ['$_id', '$$detailsId'] },
+            },
+          },
+          {
+            $project: {
+              // Replace these fields with the actual fields you need
+              _id: 1,
+            },
+          },
+        ],
+        as: 'bookingResidenceDetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$bookingResidenceDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // Lookup for Ads details
+    {
+      $lookup: {
+        from: 'ads',
+        let: { detailsId: '$details' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ['$_id', '$$detailsId'] },
+            },
+          },
+          {
+            $project: {
+              // Replace these fields with the actual fields you need
+              _id: 1,
+              property: 1,
+              tranId: 1,
+              status: 1,
+              expireAt: 1,
+              startAt: 1,
+              banner: 1,
+              price: 1,
+            },
+          },
+        ],
+        as: 'adsDetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$adsDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // Combine the details fields into one
+    {
+      $addFields: {
+        detailsInfo: {
+          $cond: {
+            if: { $eq: ['$type', 'BookingResidence'] },
+            then: '$bookingResidenceDetails',
+            else: {
+              $cond: {
+                if: { $eq: ['$type', 'Ads'] },
+                then: '$adsDetails',
+                else: null,
+              },
+            },
+          },
+        },
+      },
+    },
+    // Lookup to populate the "residenceAuthority" field
+    {
+      $lookup: {
+        from: 'users',
+        let: { userId: '$residenceAuthority' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ['$_id', '$$userId'] },
+            },
+          },
+          {
+            $project: {
+              role: 1,
+              email: 1,
+              name: 1,
+              username: 1,
+              _id: 1,
+              phoneNumber: 1,
+            },
+          },
+        ],
+        as: 'userDetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$userDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalIncome: { $sum: '$amount' },
+        todayIncome: {
+          $sum: {
+            $cond: ['$isToday', '$amount', 0],
+          },
+        },
+        totalPaymentsList: {
+          $push: {
+            amount: '$amount',
+            paymentMethod: '$paymentMethod',
+            status: '$status',
+            transitionId: '$transitionId',
+            transitionDate: '$transitionDate',
+            type: '$type',
+            details: '$detailsInfo',
+            user: '$userInfo',
+            residenceAuthority: '$userDetails',
+            landlordAmount: '$landlordAmount',
+            adminAmount: '$adminAmount',
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalIncome: 1,
+        totalTransactions: 1,
+        todayIncome: 1,
+        todayTransactions: 1,
+        totalPaymentsList: 1,
+      },
+    },
+  ]);
+
+  // const result = await Payment.aggregate([
+  //   {
+  //     $match: {
+  //       ...matchStage,
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       isToday: {
+  //         $and: [
+  //           { $gte: ['$transitionDate', today] },
+  //           { $lt: ['$transitionDate', tomorrow] },
+  //         ],
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: 'users',
+  //       let: { userId: '$residenceAuthority' },
+  //       pipeline: [
+  //         {
+  //           $match: {
+  //             $expr: { $eq: ['$_id', '$$userId'] },
+  //           },
+  //         },
+  //         {
+  //           $project: {
+  //             role: 1,
+  //             email: 1,
+  //             name: 1,
+  //             username: 1,
+  //             _id: 1,
+  //             phoneNumber: 1,
+  //           },
+  //         },
+  //       ],
+  //       as: 'userDetails',
+  //     },
+  //   },
+  //   {
+  //     $unwind: {
+  //       path: '$userDetails',
+  //       preserveNullAndEmptyArrays: true,
+  //     },
+  //   },
+  //   {
+  //     $group: {
+  //       _id: null,
+  //       totalIncome: { $sum: '$amount' },
+  //       todayIncome: {
+  //         $sum: {
+  //           $cond: ['$isToday', '$amount', 0],
+  //         },
+  //       },
+  //       totalPaymentsList: {
+  //         $push: {
+  //           amount: '$amount',
+  //           paymentMethod: '$paymentMethod',
+  //           status: '$status',
+  //           transitionId: '$transitionId',
+  //           transitionDate: '$transitionDate',
+  //           type: '$type',
+  //           details: '$detailsInfo',
+  //           residenceAuthority: '$userDetails',
+  //           landlordAmount: '$landlordAmount',
+  //           adminAmount: '$adminAmount',
+  //         },
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $project: {
+  //       _id: 0,
+  //       totalIncome: 1,
+  //       totalTransactions: 1,
+  //       todayIncome: 1,
+  //       todayTransactions: 1,
+  //       totalPaymentsList: 1,
+  //     },
+  //   },
+  // ]);
+
+  return result?.length > 0 ? result[0] : [];
 };
 
 export const paymentsService = {
@@ -1004,4 +1413,6 @@ export const paymentsService = {
   PercentageStatisticsIncomes,
   calculatePackageNameByIncome,
   topLandlordIncome,
+  allTransitions,
+  returnUrl,
 };

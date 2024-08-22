@@ -11,12 +11,14 @@ import router from './app/routes';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
+import bodyParser from 'body-parser';
 
 const app: Application = express();
 app.use(express.static('public'));
 
 //parsers
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
@@ -61,4 +63,3 @@ app.use(globalErrorHandler);
 app.use(notFound);
 
 export default app;
- 

@@ -22,7 +22,7 @@ const userSchema = new Schema<TUser>(
     },
     image: {
       type: String,
-      default: '',
+      default: `https://${config.aws.bucket}.s3.${config.aws.region}.amazonaws.com/profile.jpeg`,
     },
     phoneNumber: {
       type: String,
@@ -58,7 +58,7 @@ const userSchema = new Schema<TUser>(
       required: true,
     },
     bankInfo: {
-      country:{
+      country: {
         type: String,
       },
       bankName: {
@@ -67,8 +67,8 @@ const userSchema = new Schema<TUser>(
       accountHolder: {
         type: String,
       },
-      swiftCode:{
-        type:String
+      swiftCode: {
+        type: String,
       },
       accountNumber: {
         type: String,
@@ -79,14 +79,16 @@ const userSchema = new Schema<TUser>(
     },
     documents: {
       type: {
-        selfie:{type: String},
-         documentType:{type: String,},
-        documents: [{
-          key:String,
-          url:String
-        },]
+        selfie: { type: String || null },
+        documentType: { type: String || null },
+        documents: [
+          {
+            key: String || null,
+            url: String || null,
+          },
+        ],
       },
-      required:false
+      required: false,
     },
     verificationRequest: {
       type: String,

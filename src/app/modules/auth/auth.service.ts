@@ -26,7 +26,7 @@ const login = async (payload: Tlogin) => {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is Blocked');
   }
 
-  if (!(await User.isPasswordMatched(payload.password, user.password))) {
+  if (!payload?.loginWithGoogle && !(await User.isPasswordMatched(payload.password, user.password))) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }
 
@@ -64,6 +64,7 @@ const changePassword = async (id: string, payload: TchangePassword) => {
   if (!(await User.isPasswordMatched(payload?.oldPassword, user.password))) {
     throw new AppError(httpStatus.FORBIDDEN, 'Old password does not match');
   }
+  
   if (payload?.newPassword !== payload?.confirmPassword) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -99,12 +100,13 @@ const forgotPassword = async (email: string) => {
   }
 
   if (user?.isDeleted) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+    throw new AppError(httpStatus.NOT_FOUND, 'this user is deleted');
   }
 
   if (user?.status === 'blocked') {
-    throw new AppError(httpStatus.FORBIDDEN, 'User not found');
+    throw new AppError(httpStatus.FORBIDDEN, 'User is blocked');
   }
+
   const jwtPayload = {
     email: email,
     id: user?._id,
@@ -139,6 +141,7 @@ const forgotPassword = async (email: string) => {
 // Reset password
 const resetPassword = async (token: string, payload: TresetPassword) => {
   let decode;
+
   try {
     decode = jwt.verify(
       token,
@@ -149,9 +152,10 @@ const resetPassword = async (token: string, payload: TresetPassword) => {
       httpStatus.UNAUTHORIZED,
       'Session has expired. Please try again',
     );
-  }
-
-  const user = await User.findById(decode?.id).select('isDeleted verification');
+  } 
+  const user = await User.findById(decode?.userId || decode?.id).select(
+    'isDeleted verification',
+  ); 
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');

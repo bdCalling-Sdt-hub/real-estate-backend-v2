@@ -6,6 +6,8 @@ import parseData from '../../middleware/parseData';
 import { residenceController } from './residence.controller';
 import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constant';
+import validateRequest from '../../middleware/validateRequest';
+import { residenceValidation } from './residence.validation';
 
 const router = Router();
 const storage = memoryStorage();
@@ -17,7 +19,7 @@ router.post(
     USER_ROLE.admin,
     USER_ROLE.sub_admin,
     USER_ROLE.super_admin,
-    USER_ROLE.landlord,
+    USER_ROLE.landlord, 
   ),
   upload.fields([
     { name: 'images', maxCount: 10 },
