@@ -588,6 +588,7 @@ const PercentageIncome = async () => {
             amount: '$amount',
             paymentMethod: '$paymentMethod',
             status: '$status',
+            user: '$userDetails',
             transitionId: '$transitionId',
             transitionDate: '$transitionDate',
             type: '$type',
@@ -610,6 +611,7 @@ const PercentageIncome = async () => {
       },
     },
   ]);
+  console.table(result[0]?.totalPaymentsList);
 
   return result.length > 0
     ? result[0]

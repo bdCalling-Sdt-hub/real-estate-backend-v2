@@ -5,6 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "build": "tsc",
+    "start": "node ./dist/server.js",
     "generate": "node generateFolder.ts",
     "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "lint:check": "eslint --ignore-path .eslintignore --ext .js,.ts .",
@@ -68,6 +69,7 @@
     "path": "^0.12.7",
     "socket.io": "^4.7.5",
     "stripe": "^15.10.0",
+    "vercel": "^32.3.0",
     "zod": "^3.23.8"
   }
 }

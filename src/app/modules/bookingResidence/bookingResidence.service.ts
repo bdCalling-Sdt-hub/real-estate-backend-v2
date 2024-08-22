@@ -51,8 +51,13 @@ const createBookingResidence = async (
 const getAllBookingResidence = async (query: Record<string, any>) => {
   const bookingResidenceModel = new QueryBuilder(
     BookingResidence.find().populate([
-      { path: 'residence' },
-      { path: 'author', select: 'name email _id username phoneNumber image' },
+      {
+        path: 'residence',
+        populate: [
+          { path: 'host', select: 'name email _id username phoneNumber image' },
+        ],
+      },
+      // { path: 'author', select: 'name email _id username phoneNumber image' },
       { path: 'user', select: 'name email _id username phoneNumber image' },
     ]),
     query,
