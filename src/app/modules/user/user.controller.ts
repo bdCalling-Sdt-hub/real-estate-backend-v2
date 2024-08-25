@@ -230,6 +230,7 @@ const rejectIdVerificationRequest = catchAsync(
 
 //accept verification request
 const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
+  
   req.body.documents = {
     selfie: null,
     documentType: req?.body?.documentType || null,

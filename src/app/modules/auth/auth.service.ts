@@ -70,7 +70,7 @@ const changePassword = async (id: string, payload: TchangePassword) => {
       httpStatus.BAD_REQUEST,
       'New password and confirm password do not match',
     );
-  }
+  } 
 
   const hashedPassword = await bcrypt.hash(
     payload?.newPassword,
@@ -139,7 +139,7 @@ const forgotPassword = async (email: string) => {
 };
 
 // Reset password
-const resetPassword = async (token: string, payload: TresetPassword) => {
+const resetPassword = async (token: string, payload: TresetPassword) => { 
   let decode;
 
   try {
@@ -153,10 +153,11 @@ const resetPassword = async (token: string, payload: TresetPassword) => {
       'Session has expired. Please try again',
     );
   } 
-  const user = await User.findById(decode?.userId || decode?.id).select(
-    'isDeleted verification',
-  ); 
 
+
+  const user = await User.findById(decode?.userId || decode?.id).select(
+    'isDeleted verification _id',
+  );  
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -176,16 +177,16 @@ const resetPassword = async (token: string, payload: TresetPassword) => {
   const hashedPassword = await bcrypt.hash(
     payload?.newPassword,
     Number(config.bcrypt_salt_rounds),
-  );
+  ); 
 
-  const result = await User.findByIdAndUpdate(decode?.id, {
+  const result = await User.findByIdAndUpdate(decode?.userId, {
     password: hashedPassword,
     passwordChangedAt: new Date(),
     verification: {
       otp: 0,
       status: true,
     },
-  });
+  }); 
 
   return result;
 };
