@@ -4,9 +4,22 @@ import Chat from './chat.models';
 import { IChat } from './chat.interface';
 import Message from '../messages/messages.models';
 import { deleteFromS3 } from '../../utils/s3';
+import { User } from '../user/user.model';
 
 // Create chat
 const createChat = async (payload: IChat) => {
+  const user1 = await User.findById(payload?.participants[0]);
+
+  if (!user1) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid user');
+  }
+  
+  const user2 = await User.findById(payload?.participants[1]);
+
+  if (!user2) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid user');
+  }
+
   const alreadyExists = await Chat.findOne({
     participants: { $all: payload.participants },
   }).populate(['participants']);

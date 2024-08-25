@@ -3,16 +3,13 @@ import catchAsync from '../../utils/catchAsync';
 import { adsService } from './ads.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
-import { deleteFromS3, uploadToS3 } from '../../utils/s3';
-import pick from '../../utils/pick';
-import { paginationFields } from '../../../constants/pagination';
-import { adsFilterableFields } from './ads.constants';
+import { uploadToS3 } from '../../utils/s3';
 
 const createAds = catchAsync(async (req: Request, res: Response) => {
   if (req.file) {
     const bannerUrl = await uploadToS3({
       file: req.file,
-      fileName: `images/ads/${req.body.property}`,
+      fileName: `images/ads/${Math.floor(100000 + Math.random() * 900000)}`,
     });
 
     req.body.banner = bannerUrl;
@@ -28,9 +25,7 @@ const createAds = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllAds = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, adsFilterableFields);
-  const paginationOptions = pick(req.query, paginationFields);
-  const result = await adsService.getAllAds(filters, paginationOptions);
+  const result = await adsService.getAllAds(req.query);
 
   sendResponse(req, res, {
     statusCode: httpStatus.OK,
@@ -65,9 +60,6 @@ const updateAds = catchAsync(async (req: Request, res: Response) => {
 const deleteAds = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await adsService.deleteAds(id);
-  if (result.banner) {
-    await deleteFromS3(`images/ads/${result.property}`);
-  }
   sendResponse(req, res, {
     statusCode: httpStatus.OK,
     success: true,

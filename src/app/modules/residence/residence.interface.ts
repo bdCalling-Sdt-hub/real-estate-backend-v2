@@ -53,7 +53,8 @@ export interface IResidence {
   discount: number;
   discountCode: string;
   host: ObjectId;
-  isDeleted: boolean;
+  isDeleted: boolean; 
+  totalBooking:number;
   // popularity: number;
 
   // perNightPrice: number;

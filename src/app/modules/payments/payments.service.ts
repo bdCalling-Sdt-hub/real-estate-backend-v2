@@ -88,6 +88,7 @@ const webhook = async (payload: any) => {
   if (!payment) {
     throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
   }
+  let updateData = {}
 
   if (payment.type === paymentTypes.Booking_Residence) {
     const booking = await BookingResidence.findByIdAndUpdate(
@@ -97,12 +98,16 @@ const webhook = async (payload: any) => {
       },
       { new: true },
     );
+if(payload.result === 'CAPTURED'){
+  await User.findByIdAndUpdate(
+    booking?.author,
+    {
+      $inc: { balance: payment?.amount, tenants:1, totalBooking: 1 }, 
+    },
+    { new: true, timestamps: false },
+  );
 
-    await User.findByIdAndUpdate(
-      booking?.author,
-      { $inc: { balance: payment?.amount } },
-      { new: true, timestamps: false },
-    );
+}
     // await Residence.findByIdAndUpdate(
     //   booking?.residence,
     //   { $inc: { popularity: 1 } },

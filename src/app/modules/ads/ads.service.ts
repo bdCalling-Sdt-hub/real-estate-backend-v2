@@ -10,135 +10,154 @@ import { paginationHelper } from '../../helpers/pagination.helpers';
 import { adsSearchableFields } from './ads.constants';
 import { paymentsService } from '../payments/payments.service';
 import moment from 'moment';
+import QueryBuilder from '../../builder/QueryBuilder';
 
-const createAd = async (payload: Partial<IAds>, userId: string) => {
-  const startDate = new Date();
-  const endDate = new Date(startDate);
-  payload?.month
-    ? endDate.setMonth(endDate.getMonth() + parseInt(payload?.month))
-    : endDate.setMonth(endDate.getMonth() + 1);
+const createAd = async (payload: IAds, userId: string) => {
+  // const startDate = new Date();
+  // const endDate = new Date(startDate);
+  // payload?.month
+  //   ? endDate.setMonth(endDate.getMonth() + parseInt(payload?.month))
+  //   : endDate.setMonth(endDate.getMonth() + 1);
 
-  payload.startAt = startDate;
-  payload.expireAt = endDate;
-  payload.price = payload.month ? 2 * parseInt(payload?.month) : 2;
+  // payload.startAt = startDate;
+  // payload.expireAt = endDate;
+  // payload.price = payload.month ? 2 * parseInt(payload?.month) : 2;
 
   const result: IAds | null = await Ads.create(payload);
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Ad creation failed');
   }
 
-  const paymentLink = await paymentsService.initiatePayment({
-    user: userId,
-    bookingId: result?._id,
-    paymentType: 'Ads',
-  });
+  // const paymentLink = await paymentsService.initiatePayment({
+  //   user: userId,
+  //   bookingId: result?._id,
+  //   paymentType: 'Ads',
+  // });
 
-  return { ads: result, paymentLink: paymentLink?.data?.link };
+  return result;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getAllAds = async (
-  filters: IFilter,
-  paginationOptions: IPaginationOption,
-) => {
-  const { searchTerm, ...filtersData } = filters;
-  const pipeline: any[] = [];
+// const getAllAds = async (
+//   filters: IFilter,
+//   paginationOptions: IPaginationOption,
+// ) => {
+//   const { searchTerm, ...filtersData } = filters;
+//   const pipeline: any[] = [];
 
-  // Aggregation to populate referenced fields
-  pipeline.push({
-    $lookup: {
-      from: 'residences',
-      localField: 'property',
-      foreignField: '_id',
-      as: 'property',
-    },
-  });
+//   // Aggregation to populate referenced fields
+//   pipeline.push({
+//     $lookup: {
+//       from: 'residences',
+//       localField: 'property',
+//       foreignField: '_id',
+//       as: 'property',
+//     },
+//   });
 
-  pipeline.push({ $unwind: '$property' });
+//   pipeline.push({ $unwind: '$property' });
 
-  pipeline.push({
-    $lookup: {
-      from: 'users',
-      localField: 'property.host',
-      foreignField: '_id',
-      as: 'property.host',
-    },
-  });
+//   pipeline.push({
+//     $lookup: {
+//       from: 'users',
+//       localField: 'property.host',
+//       foreignField: '_id',
+//       as: 'property.host',
+//     },
+//   });
 
-  pipeline.push({
-    $lookup: {
-      from: 'categories',
-      localField: 'property.category',
-      foreignField: '_id',
-      as: 'property.category',
-    },
-  });
+//   pipeline.push({
+//     $lookup: {
+//       from: 'categories',
+//       localField: 'property.category',
+//       foreignField: '_id',
+//       as: 'property.category',
+//     },
+//   });
 
-  pipeline.push({ $unwind: '$property.host' });
-  pipeline.push({ $unwind: '$property.category' });
+//   pipeline.push({ $unwind: '$property.host' });
+//   pipeline.push({ $unwind: '$property.category' });
 
-  let matchStage: any = {};
+//   let matchStage: any = {};
 
-  // Add search term conditions to matchStage
-  if (searchTerm) {
-    matchStage.$or = adsSearchableFields.map(field => ({
-      [field]: { $regex: searchTerm, $options: 'i' },
-    }));
-  }
+//   // Add search term conditions to matchStage
+//   if (searchTerm) {
+//     matchStage.$or = adsSearchableFields.map(field => ({
+//       [field]: { $regex: searchTerm, $options: 'i' },
+//     }));
+//   }
 
-  // Add filtersData to matchStage
-  const nonNestedFilters: any = {};
-  const nestedFilters: any = {};
+//   // Add filtersData to matchStage
+//   const nonNestedFilters: any = {};
+//   const nestedFilters: any = {};
 
-  Object.keys(filtersData).forEach(key => {
-    if (key.includes('.')) {
-      nestedFilters[key] = filtersData[key];
-    } else {
-      nonNestedFilters[key] = filtersData[key];
-    }
-  });
+//   Object.keys(filtersData).forEach(key => {
+//     if (key.includes('.')) {
+//       nestedFilters[key] = filtersData[key];
+//     } else {
+//       nonNestedFilters[key] = filtersData[key];
+//     }
+//   });
 
-  // Merge non-nested filters into matchStage
-  matchStage = { ...matchStage, ...nonNestedFilters };
+//   // Merge non-nested filters into matchStage
+//   matchStage = { ...matchStage, ...nonNestedFilters };
 
-  // Add $match stage early in the pipeline if applicable
-  if (Object.keys(matchStage).length > 0) {
-    pipeline.push({ $match: matchStage });
-  }
+//   // Add $match stage early in the pipeline if applicable
+//   if (Object.keys(matchStage).length > 0) {
+//     pipeline.push({ $match: matchStage });
+//   }
 
-  // Add nested filters after lookup and unwind
-  if (Object.keys(nestedFilters).length > 0) {
-    Object.keys(nestedFilters).forEach(key => {
-      pipeline.push({
-        $match: {
-          [key]: { $regex: nestedFilters[key], $options: 'i' },
-        },
-      });
-    });
-  }
+//   // Add nested filters after lookup and unwind
+//   if (Object.keys(nestedFilters).length > 0) {
+//     Object.keys(nestedFilters).forEach(key => {
+//       pipeline.push({
+//         $match: {
+//           [key]: { $regex: nestedFilters[key], $options: 'i' },
+//         },
+//       });
+//     });
+//   }
 
-  // Sorting and pagination
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePagination(paginationOptions);
+//   // Sorting and pagination
+//   const { page, limit, skip, sortBy, sortOrder } =
+//     paginationHelper.calculatePagination(paginationOptions);
 
-  const sortConditions: { [key: string]: SortOrder } = {};
-  if (sortBy && sortOrder) {
-    sortConditions[sortBy] = sortOrder === 'desc' ? -1 : 1;
-  }
+//   const sortConditions: { [key: string]: SortOrder } = {};
+//   if (sortBy && sortOrder) {
+//     sortConditions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+//   }
 
-  // Add sorting, skipping, and limiting at the end
-  pipeline.push({ $sort: sortConditions });
-  pipeline.push({ $skip: skip });
-  pipeline.push({ $limit: limit });
- 
+//   // Add sorting, skipping, and limiting at the end
+//   pipeline.push({ $sort: sortConditions });
+//   pipeline.push({ $skip: skip });
+//   pipeline.push({ $limit: limit });
 
-  // Execute the aggregation pipeline
-  const results = await Ads.aggregate(pipeline);
-  const totalData = results.length;
+//   // Execute the aggregation pipeline
+//   const results = await Ads.aggregate(pipeline);
+//   const totalData = results.length;
 
+//   return {
+//     meta: { page, limit, total: totalData },
+//     data: results,
+//   };
+// };
+
+const getAllAds = async (query: Record<string, any>) => {
+  const adsModel = new QueryBuilder(
+    Ads.find().populate({ path: 'category', select: 'name _id' }),
+    query,
+  )
+    .search([])
+    .filter()
+    .paginate()
+    .sort()
+    .fields();
+
+  const data = await adsModel.modelQuery;
+  const meta = await adsModel.countTotal();
   return {
-    meta: { page, limit, total: totalData },
-    data: results,
+    data,
+    meta,
   };
 };
 
@@ -148,7 +167,10 @@ const getAllAds = async (
 // }
 
 const getAdsById = async (id: string): Promise<IAds> => {
-  const result = await Ads.findById(id).populate('property');
+  const result = await Ads.findById(id).populate({
+    path: 'category',
+    select: 'name _id',
+  });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Oops! Ad not found.');
   }
@@ -165,7 +187,7 @@ const updateAd = async (
     const ad = await Ads.findById(id);
     const bannerUrl = await uploadToS3({
       file: file,
-      fileName: `images/ads/${ad?.property}`,
+      fileName: `images/ads/${Math.floor(100000 + Math.random() * 900000)}`,
     });
 
     payload.banner = bannerUrl as string;

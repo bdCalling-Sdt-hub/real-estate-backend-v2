@@ -9,6 +9,7 @@ import { deleteManyFromS3 } from '../../utils/s3';
 import { calculateAverageRatingForResidence } from './residence.utils';
 import { Types } from 'mongoose';
 import { changeLanguage } from 'i18next';
+import { User } from '../user/user.model';
 
 const createResidence = async (
   payload: Partial<IResidence>,
@@ -21,6 +22,12 @@ const createResidence = async (
     throw new AppError(httpStatus.BAD_REQUEST, 'images is required');
   }
   const result = await Residence.create(payload);
+
+await User.findByIdAndUpdate(
+  result?.host,
+  { $inc: { totalProperties: 1 } },
+  { timestamps: false },
+);
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Residence creation failed');
   }
@@ -55,19 +62,19 @@ const getAllResidence = async (query: Record<string, any>) => {
   const data = await ResidenceModel.modelQuery;
   const meta = await ResidenceModel.countTotal();
 
-  // if (data?.length > 0) {
-  //   await Promise.all(
-  //     data.map(async residence => {
-  //       const review: any = await calculateAverageRatingForResidence(
-  //         residence?._id?.toString() as string,
-  //       );
-  //       allResidence.push({ ...residence?.toObject(), ...review });
-  //     }),
-  //   );
-  // }
+  if (data?.length > 0) {
+    await Promise.all(
+      data.map(async residence => {
+        const review: any = await calculateAverageRatingForResidence(
+          residence?._id?.toString() as string,
+        );
+        allResidence.push({ ...residence?.toObject(), ...review });
+      }),
+    );
+  }
 
   return {
-    allResidence: data,
+    allResidence: allResidence,
     meta,
   };
 };
@@ -82,11 +89,11 @@ const getResidenceById = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Oops! Residence not found');
   }
 
-  // const avgRating = await calculateAverageRatingForResidence(
-  //   result?._id?.toString() as string,
-  // );
+  const avgRating = await calculateAverageRatingForResidence(
+    result?._id?.toString() as string,
+  );
 
-  return result;
+  return { ...result.toObject(), ...avgRating };
 };
 
 const updateResidence = async (id: string, payload: Partial<IResidence>) => {
@@ -109,10 +116,10 @@ const deleteResidence = async (id: string) => {
       new: true,
     },
   );
-
   if (!result) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Residence deletion failed');
   }
+  await User.findByIdAndUpdate(result?.host, { inc: { totalProperties: -1 } });
 
   const deleteKeys: string[] = [];
 

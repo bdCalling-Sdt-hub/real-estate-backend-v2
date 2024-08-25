@@ -63,8 +63,8 @@ router.get(
   auth(USER_ROLE.admin),
   paymentsController.todayAndTotalIncome,
 );
-
-router.get(
+ 
+ router.get(
   '/packages-statistics-incomes',
   auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
   paymentsController.PackagesStatisticsIncomes,

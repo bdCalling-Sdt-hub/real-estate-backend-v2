@@ -60,7 +60,6 @@ const paymentSchema = new Schema<IPayment>(
     //     return this.amount * 0.1;
     //   },
     // },
-    
   },
   {
     timestamps: true,
