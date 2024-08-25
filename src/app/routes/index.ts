@@ -17,6 +17,7 @@ import { messagesRoutes } from '../modules/messages/messages.route';
 import { maintenanceRequestRoutes } from '../modules/maintenanceRequest/maintenanceRequest.route';
 import { PackageRoutes } from '../modules/package/package.route';
 import { SubscriptionsRoutes } from '../modules/subscriptions/subscriptions.route';
+import { AdsCategoryRoutes } from '../modules/adsCategory/adsCategory.route';
 
 const router = Router();
 const moduleRoutes = [
@@ -39,6 +40,10 @@ const moduleRoutes = [
   {
     path: '/categories',
     route: categoryRoutes,
+  },
+  {
+    path: '/ads-categories',
+    route: AdsCategoryRoutes,
   },
   {
     path: '/ads',

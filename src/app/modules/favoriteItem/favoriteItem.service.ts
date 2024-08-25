@@ -80,7 +80,7 @@ const getMyFavoriteItems = async (
     andCondition.push({
       $or: favoriteItemSearchableFields.map(field => ({
         $regexMatch: {
-          input: `$${field}`,
+          input: `$${field}`, 
           regex: searchTerm,
           options: 'i',
         },

@@ -155,6 +155,10 @@ const residenceSchema = new Schema<IResidence>({
     type: Number,
     default: 0,
   },
+  totalBooking: {
+    type: Number,
+    default: 0,
+  },
   isDeleted: {
     type: Boolean,
     default: false,

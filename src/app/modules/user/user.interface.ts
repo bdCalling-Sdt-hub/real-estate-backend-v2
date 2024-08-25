@@ -1,4 +1,5 @@
 import { Model, Types } from 'mongoose';
+import { USER_ROLE } from './user.constant';
 
 interface IDocument {
   key: string;
@@ -34,6 +35,7 @@ export interface TUser {
   verificationRequest: string;
   image?: string;
   role: 'admin' | 'user' | 'host' | 'super_admin' | 'sub_admin';
+  totalProperties?: number;
   bankInfo: {
     country: string;
     bankName: string;
@@ -51,6 +53,7 @@ export interface TUser {
     expiresAt: Date;
     status: boolean;
   };
+  tenants?: number;
   balance: number;
   about: string;
 }

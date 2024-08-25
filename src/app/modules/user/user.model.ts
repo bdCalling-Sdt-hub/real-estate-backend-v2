@@ -2,7 +2,7 @@ import { Error, Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
 import config from '../../config';
 import bcrypt from 'bcrypt';
-import { gender, monthlyIncome, role } from './user.constant';
+import { gender, monthlyIncome, role, USER_ROLE } from './user.constant';
 const userSchema = new Schema<TUser>(
   {
     username: {
@@ -90,6 +90,9 @@ const userSchema = new Schema<TUser>(
       },
       required: false,
     },
+    totalProperties: {
+      type: Number,
+    },
     verificationRequest: {
       type: String,
       enum: ['pending', 'send', 'accepted', 'rejected'],
@@ -128,6 +131,10 @@ const userSchema = new Schema<TUser>(
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    tenants: {
+      type: String,
+      default: 0
     },
     verification: {
       otp: {

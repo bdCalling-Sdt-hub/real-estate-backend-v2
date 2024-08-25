@@ -7,11 +7,14 @@ import config from '../config/index';
 import { User } from '../modules/user/user.model';
 
 const auth = (...userRoles: string[]) => {
+
+
   return catchAsync(async (req, res, next) => {
+    
     const token = req?.headers?.authorization?.split(' ')[1];  
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized!');
-    }
+    } 
     let decode;
     try {
       decode = jwt.verify(
@@ -25,11 +28,11 @@ const auth = (...userRoles: string[]) => {
     const isUserExist = User.IsUserExistId(userId);
     if (!isUserExist) {
       throw new AppError(httpStatus.NOT_FOUND, 'user not found');
-    }
-    if (userRoles && !userRoles.includes(role)) {
+    } 
+    if (userRoles && !userRoles.includes(role)) { 
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized');
     }
-    req.user = decode;
+    req.user = decode; 
     next();
   });
 };

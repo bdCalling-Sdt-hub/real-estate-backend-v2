@@ -12,7 +12,7 @@ const storage = memoryStorage();
 const upload = multer({ storage });
 
 router.post(
-  '/create-ad',
+  '/create-ads',
   auth(
     USER_ROLE.super_admin,
     USER_ROLE.sub_admin,
@@ -31,7 +31,7 @@ router.patch(
   auth(USER_ROLE.super_admin, USER_ROLE.sub_admin, USER_ROLE.admin),
   upload.single('banner'),
   parseData(),
-  validateRequest(adsValidation.updateAdsZodSchema),
+  // validateRequest(adsValidation.updateAdsZodSchema),
   adsControllers.updateAds,
 );
 

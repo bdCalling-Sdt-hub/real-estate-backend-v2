@@ -221,19 +221,19 @@ export const getPaymentConfig = async (payload: any) => {
       };
       break;
 
-    case paymentTypes.Ads:
-      // eslint-disable-next-line no-case-declarations
-      const ads: IAds | null = await Ads.findById(payload.bookingId);
-      if (!ads) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Ads booking not found');
-      }
-      order = {
-        id: ads._id as string,
-        description: '', // Add appropriate description if needed
-        currency: 'KWD',
-        amount: ads.price as number,
-      };
-      break;
+    // case paymentTypes.Ads:
+    //   // eslint-disable-next-line no-case-declarations
+    //   const ads: IAds | null = await Ads.findById(payload.bookingId);
+    //   if (!ads) {
+    //     throw new AppError(httpStatus.NOT_FOUND, 'Ads booking not found');
+    //   }
+    //   order = {
+    //     id: ads._id as string,
+    //     description: '', // Add appropriate description if needed
+    //     currency: 'KWD',
+    //     amount: ads.price as number,
+    //   };
+    //   break;
 
     default:
       throw new AppError(httpStatus.BAD_REQUEST, 'Invalid payment type');

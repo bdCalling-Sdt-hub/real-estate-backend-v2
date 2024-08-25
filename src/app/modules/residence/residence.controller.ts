@@ -7,12 +7,11 @@ import { uploadManyToS3 } from '../../utils/s3';
 import { UploadedFiles } from '../../interface/common.interface';
 import { USER_ROLE } from '../user/user.constant';
 
-const createResidence = catchAsync(async (req: Request, res: Response) => { 
-
-  if(req.user.role !== USER_ROLE.admin){
+const createResidence = catchAsync(async (req: Request, res: Response) => {
+  if (req.user.role !== USER_ROLE.admin) {
     req.body.host = req.user?.userId;
   }
-  
+
   if (req?.files) {
     const { images, videos } = req.files as UploadedFiles;
 
@@ -45,12 +44,10 @@ const createResidence = catchAsync(async (req: Request, res: Response) => {
     message: 'Residence created successfully',
     data: result,
   });
-  
-
 });
 
-const getAllResidence = catchAsync(async (req: Request, res: Response) => { 
-  const result = await ResidenceService.getAllResidence(req.query); 
+const getAllResidence = catchAsync(async (req: Request, res: Response) => {
+  const result = await ResidenceService.getAllResidence(req.query);
   sendResponse(req, res, {
     statusCode: 200,
     success: true,

@@ -14,7 +14,7 @@ const resentOtpZodSchema = z.object({
       .string({
         required_error: 'Email is required',
       })
-      .email(),
+      // .email(),           
   }),
 });
 
