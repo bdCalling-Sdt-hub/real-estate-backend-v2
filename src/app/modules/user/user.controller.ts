@@ -230,7 +230,7 @@ const rejectIdVerificationRequest = catchAsync(
 
 //accept verification request
 const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
-  
+
   req.body.documents = {
     selfie: null,
     documentType: req?.body?.documentType || null,
@@ -262,6 +262,12 @@ const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
     }
   }
   const result = await userServices.requestIdVerify(req.user.userId, req.body);
+  sendResponse(req, res, {
+    statusCode: 200,
+    success: true,
+    message: 'user id verify request send successfully',
+    data: result,
+  });
 });
 
 export const userControllers = {
