@@ -250,8 +250,9 @@ export const getPaymentConfig = async (payload: any) => {
       email: user.email,
     },
     returnUrl: `${config?.server_url}payments/return`,
-    cancelUrl: 'https://error.com',
-    notificationUrl: 'http://115.127.156.14:9005/api/v1/payments/webhooks',
+    cancelUrl:
+      'https://docs.stripe.com/payments/quickstart?lang=node#use-webhook',
+    notificationUrl: `${config?.server_url}/payments/webhooks`,
     // 'https://www.linkedin.com/feed/?highlightedUpdateType=SHARED_BY_YOUR_NETWORK&highlightedUpdateUrn=urn%3Ali%3Aactivity%3A7215661277094756352',
     customerExtraData: tranId,
     order, // Added the order object to the return object for completeness
