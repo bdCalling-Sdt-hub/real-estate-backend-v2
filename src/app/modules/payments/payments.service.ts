@@ -16,6 +16,7 @@ import { User } from '../user/user.model';
 import Residence from '../residence/residence.models';
 import Message from '../messages/messages.models';
 import { messagesService } from '../messages/messages.service';
+import { notificationServices } from '../notification/notification.service';
 
 // Initiate payment
 const initiatePayment = async (payload: any) => {
@@ -88,7 +89,7 @@ const webhook = async (payload: any) => {
   if (!payment) {
     throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
   }
-  let updateData = {}
+  let updateData = {};
 
   if (payment.type === paymentTypes.Booking_Residence) {
     const booking = await BookingResidence.findByIdAndUpdate(
@@ -98,28 +99,27 @@ const webhook = async (payload: any) => {
       },
       { new: true },
     );
-if(payload.result === 'CAPTURED'){
-  await User.findByIdAndUpdate(
-    booking?.author,
-    {
-      $inc: { balance: payment?.amount, tenants:1, totalBooking: 1 }, 
-    },
-    { new: true, timestamps: false },
-  );
-
-}
+    if (payload.result === 'CAPTURED') {
+      await User.findByIdAndUpdate(
+        booking?.author,
+        {
+          $inc: { balance: payment?.amount, tenants: 1, totalBooking: 1 },
+        },
+        { new: true, timestamps: false },
+      );
+    }
     // await Residence.findByIdAndUpdate(
     //   booking?.residence,
     //   { $inc: { popularity: 1 } },
     //   { new: true, timestamps: false },
     // );
 
-    //  await notificationServices?.insertNotificationIntoDb({
-    //    receiverId: someReceiverId,
-    //    referenceId: someReferenceId,
-    //    modelType: 'Payment', // or 'Residence'
-    //    message: 'Your payment has been received.',
-    //  });
+    await notificationServices?.insertNotificationIntoDb({
+      receiverId: booking?.user,
+      referenceId: booking?._id,
+      modelType: 'Payment', // or 'Residence'
+      message: 'Your payment has been Successful.',
+    });
     return payment;
   } else if (payment.type === paymentTypes.Subscription_Booking) {
     const subscription: any = await Subscription.findById(
@@ -1057,7 +1057,7 @@ const topLandlordIncome = async () => {
         totalTransactions: 1,
       },
     },
-  ]); 
+  ]);
   // const result = await Payment.aggregate([
   //   {
   //     $match: {

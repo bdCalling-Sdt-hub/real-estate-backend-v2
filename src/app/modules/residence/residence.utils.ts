@@ -25,8 +25,8 @@ export const calculateAverageRatingForResidence = async (
 
   if (result.length > 0) { 
     return {
-      averageRating: Number(result[0].averageRating.toFixed(1)),
-      totalReview: Number(result[0].totalReview.toFixed(1)),
+      averageRating: Number(result[0].averageRating.toFixed(1)||0),
+      totalReview: Number(result[0].totalReview.toFixed(1)||0),
     };
   }
   const defaultNumber: number = 0;
