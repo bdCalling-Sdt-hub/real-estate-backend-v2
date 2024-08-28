@@ -12,6 +12,10 @@ router.post(
   validateRequest(authValidation.loginZodValidationSchema),
   authControllers.login,
 );
+router.post(
+  '/sign-in-with-google', 
+  authControllers.signInWithGoogle,
+);
 
 router.post(
   '/refresh-token',

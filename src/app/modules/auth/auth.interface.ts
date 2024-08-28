@@ -17,3 +17,9 @@ export type TresetPassword = {
   newPassword: string;
   confirmPassword: string;
 };
+
+export interface ISignInWithGoogle {
+  email: string;
+  name: string;
+  role?: string;
+};

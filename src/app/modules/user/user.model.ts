@@ -5,15 +5,14 @@ import bcrypt from 'bcrypt';
 import { gender, monthlyIncome, role, USER_ROLE } from './user.constant';
 const userSchema = new Schema<TUser>(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+    // username: {
+    //   type: String,
+    //   required: true,
+    //   unique: true,
+    // },
     name: {
       type: String,
       required: true,
-      unique: false,
     },
     email: {
       type: String,
@@ -29,7 +28,6 @@ const userSchema = new Schema<TUser>(
     },
     phoneCode: {
       type: String,
-      required: true,
       default: '+1',
     },
     nationality: {
@@ -55,7 +53,7 @@ const userSchema = new Schema<TUser>(
     monthlyIncome: {
       type: String,
       enum: monthlyIncome,
-      required: true,
+      required: false,
     },
     bankInfo: {
       country: {
@@ -113,7 +111,7 @@ const userSchema = new Schema<TUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
       select: false,
     },
     status: {
@@ -134,7 +132,7 @@ const userSchema = new Schema<TUser>(
     },
     tenants: {
       type: String,
-      default: 0
+      default: 0,
     },
     verification: {
       otp: {
@@ -149,6 +147,10 @@ const userSchema = new Schema<TUser>(
         type: Boolean,
         default: false,
       },
+    },
+    isCredentialLogin: {
+      type: Boolean,
+      default: true,
     },
     balance: {
       type: Number,
@@ -167,10 +169,12 @@ const userSchema = new Schema<TUser>(
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds),
-  );
+  if (user.isCredentialLogin) {
+    user.password = await bcrypt.hash(
+      user.password,
+      Number(config.bcrypt_salt_rounds),
+    );
+  }
   next();
 });
 
