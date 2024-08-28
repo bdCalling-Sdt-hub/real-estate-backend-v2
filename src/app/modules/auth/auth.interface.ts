@@ -22,4 +22,5 @@ export interface ISignInWithGoogle {
   email: string;
   name: string;
   role?: string;
+  registerWith:string;
 };

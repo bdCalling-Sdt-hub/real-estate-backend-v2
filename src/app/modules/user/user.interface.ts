@@ -36,7 +36,7 @@ export interface TUser {
   image?: string;
   role: 'admin' | 'user' | 'host' | 'super_admin' | 'sub_admin';
   totalProperties?: number;
-  isCredentialLogin:boolean;
+  registerWith: 'credential' | "google" | "apple";
   bankInfo: {
     country: string;
     bankName: string;

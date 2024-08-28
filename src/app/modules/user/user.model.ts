@@ -2,7 +2,7 @@ import { Error, Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
 import config from '../../config';
 import bcrypt from 'bcrypt';
-import { gender, monthlyIncome, role, USER_ROLE } from './user.constant';
+import { gender, monthlyIncome, REGISTER_WITH, role, USER_ROLE } from './user.constant';
 const userSchema = new Schema<TUser>(
   {
     // username: {
@@ -148,9 +148,10 @@ const userSchema = new Schema<TUser>(
         default: false,
       },
     },
-    isCredentialLogin: {
-      type: Boolean,
-      default: true,
+    registerWith: {
+      type: String,
+      enum: [REGISTER_WITH.credential, REGISTER_WITH.apple, REGISTER_WITH.google],
+      default: 'credential',
     },
     balance: {
       type: Number,
@@ -169,7 +170,7 @@ const userSchema = new Schema<TUser>(
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
-  if (user.isCredentialLogin) {
+  if (user.registerWith === REGISTER_WITH.credential) {
     user.password = await bcrypt.hash(
       user.password,
       Number(config.bcrypt_salt_rounds),

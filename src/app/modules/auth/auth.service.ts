@@ -1,5 +1,5 @@
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
-import httpStatus from 'http-status';
+import httpStatus, { SWITCHING_PROTOCOLS } from 'http-status';
 import AppError from '../../error/AppError';
 import { User } from '../user/user.model';
 import {
@@ -15,7 +15,7 @@ import moment from 'moment';
 import { sendEmail } from '../../utils/mailSender';
 import bcrypt from 'bcrypt';
 import { TUser } from '../user/user.interface';
-import { USER_ROLE } from '../user/user.constant';
+import { REGISTER_WITH, USER_ROLE } from '../user/user.constant';
 
 // Login
 const login = async (payload: Tlogin) => {
@@ -32,10 +32,14 @@ const login = async (payload: Tlogin) => {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is Blocked');
   }
 
-  if (
-    !payload?.loginWithGoogle &&
-    !(await User.isPasswordMatched(payload.password, user.password))
-  ) {
+  if(user?.registerWith !== REGISTER_WITH.credential){
+     throw new AppError(
+       httpStatus.FORBIDDEN,
+       'your credential is not available',
+     );
+  }
+
+  if (await User.isPasswordMatched(payload.password, user.password)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }
 
@@ -64,8 +68,11 @@ const login = async (payload: Tlogin) => {
 };
 
 const signInWithGoogle = async (payload: ISignInWithGoogle) => {
-  const user = await User.isUserExist(payload.email); 
-  if (user && !user?.isCredentialLogin) { 
+  const user = await User.isUserExist(payload.email);
+  if (
+    user?.registerWith === REGISTER_WITH.google &&
+    payload.registerWith === REGISTER_WITH.google
+  ) {
     const jwtPayload: { userId: string; role: string } = {
       userId: user?._id?.toString() as string,
       role: user?.role,
@@ -88,69 +95,132 @@ const signInWithGoogle = async (payload: ISignInWithGoogle) => {
       accessToken,
       refreshToken,
     };
-  } else if (user && user?.isCredentialLogin) {
+  } else if (
+    user?.registerWith === REGISTER_WITH.apple &&
+    payload.registerWith === REGISTER_WITH.apple
+  ) {
+    const jwtPayload: { userId: string; role: string } = {
+      userId: user?._id?.toString() as string,
+      role: user?.role,
+    };
 
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      'User is not a Credential Login User',
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret as string,
+      config.jwt_access_expires_in as string,
     );
-  }
 
-  if (payload?.role === USER_ROLE.admin) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      'you cannot able to create  admin',
+    const refreshToken = createToken(
+      jwtPayload,
+      config.jwt_refresh_secret as string,
+      config.jwt_refresh_expires_in as string,
     );
-  }
 
-  if (!payload.email && !payload.role && !payload.name) {
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
+  } else if (!payload.email && !payload.role && !payload.name) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Please provide email, role and name',
     );
-  }
-
-  const newUser = await User.create({
-    email: payload?.email,
-    name: payload?.name,
-    role: payload?.role,
-    isCredentialLogin: false,
-    verification: {
-      otp: 0,
-      expiresAt: new Date(),
-      status: true,
-    },
-  });
-
-  if (!newUser) {
+  } else if (payload?.role === USER_ROLE.admin) {
     throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Failed to create user',
+      httpStatus.FORBIDDEN,
+      'you cannot able to create  admin',
+    );
+  } else if (!user && payload.registerWith === REGISTER_WITH.google) {
+    const newUser = await User.create({
+      email: payload?.email,
+      name: payload?.name,
+      role: payload?.role,
+      registerWith: REGISTER_WITH.google,
+      verification: {
+        otp: 0,
+        expiresAt: new Date(),
+        status: true,
+      },
+    });
+
+    if (!newUser) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Failed to create user',
+      );
+    }
+
+    const jwtPayload: { userId: string; role: string } = {
+      userId: newUser?._id?.toString() as string,
+      role: newUser?.role,
+    };
+
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret as string,
+      config.jwt_access_expires_in as string,
+    );
+
+    const refreshToken = createToken(
+      jwtPayload,
+      config.jwt_refresh_secret as string,
+      config.jwt_refresh_expires_in as string,
+    );
+
+    return {
+      newUser,
+      accessToken,
+      refreshToken,
+    };
+  } else if (!user && payload.registerWith === REGISTER_WITH.apple) {
+    const newUser = await User.create({
+      email: payload?.email,
+      name: payload?.name,
+      role: payload?.role,
+      registerWith: REGISTER_WITH.apple,
+      verification: {
+        otp: 0,
+        expiresAt: new Date(),
+        status: true,
+      },
+    });
+
+    if (!newUser) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Failed to create user',
+      );
+    }
+
+    const jwtPayload: { userId: string; role: string } = {
+      userId: newUser?._id?.toString() as string,
+      role: newUser?.role,
+    };
+
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret as string,
+      config.jwt_access_expires_in as string,
+    );
+
+    const refreshToken = createToken(
+      jwtPayload,
+      config.jwt_refresh_secret as string,
+      config.jwt_refresh_expires_in as string,
+    );
+
+    return {
+      newUser,
+      accessToken,
+      refreshToken,
+    };
+  } else {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'your credential is not available',
     );
   }
-
-  const jwtPayload: { userId: string; role: string } = {
-    userId: newUser?._id?.toString() as string,
-    role: newUser?.role,
-  };
-
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
-  );
-
-  const refreshToken = createToken(
-    jwtPayload,
-    config.jwt_refresh_secret as string,
-    config.jwt_refresh_expires_in as string,
-  );
-
-  return {
-    newUser,
-    accessToken,
-    refreshToken,
-  };
 };
 // Change password
 const changePassword = async (id: string, payload: TchangePassword) => {

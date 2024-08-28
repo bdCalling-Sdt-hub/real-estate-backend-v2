@@ -7,6 +7,11 @@ export const USER_ROLE = {
   vendor: 'vendor',
 };
 
+export const REGISTER_WITH = {
+  credential:'credential',
+  google: "google" ,
+  apple: "apple"
+}
 export const monthlyIncome = [
   'Under 800 KD',
   'Between 800 - 1499 KD',
