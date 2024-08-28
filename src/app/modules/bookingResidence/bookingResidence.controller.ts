@@ -33,7 +33,9 @@ const getAllBookingResidence = catchAsync(
 );
 
 const myBookings = catchAsync(async (req: Request, res: Response) => {
-  const result = await BookingResidenceService.myBookings(req.user?.userId);
+  req.query.user = req.user?.userId;
+
+  const result = await BookingResidenceService.myBookings(req.query);
   sendResponse(req, res, {
     statusCode: 200,
     success: true,
@@ -56,8 +58,7 @@ const getBookingResidenceById = catchAsync(
   },
 );
 
- 
-const canceledBooking = catchAsync(async (req: Request, res: Response) =>{
+const canceledBooking = catchAsync(async (req: Request, res: Response) => {
   const result = await BookingResidenceService.canceledBooking(req.params.id);
   sendResponse(req, res, {
     statusCode: 200,
@@ -65,9 +66,9 @@ const canceledBooking = catchAsync(async (req: Request, res: Response) =>{
     message: 'residence booking  canceled successfully',
     data: result,
   });
-})
+});
 
-const approvedBooking = catchAsync(async (req: Request, res: Response) =>{
+const approvedBooking = catchAsync(async (req: Request, res: Response) => {
   const result = await BookingResidenceService.approvedBooking(req.params.id);
   sendResponse(req, res, {
     statusCode: 200,
@@ -75,7 +76,7 @@ const approvedBooking = catchAsync(async (req: Request, res: Response) =>{
     message: 'residence booking  approved successfully',
     data: result,
   });
-})
+});
 const deleteBookingResidence = catchAsync(
   async (req: Request, res: Response) => {
     const result = await BookingResidenceService.deleteBookingResidence(

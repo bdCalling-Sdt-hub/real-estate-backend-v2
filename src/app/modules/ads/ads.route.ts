@@ -10,7 +10,7 @@ import multer, { memoryStorage } from 'multer';
 const router = Router();
 const storage = memoryStorage();
 const upload = multer({ storage });
-
+ 
 router.post(
   '/create-ads',
   auth(

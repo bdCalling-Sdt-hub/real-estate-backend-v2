@@ -18,6 +18,7 @@ import { maintenanceRequestRoutes } from '../modules/maintenanceRequest/maintena
 import { PackageRoutes } from '../modules/package/package.route';
 import { SubscriptionsRoutes } from '../modules/subscriptions/subscriptions.route';
 import { AdsCategoryRoutes } from '../modules/adsCategory/adsCategory.route';
+import { bookingDocumentsRoutes } from '../modules/bookingDocuments/bookingDocuments.route';
 
 const router = Router();
 const moduleRoutes = [
@@ -68,6 +69,10 @@ const moduleRoutes = [
   {
     path: '/contents',
     route: contentsRoutes,
+  },
+  {
+    path: '/booking-documents',
+    route: bookingDocumentsRoutes,
   },
   {
     path: '/payments',
