@@ -182,14 +182,14 @@ const approvedBooking = async (id: string) => {
       'Residence Booking approving failed',
     );
   }
-  await messagesService.createMessages({
-    text: 'To proceed with your booking, please pay the service fee of 10 KWD. Once the payment is made, you will receive the booking payment link.',
-    sender: result.author,
-    receiver: result?.user,
-    //@ts-ignore
-    bookingId: result?._id,
-    showButton: true,
-  });
+  // await messagesService.createMessages({
+  //   text: 'To proceed with your booking, please pay the service fee of 10 KWD. Once the payment is made, you will receive the booking payment link.',
+  //   sender: result.author,
+  //   receiver: result?.user,
+  //   //@ts-ignore
+  //   bookingId: result?._id,
+  //   showButton: true,
+  // });
 
   await notificationServices?.insertNotificationIntoDb({
     receiver: result?.user,
