@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PackageRoutes = void 0;
+const express_1 = require("express");
+const parseData_1 = __importDefault(require("../../middleware/parseData"));
+const validateRequest_1 = __importDefault(require("../../middleware/validateRequest"));
+const user_constant_1 = require("../user/user.constant");
+const auth_1 = __importDefault(require("../../middleware/auth"));
+const package_controller_1 = require("./package.controller");
+const package_validation_1 = require("./package.validation");
+const router = (0, express_1.Router)();
+router.post('/create-package', (0, auth_1.default)(user_constant_1.USER_ROLE.super_admin, user_constant_1.USER_ROLE.sub_admin, user_constant_1.USER_ROLE.admin), (0, validateRequest_1.default)(package_validation_1.packageValidation.createPackageSchema), package_controller_1.PackageController.createPackage);
+router.patch('/update/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.super_admin, user_constant_1.USER_ROLE.sub_admin, user_constant_1.USER_ROLE.admin), (0, parseData_1.default)(), (0, validateRequest_1.default)(package_validation_1.packageValidation.updatePackageSchema), package_controller_1.PackageController.updatePackage);
+// router.get('/all', SubscriptionsController.getAllSubscriptions);
+router.delete('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.super_admin, user_constant_1.USER_ROLE.sub_admin, user_constant_1.USER_ROLE.admin), package_controller_1.PackageController.deletePackage);
+router.get('/:id', (0, auth_1.default)(user_constant_1.USER_ROLE.super_admin, user_constant_1.USER_ROLE.sub_admin, user_constant_1.USER_ROLE.admin, user_constant_1.USER_ROLE.user, user_constant_1.USER_ROLE.landlord), package_controller_1.PackageController.getPackageById);
+router.get('/', (0, auth_1.default)(user_constant_1.USER_ROLE.super_admin, user_constant_1.USER_ROLE.sub_admin, user_constant_1.USER_ROLE.admin, user_constant_1.USER_ROLE.user, user_constant_1.USER_ROLE.landlord), package_controller_1.PackageController.getAllPackages);
+exports.PackageRoutes = router;
