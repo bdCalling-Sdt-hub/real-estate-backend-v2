@@ -52,7 +52,7 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
     },
     status:{
       type: String,
-      enum: ['pending', 'approved', 'canceled'],
+      enum: ['pending', 'approved',"ongoing", 'canceled'],
       required: true,
       default: 'pending',
     },
@@ -61,6 +61,7 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
       required: true,
       default: false,
     },
+    
     isDeleted: {
       type: Boolean,
       default: false,

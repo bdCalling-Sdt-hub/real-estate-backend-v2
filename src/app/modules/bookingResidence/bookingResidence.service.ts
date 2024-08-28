@@ -54,11 +54,19 @@ const getAllBookingResidence = async (query: Record<string, any>) => {
       {
         path: 'residence',
         populate: [
-          { path: 'host', select: 'name email _id username phoneNumber image' },
+          {
+            path: 'host',
+            select:
+              '-password -bankInfo -needsPasswordChange -passwordChangedAt -isDeleted',
+          },
         ],
       },
       // { path: 'author', select: 'name email _id username phoneNumber image' },
-      { path: 'user', select: 'name email _id username phoneNumber image' },
+      {
+        path: 'user',
+        select:
+          '-password -bankInfo -needsPasswordChange -passwordChangedAt -isDeleted',
+      },
     ]),
     query,
   )
@@ -77,29 +85,28 @@ const getAllBookingResidence = async (query: Record<string, any>) => {
   };
 };
 
-const myBookings = async (
-  userId: string,
-): Promise<IBookingResidence[] | null> => {
-  const bookings = await BookingResidence.find({ user: userId }).populate([
-    {
-      path: 'residence',
-    },
-    {
-      path: 'author',
-      select:
-        '-password -bankInfo -needsPasswordChange -passwordChangedAt -isDeleted',
-    },
-  ]);
+const myBookings = async (query: Record<string, any>) => {
+  const bookingsModel = new QueryBuilder(
+    BookingResidence.find().populate([
+      {
+        path: 'residence',
+      },
+      {
+        path: 'author',
+        select:
+          '-password -bankInfo -needsPasswordChange -passwordChangedAt -isDeleted',
+      },
+    ]),
+    query,
+  )
+    .search(['name'])
+    .filter()
+    .paginate()
+    .sort()
+    .fields();
 
-  if (!bookings) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Oops! You don't have any bookings.",
-    );
-  }
-
-  // Get all residence IDs from the bookings
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bookings = await bookingsModel.modelQuery;
+  const meta = await bookingsModel.countTotal();
   const residenceIds = bookings.map((booking: any) => booking?.residence?._id);
 
   // Calculate average ratings for each residence
@@ -119,13 +126,13 @@ const myBookings = async (
     return acc;
   }, {});
 
-  const enrichedBookings = bookings.map(booking => {
+  const enrichedBookings = bookings.map((booking: any) => {
     const residence: any = booking.residence;
     const averageRating = ratingsMap[residence._id.toString()] || 0;
     return { ...booking.toObject(), averageRating };
   });
 
-  return enrichedBookings;
+  return { enrichedBookings, meta };
 };
 
 //get booking residence
