@@ -634,12 +634,14 @@ const todayAndTotalIncome = async (query: Record<string, any>) => {
 
   const today = moment().startOf('day').toDate();
   const tomorrow = moment(today).add(1, 'days').toDate();
+
+
   const startDate = moment(`${year || moment().format('yyyy')}-01-01`)
     .startOf('year')
     .toDate();
   const endDate = moment(`${year || moment().format('yyyy')}-12-31`).endOf(
     'year',
-  ).toDate;
+  ).toDate();
 
   const [todayIncomeResult, totalIncomeResult] = await Promise.all([
     Payment.aggregate([
@@ -659,6 +661,7 @@ const todayAndTotalIncome = async (query: Record<string, any>) => {
         },
       },
     ]),
+
     Payment.aggregate([
       {
         $match: {
@@ -685,12 +688,14 @@ const todayAndTotalIncome = async (query: Record<string, any>) => {
         },
       },
     },
+
     {
       $group: {
         _id: { month: { $month: '$transitionDate' } },
         total: { $sum: '$amount' },
       },
     },
+
     {
       $sort: { '_id.month': 1 },
     },
@@ -1157,6 +1162,7 @@ const allTransitions = async (query: Record<string, any>) => {
               role: 1,
               email: 1,
               name: 1,
+              image:1,
               username: 1,
               _id: 1,
               phoneNumber: 1,
