@@ -20,6 +20,8 @@ import { REGISTER_WITH, USER_ROLE } from '../user/user.constant';
 // Login
 const login = async (payload: Tlogin) => {
   const user: TUser | null = await User.isUserExist(payload?.email);
+
+  console.log(user);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -32,14 +34,14 @@ const login = async (payload: Tlogin) => {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is Blocked');
   }
 
-  if(user?.registerWith !== REGISTER_WITH.credential){
-     throw new AppError(
-       httpStatus.FORBIDDEN,
-       'your credential is not available',
-     );
+  if (user?.registerWith !== REGISTER_WITH.credential) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'your credential is not available',
+    );
   }
 
-  if (await User.isPasswordMatched(payload.password, user.password)) {
+  if (!(await User.isPasswordMatched(payload.password, user.password))) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }
 
