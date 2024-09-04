@@ -48,6 +48,7 @@ i18next
     preload: ['en', 'ar'],
     fallbackLng: 'en', // default language en= english
   });
+  
 app.use(i18nextMiddleware.handle(i18next));
 
 // application routes
