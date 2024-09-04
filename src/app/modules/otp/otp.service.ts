@@ -6,6 +6,7 @@ import { User } from '../user/user.model';
 import { generateOtp } from '../../utils/otpGenerator';
 import moment from 'moment';
 import { sendEmail } from '../../utils/mailSender';
+import { sendWhatsAppMessage } from '../../utils/smsSender';
 
 const verifyOtp = async (token: string, otp: string | number) => {
   if (!token) {
@@ -59,7 +60,7 @@ const verifyOtp = async (token: string, otp: string | number) => {
     email: user?.email,
     role: user?.role,
     userId: user?._id,
-  }; 
+  };
   const jwtToken = jwt.sign(jwtPayload, config.jwt_access_secret as Secret, {
     expiresIn: '30d',
   });
@@ -116,6 +117,20 @@ const resendOtp = async (email: string) => {
         <p style="font-size: 14px; color: #666;">This OTP is valid until: ${expiresAt.toLocaleString()}</p>
       </div>
     </div>`,
+  );
+
+  // const integratedNumber = '96599615330';
+  const phoneNumber = user?.phoneCode + user?.phoneNumber;
+
+  const phoneNumbers = [phoneNumber];
+  const languageCode = 'ar';
+  const OTPCode = otp.toString();
+
+  await sendWhatsAppMessage(
+    // integratedNumber,
+    phoneNumbers,
+    languageCode,
+    OTPCode,
   );
 
   return { token };

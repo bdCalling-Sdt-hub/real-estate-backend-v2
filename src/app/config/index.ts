@@ -37,6 +37,7 @@ export default {
   nodemailer_host_pass: process.env.NODEMAILER_HOST_PASS,
   socket_port: process.env.SOCKET_PORT,
   stripe_secret: process.env.STRIPE_SECRET,
+  sms_auth_key: process.env.SMS_AUTH_KEY,
   aws,
   payment,
 };
