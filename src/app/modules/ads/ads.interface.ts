@@ -9,6 +9,7 @@ export interface IAds {
   banner: string;
   contactLink: string;
   category: ObjectId;
+  expireDate: Date;
   // startAt: Date | string;
   // expireAt: Date | string;
   // status: boolean;
