@@ -1,12 +1,12 @@
 import httpStatus from 'http-status';
-import AppError from '../../error/AppError';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
-import config from '../../config';
-import { User } from '../user/user.model';
-import { generateOtp } from '../../utils/otpGenerator';
 import moment from 'moment';
+import config from '../../config';
+import AppError from '../../error/AppError';
 import { sendEmail } from '../../utils/mailSender';
-import { sendWhatsAppMessage } from '../../utils/smsSender';
+import { generateOtp } from '../../utils/otpGenerator';
+import { sendMobileSms, sendWhatsAppMessage } from '../../utils/smsSender';
+import { User } from '../user/user.model';
 
 const verifyOtp = async (token: string, otp: string | number) => {
   if (!token) {
@@ -68,7 +68,8 @@ const verifyOtp = async (token: string, otp: string | number) => {
   return { user: updateUser, token: jwtToken };
 };
 
-const resendOtp = async (email: string) => {
+const resendOtp = async (email: string, type: string) => {
+  console.log('hitted');
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -125,13 +126,25 @@ const resendOtp = async (email: string) => {
   const phoneNumbers = [phoneNumber];
   const languageCode = 'ar';
   const OTPCode = otp.toString();
-
-  await sendWhatsAppMessage(
-    // integratedNumber,
-    phoneNumbers,
-    languageCode,
-    OTPCode,
-  );
+  const smsOptions = {
+    recipients: [
+      {
+        mobiles: '+8801876399629',
+        otp: OTPCode,
+        // Add more variables as needed
+      },
+    ],
+  };
+  if (type === 'whatsapp') {
+    await sendWhatsAppMessage(
+      // integratedNumber,
+      phoneNumbers,
+      languageCode,
+      OTPCode,
+    );
+  } else {
+    await sendMobileSms(smsOptions);
+  }
 
   return { token };
 };

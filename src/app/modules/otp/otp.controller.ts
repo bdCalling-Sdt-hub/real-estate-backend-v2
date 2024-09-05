@@ -1,8 +1,8 @@
+import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
-import { otpServices } from './otp.service';
 import sendResponse from '../../utils/sendResponse';
-import { Request, Response } from 'express';
+import { otpServices } from './otp.service';
 
 const verifyOtp = catchAsync(async (req: Request, res: Response) => {
   const token = req?.headers?.token;
@@ -16,7 +16,7 @@ const verifyOtp = catchAsync(async (req: Request, res: Response) => {
 });
 
 const resendOtp = catchAsync(async (req: Request, res: Response) => {
-  const result = await otpServices.resendOtp(req.body.email);
+  const result = await otpServices.resendOtp(req.body.email, req?.body?.type);
   sendResponse(req, res, {
     statusCode: httpStatus.OK,
     success: true,
