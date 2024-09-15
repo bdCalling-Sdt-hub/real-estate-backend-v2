@@ -68,8 +68,7 @@ const verifyOtp = async (token: string, otp: string | number) => {
   return { user: updateUser, token: jwtToken };
 };
 
-const resendOtp = async (email: string, type?: string) => {
-  console.log('hitted');
+const resendOtp = async (email: string, type?: string) => { 
   const user = await User.findOne({ email });
 
   if (!user) {
