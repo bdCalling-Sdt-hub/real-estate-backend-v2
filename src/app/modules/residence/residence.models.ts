@@ -28,14 +28,17 @@ const residenceSchema = new Schema<IResidence>({
   squareFeet: {
     type: String,
     required: true,
+    default: '0',
   },
   bathrooms: {
     type: String,
     required: true,
+    default: '0',
   },
   bedrooms: {
     type: String,
     required: true,
+    default: '0',
   },
   residenceType: {
     type: String,
@@ -67,7 +70,7 @@ const residenceSchema = new Schema<IResidence>({
   },
   gracePeriod: {
     type: String,
-    default: null,
+    default: '0',
   },
   document: {
     marriageCertificate: {
