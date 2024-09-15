@@ -1,6 +1,8 @@
-import { model, Schema } from "mongoose";
-import { IBookingDocuments, IBookingDocumentsModel } from "./bookingDocuments.interface";
-import { USER_ROLE } from "../user/user.constant";
+import { model, Schema } from 'mongoose';
+import {
+  IBookingDocuments,
+  IBookingDocumentsModel,
+} from './bookingDocuments.interface'; 
 
 const bookingDocumentSchema = new Schema<IBookingDocuments>({
   booking: {
@@ -14,6 +16,12 @@ const bookingDocumentSchema = new Schema<IBookingDocuments>({
         type: String,
         default: null,
       },
+      documents: [
+        {
+          url: { type: String },
+          key: { type: String },
+        },
+      ],
       civilId: {
         type: String,
         default: null,
@@ -26,6 +34,12 @@ const bookingDocumentSchema = new Schema<IBookingDocuments>({
         type: String,
         default: null,
       },
+      documents: [
+        {
+          url: { type: String },
+          key: { type: String },
+        },
+      ],
       civilId: {
         type: String,
         default: null,
@@ -33,8 +47,10 @@ const bookingDocumentSchema = new Schema<IBookingDocuments>({
     },
   },
 });
- 
 
-const BookingDocuments = model<IBookingDocuments, IBookingDocumentsModel>("BookingDocuments", bookingDocumentSchema);
+const BookingDocuments = model<IBookingDocuments, IBookingDocumentsModel>(
+  'BookingDocuments',
+  bookingDocumentSchema,
+);
 
 export default BookingDocuments;

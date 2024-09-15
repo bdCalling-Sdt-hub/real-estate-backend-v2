@@ -2,26 +2,64 @@ import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import { bookingDocumentsService } from './bookingDocuments.service';
 import sendResponse from '../../utils/sendResponse';
-import { uploadToS3 } from '../../utils/s3';
+import { uploadManyToS3 } from '../../utils/s3';
 import { USER_ROLE } from '../user/user.constant';
+import { UploadedFiles } from '../../interface/common.interface';
 
 const createBookingDocuments = catchAsync(
   async (req: Request, res: Response) => {
-    if (req.file) {
-      const Url = await uploadToS3({
-        file: req.file,
-        fileName: `images/signatures/${Math.floor(100000 + Math.random() * 900000)}`,
-      });
+    if (req?.files) {
+      const { documents, signature } = req.files as UploadedFiles;
 
-      if (req.user.role === USER_ROLE.landlord) {
-        req.body.landlord.signature = Url;
-        req.body.landlord.signature = Url;
+      if (documents?.length) {
+        const documentArray: { file: any; path: string }[] = [];
+
+        documents?.map(async (document: any) => {
+          documentArray.push({ file: document, path: `images/documents` });
+        });
+        const documentsLinks = await uploadManyToS3(documentArray);
+
+        if (req.user.role === USER_ROLE.landlord) {
+          req.body.landlord.documents = documentsLinks;
+        }
+
+        if (req.user.role === USER_ROLE.user) {
+          req.body.user.documents = documentsLinks;
+        }
       }
+      if (signature?.length) {
+        const signatureArray: { file: any; path: string }[] = [];
 
-      if (req.user.role === USER_ROLE.user) {
-        req.body.user.signature = Url;
+        signature?.map(async (document: any) => {
+          signatureArray.push({ file: document, path: `images/signature` });
+        });
+        const signatureLinks = await uploadManyToS3(signatureArray);
+
+        if (req.user.role === USER_ROLE.landlord) {
+          req.body.landlord.signature = signatureLinks[0]?.url;
+        }
+
+        if (req.user.role === USER_ROLE.user) {
+          req.body.user.signature = signatureLinks[0]?.url;
+        }
       }
     }
+
+    // if (req.file) {
+    //   const Url = await uploadToS3({
+    //     file: req.file,
+    //     fileName: `images/signatures/${Math.floor(100000 + Math.random() * 900000)}`,
+    //   });
+
+    //   if (req.user.role === USER_ROLE.landlord) {
+    //     req.body.landlord.signature = Url;
+    //     req.body.landlord.signature = Url;
+    //   }
+
+    //   if (req.user.role === USER_ROLE.user) {
+    //     req.body.user.signature = Url;
+    //   }
+    // }
 
     const result = await bookingDocumentsService.createBookingDocuments(
       req.body,
@@ -68,21 +106,57 @@ const getBookingDocumentsById = catchAsync(
 
 const updateBookingDocuments = catchAsync(
   async (req: Request, res: Response) => {
-    if (req.file) {
-      const Url = await uploadToS3({
-        file: req.file,
-        fileName: `images/signatures/${Math.floor(100000 + Math.random() * 900000)}`,
-      });
+    if (req?.files) {
+      const { documents, signature } = req.files as UploadedFiles;
 
-      if (req.user.role === USER_ROLE.landlord) {
-        req.body.landlord.signature = Url;
-        req.body.landlord.signature = Url;
+      if (documents?.length) {
+        const documentArray: { file: any; path: string }[] = [];
+
+        documents?.map(async (document: any) => {
+          documentArray.push({ file: document, path: `images/documents` });
+        });
+        const documentsLinks = await uploadManyToS3(documentArray);
+
+        if (req.user.role === USER_ROLE.landlord) {
+          req.body.landlord.documents = documentsLinks;
+        }
+
+        if (req.user.role === USER_ROLE.user) {
+          req.body.user.documents = documentsLinks;
+        }
       }
+      if (signature?.length) {
+        const signatureArray: { file: any; path: string }[] = [];
 
-      if (req.user.role === USER_ROLE.user) {
-        req.body.user.signature = Url;
+        signature?.map(async (document: any) => {
+          signatureArray.push({ file: document, path: `images/signature` });
+        });
+        const signatureLinks = await uploadManyToS3(signatureArray);
+
+        if (req.user.role === USER_ROLE.landlord) {
+          req.body.landlord.signature = signatureLinks[0]?.url;
+        }
+
+        if (req.user.role === USER_ROLE.user) {
+          req.body.user.signature = signatureLinks[0]?.url;
+        }
       }
     }
+    // if (req.file) {
+    //   const Url = await uploadToS3({
+    //     file: req.file,
+    //     fileName: `images/signatures/${Math.floor(100000 + Math.random() * 900000)}`,
+    //   });
+
+    //   if (req.user.role === USER_ROLE.landlord) {
+    //     req.body.landlord.signature = Url;
+    //     req.body.landlord.signature = Url;
+    //   }
+
+    //   if (req.user.role === USER_ROLE.user) {
+    //     req.body.user.signature = Url;
+    //   }
+    // }
 
     const result = await bookingDocumentsService.updateBookingDocuments(
       req.params.bookingId,

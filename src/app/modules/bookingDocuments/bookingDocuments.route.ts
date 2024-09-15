@@ -8,11 +8,15 @@ import { USER_ROLE } from '../user/user.constant';
 const router = Router();
 const storage = memoryStorage();
 const upload = multer({ storage });
-
+// documents;
 router.post(
   '/',
   auth(USER_ROLE.landlord),
-  upload.single('signature'),
+  upload.fields([
+    { name: 'signature', maxCount: 1 },
+    { name: 'documents', maxCount: 10 },
+  ]),
+  // upload.single('signature'),
   parseData(),
   bookingDocumentsController.createBookingDocuments,
 );
@@ -20,7 +24,10 @@ router.post(
 router.patch(
   '/:bookingId',
   auth(USER_ROLE.user),
-  upload.single('signature'),
+  upload.fields([
+    { name: 'signature', maxCount: 1 },
+    { name: 'documents', maxCount: 10 },
+  ]),
   parseData(),
   bookingDocumentsController.updateBookingDocuments,
 );

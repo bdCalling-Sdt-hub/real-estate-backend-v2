@@ -65,8 +65,16 @@ const residenceSchema = new Schema<IResidence>({
     min: 0,
     required: true,
   },
+  gracePeriod: {
+    type: String,
+    default: null,
+  },
   document: {
     marriageCertificate: {
+      type: Boolean,
+      default: false,
+    },
+    criminalStatusCertificate: {
       type: Boolean,
       default: false,
     },

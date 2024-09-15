@@ -40,10 +40,12 @@ export interface IResidence {
   features: string[];
   rentType: string;
   paymentType: string;
-  deposit: string;
   rent: number;
+  deposit: string;
+  gracePeriod: string;
   document: {
     marriageCertificate: boolean;
+    criminalStatusCertificate: boolean;
     salaryCertificate: boolean;
     bankStatement: boolean;
     passport: boolean;
@@ -53,8 +55,8 @@ export interface IResidence {
   discount: number;
   discountCode: string;
   host: ObjectId;
-  isDeleted: boolean; 
-  totalBooking:number;
+  isDeleted: boolean;
+  totalBooking: number;
   // popularity: number;
 
   // perNightPrice: number;

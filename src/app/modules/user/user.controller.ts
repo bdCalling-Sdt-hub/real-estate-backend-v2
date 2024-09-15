@@ -79,7 +79,7 @@ const insertUserIntoDb = catchAsync(async (req: Request, res: Response) => {
   }
 
   const result = await userServices.insertSubAdminIntoDb(req.body);
-  const sendOtp = await otpServices.resendOtp(result?.email);
+  const sendOtp = await otpServices.resendOtp(result?.email as string);
 
   sendResponse(req, res, {
     statusCode: 200,

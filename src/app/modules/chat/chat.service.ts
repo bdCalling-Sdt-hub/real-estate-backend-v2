@@ -51,7 +51,7 @@ const getMyChatList = async (userId: string) => {
 
   const data = [];
   for (const chatItem of chats) {
-    const chatId = chatItem._id;
+    const chatId = chatItem?._id;
 
     // Find the latest message in the chat
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
