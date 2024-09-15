@@ -129,7 +129,7 @@ const resendOtp = async (email: string, type?: string) => {
   const smsOptions = {
     recipients: [
       {
-        mobiles: '+8801876399629',
+        mobiles: phoneNumber,
         otp: OTPCode,
         // Add more variables as needed
       },
