@@ -15,7 +15,7 @@ import { generateRandomString } from './user.utils';
 // Insert sub-admin into the database
 const insertSubAdminIntoDb = async (
   payload: Partial<TUser>,
-): Promise<TUser> => { 
+): Promise<TUser> => {
   const user = await User.isUserExist(payload.email as string);
 
   if (user) {
@@ -36,7 +36,6 @@ const insertSubAdminIntoDb = async (
     );
   }
 
-
   const result = await User.create(payload);
 
   if (!result) {
@@ -56,7 +55,7 @@ const insertSubAdminIntoDb = async (
       </div>
     </div>`,
   );
-  
+
   return result;
 };
 
@@ -103,7 +102,7 @@ const getSingleUser = async (id: string) => {
 const updateUser = async (
   id: string,
   payload: Partial<TUser>,
-): Promise<TUser | null> => {
+): Promise<TUser | null> => { 
   const user = await User.findById(id);
 
   if (payload?.email) {
@@ -113,7 +112,7 @@ const updateUser = async (
     throw new AppError(httpStatus.BAD_REQUEST, 'Role update is not allowed');
   }
 
-  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  const result = await User.findByIdAndUpdate(id, payload, { new: true }); 
 
   if (result && payload?.image) {
     await deleteFile(user?.image as string);
