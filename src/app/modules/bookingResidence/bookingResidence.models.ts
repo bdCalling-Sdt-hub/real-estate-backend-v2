@@ -11,6 +11,11 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
       ref: 'User',
       required: true,
     },
+
+    contractNo: {
+      type: String,
+      required: true,
+    },
     residence: {
       type: Schema.Types.ObjectId,
       ref: 'Residence',
@@ -32,13 +37,13 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-    }, 
-    discount:{
+    },
+    discount: {
       type: Number,
       required: true,
       default: 0,
     },
-    guest:{
+    guest: {
       child: {
         type: Number,
         required: true,
@@ -50,9 +55,9 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
         default: 0,
       },
     },
-    status:{
+    status: {
       type: String,
-      enum: ['pending', 'approved',"ongoing", 'canceled'],
+      enum: ['pending', 'approved', 'ongoing', 'canceled'],
       required: true,
       default: 'pending',
     },
@@ -61,7 +66,7 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
       required: true,
       default: false,
     },
-    
+
     isDeleted: {
       type: Boolean,
       default: false,

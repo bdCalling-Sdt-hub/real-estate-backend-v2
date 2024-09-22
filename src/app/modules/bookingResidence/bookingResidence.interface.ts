@@ -5,6 +5,7 @@ export interface IBookingResidence {
   payload: any;
   _id?: string;
   residence: ObjectId;
+  contractNo: string;
   user: ObjectId;
   startDate: Date;
   endDate: Date;
