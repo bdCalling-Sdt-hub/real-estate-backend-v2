@@ -11,10 +11,12 @@ import { notificationServices } from '../notification/notification.service';
 import { User } from '../user/user.model';
 import { messagesController } from '../messages/messages.controller';
 import { messagesService } from '../messages/messages.service';
+import { generateRandomString } from '../user/user.utils';
 
 const createBookingResidence = async (
   payload: IBookingResidence,
 ): Promise<IBookingResidence> => {
+  payload?.contractNo = generateRandomString(8)
   const residence: IResidence | null = await Residence.findById(
     payload.residence,
   );

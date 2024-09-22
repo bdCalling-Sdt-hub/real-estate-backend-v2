@@ -28,6 +28,7 @@ export interface IResidence {
   toObject: any;
   _id?: ObjectId;
   averageRating: number | null;
+  contractNo: string;
   images: IFile[];
   videos: IFile[] | null | [];
   category: ObjectId;
