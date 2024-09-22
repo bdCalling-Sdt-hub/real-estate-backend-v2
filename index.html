@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rental Agreement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      @layer base {
+        .border-orange {
+          border-color: #f97316;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 p-6">
+    <!-- Container -->
+    <div class="container mx-auto p-10 bg-white shadow-lg border overflow-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6 mt-10">
+        <div class="w-32">
+          <img src="https://i.ibb.co.com/bg2YkGx/logo.png" alt="" srcset="">
+        </div>
+        <div class="text-center">
+          <p>عقد ايجار</p>
+          <h1 class="text-lg font-medium">Rental Agreement</h1>
+        </div>
+        <div class="w-32">
+            <img src="https://i.ibb.co.com/KKZ1jBQ/logo2-removebg-preview.png" alt="" srcset="">
+          </div>
+      </div>
+
+      <!-- Section 1: Contract Details -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">1. Contract Details</h2>
+          <div dir="rtl">
+            <h2 class="text-right">1 تفاصيل العقد</h2>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Signature Date
+            </h1>
+           
+            <p class="border-l border-orange-400 w-32 text-end">
+              تاريخ الإنعقاد
+            </p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Contract No.
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">رقم العقد</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              End Date
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">
+              تاريخ نهاية العقد
+            </p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Start Date
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">
+              تاريخ بداية العقد
+            </p>
+          </div>
+        </div>
+
+        <div class="flex justify-between gap-2 bg-[#fae2d5]">
+          <p class="p-1 pr-2 text-sm flex-1 border-r border-orange-400">
+            The contract is automatically renewed, and either party has the
+            right not to renew, provided the other party is notified in writing
+            at least one month before the end date.
+          </p>
+          <p class="p-1 flex-1 text">
+            يجدد العقد تلقائيًا، ويحق لأي من الأطراف عدم التجديد بشرط إشعار
+            الآخر خطيًا قبل شهر من تاريخ انتهاء العقد.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 2: Landlord’s Details -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">2. Landlord’s Details (First Party)</h2>
+          <div dir="rtl">
+            <h2 class="text-right">2 بيانات المؤجر (طرف أول)</h2>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Full Name
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">الاسم الكامل</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Civil ID No
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">ي الرقم</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Phone No.
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">رقم الهاتف</p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="border-r border-orange-400 w-32">Nationality</h1>
+            <p class="border-l border-orange-400 w-[137px] text-end">الجنسية</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Tenant’s Details -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">3. Tenant’s Details (Second Party)</h2>
+          <div dir="rtl">
+            <h2 class="text-right">3 بيانات المستأجر (طرف ثاني)</h2>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Full Name
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">الاسم الكامل</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Civil ID No
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">الرقم المدني</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Phone No.
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">رقم الهاتف</p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Nationality
+            </h1>
+            <p class="border-l border-orange-400 w-[137px] text-end">الجنسية</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Property Details -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">4 Property Details</h2>
+          <div dir="rtl">
+            <h2 class="text-right">4 تفاصيل العقار (العين المؤجرة)</h2>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Property Type
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">نوع العقار</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">Address</h1>
+            <p class="border-l border-orange-400 w-32 text-end">عنوان العقار</p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400 bg-[#fae2d5]">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              PACI No.
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">
+              الرقم اﻵلي للعنوان
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Rent & Deposit -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">5 Rent & Deposit</h2>
+          <div dir="rtl">
+            <h2 class="text-right">5 الإيجار والتأمين</h2>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Rent Amount
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">
+              For each month
+            </p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="border-r border-orange-400 w-32">عن كل شهر</h1>
+            <p class="border-l border-orange-400 w-[137px] text-end">
+              قيمة اﻹيجار
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Due on the
+            </h1>
+            <p class="text-center">The 1<sup>st</sup> of each month</p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="text-center">اليوم الأول من كل شهر</h1>
+            <p class="border-l border-orange-400 w-[137px] text-end">
+              يُستحق في
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 bg-[#fae2d5] border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Payable By
+            </h1>
+            <p class="text-center">Bank Transfers/Quick Pay Links</p>
+          </div>
+          <div class="flex justify-between flex-1">
+            <h1 class="text-center">تحويل بنكي/روابط الدفع السريع</h1>
+            <p class="border-l border-orange-400 w-[137px] text-end">
+              طرق الدفع
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <h1 class="border-r border-orange-400 w-32 font-medium">
+              Deposit <span class="text-sm font-normal">(if any)</span>
+            </h1>
+            <p class="border-l border-orange-400 w-32 text-end">
+              التأمين (إن وجد)
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex gap-x-2 justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <p class="text-sm flex-1 border-r border-orange-400">
+              Rent is collected in advance and is due on the 1st day of each
+              month.
+            </p>
+            <p class="text-sm flex-1">
+              يتم تحصيل الإيجارعن كل شهر مقدًما ويُستحق في اليوم الأول من كل شهر
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-5 border-b border-orange-400">
+          <div
+            class="flex gap-x-2 justify-between flex-1 border-r border-orange-400 px-2"
+          >
+            <p class="text-sm flex-1 border-r border-orange-400">
+              Deposit is held in trust to cover any damages resulting from the
+              tenant's use, or it will be fully refunded.
+            </p>
+            <p class="text-sm flex-1">
+              .ًكاملا يسترد او المستأجر استعمال عن ناتجة اضرار أي لتغطية أمانة
+              بصفة بالتأمين الاحتفاظ يتم
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Important Notes -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">6 Important Notes</h2>
+          <div dir="rtl">
+            <h2 class="text-right">6 ملاحظات هامة</h2>
+          </div>
+        </div>
+
+        <div
+          class="flex justify-between gap-2 bg-[#fae2d5] border-b border-orange-600"
+        >
+          <p class="p-1 flex-1 border-r border-orange-400">
+            This contract is subject to Kuwaiti rental law, with disputes
+            resolved by Kuwaiti courts.
+          </p>
+          <p class="p-1 flex-1">
+            يخضع هذا العقد لقانون الإيجارات الكويتي ويكون من اختصاص المحاكم
+            الكويتية حل أي نزاع قد ينشأ بين الأطراف
+          </p>
+        </div>
+
+        <div class="flex justify-between gap-2">
+          <p class="p-1 flex-1 border-r border-orange-400">
+            Both parties agreed that correspondence should be in Arabic and be
+            delivered electronically via: (Email/SMS/Mostaajer App).
+          </p>
+          <p class="p-1 flex-1">
+            اتفق الطرفان على أن تكون المراسلات بالعربية وعلى أن تُسلم إلكترونيًا
+            عبر القنوات المعتمدة: (البريد الإلكتروني/الرسائل النصية/تطبيق
+            "مستأجر").
+          </p>
+        </div>
+
+        <div
+          class="flex justify-between gap-2 bg-[#fae2d5] border-b border-orange-600"
+        >
+          <p class="p-1 flex-1 border-r border-orange-400">
+            Correspondence (including this contract) is deemed delivered once
+            sent through the approved channels above.
+          </p>
+          <p class="p-1 flex-1">
+            جميع المراسلات (بما في ذلك هذا العقد) تكون بحكم المسلمة طالما تم
+            إرسالها عبر الطرق المتفق عليها والمذكورة أعلاه.
+          </p>
+        </div>
+
+        <div class="flex justify-between gap-2 border-b border-orange-600">
+          <p class="p-1 flex-1 border-r border-orange-400">
+            The tenant agrees to maintain the safety and cleanliness of the
+            property and is responsible for any damages, which must be repaired
+            at their own expense
+          </p>
+          <p class="p-1 flex-1">
+            يتعهد المستأجر بالحفاظ على سلامة ونظافة المأجور ويكون مسؤولاً عن كل
+            ضرر فيه ويتحتم عليه إصلاحه على حسابه الخاص.
+          </p>
+        </div>
+
+        <div
+          class="flex justify-between bg-[#fae2d5] gap-2 border-b border-orange-600"
+        >
+          <p class="p-1 flex-1 border-r border-orange-400">
+            The tenant is not permitted to demolish or remove anything from the
+            property without consulting the landlord and obtaining approval.
+          </p>
+          <p class="p-1 flex-1">
+            لا يحق للمستأجر أن يهدم أو يخلع أي شيء من المأجور دون الرجوع إلى رأي
+            المالك وأخذ الموافقة الخطية بذلك.
+          </p>
+        </div>
+
+        <div class="flex justify-between gap-2 border-b border-orange-600">
+          <p class="p-1 flex-1 border-r border-orange-400">
+            The tenant is not allowed to hang any advertisements except in the
+            location designated by the landlord after obtaining their approval.
+          </p>
+          <p class="p-1 flex-1">
+            لا يحق للمستأجر تعليق أي إعلان إلا في المكان الذي يخصصه له الطرف
+            الأول بعد موافقته
+          </p>
+        </div>
+
+        <div
+          class="flex justify-between bg-[#fae2d5] gap-2 border-b border-orange-600"
+        >
+          <p class="p-1 flex-1 border-r border-orange-400">
+            Without the landlord's approval, the tenant or any of their
+            associates are not permitted to bring anyone else into the property
+            for rental or similar purposes, regardless of their relationship.
+          </p>
+          <p class="p-1 flex-1">
+            لا يحق للمستأجر أو أي شخص آخر من طرفه إدخال أي أحد معهم بصفة تأجير
+            أو خلافه مهما كانت القرابة، إلا بموافقة المالك.
+          </p>
+        </div>
+
+        <div class="flex justify-between gap-2 border-b border-orange-600">
+          <p class="p-1 flex-1 border-r border-orange-400">
+            The tenant agrees to respect the neighbors' privacy and uphold
+            public decorum. If this obligation is not met, the landlord may
+            request that the tenant vacate the property.
+          </p>
+          <p class="p-1 flex-1">
+            يتعهد المستأجر بالحفاظ على حرمة الجوار، وعدم الإخلال بالآداب العامة،
+            وفي حال عدم الالتزام فيجوز للمالك الطلب من المستأجر إخلاء المأجور.
+          </p>
+        </div>
+
+        <div
+          class="flex justify-between bg-[#fae2d5] gap-2 border-b border-orange-600"
+        >
+          <p class="p-1 flex-1 border-r border-orange-400">
+            The corridors may not be exploited or used to distort their overall
+            appearance, nor may anything be placed in them
+          </p>
+          <p class="p-1 flex-1">
+            لا يجوز استغلال واستعمال الممرات بما يشوه منظرها العام أو وضع أي شيء
+            فيها.
+          </p>
+        </div>
+
+        <div class="flex justify-between gap-2 border-b border-orange-600">
+          <p class="p-1 flex-1 border-r border-orange-400">
+            The consumption of electricity and water, along with the associated
+            bills, shall be the landlord’s responsibility.
+          </p>
+          <p class="p-1 flex-1">
+            ستهلاك الكهرباء والماء والفاتورة المترتبة عليهما تكون على الطرف
+            الأول ويتحملها كاملة.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 7: Signatures -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">6 Signatures</h2>
+          <div dir="rtl">
+            <h2 class="text-right">6 التوقيعات</h2>
+          </div>
+        </div>
+
+        <div class="flex justify-between gap-2 bg-[#fae2d5] font-medium border-b border-orange-600">
+          <h1 class="h1-1 flex-1 border-r border-orange-400 text-center">
+            المستأجر (الطرف الثاني)
+          </h1>
+          <h1 class="p-1 flex-1 text text-center">المؤجر (الطرف الأول)</h1>
+        </div>
+
+        <div class="flex justify-between gap-2  font-medium min-h-28">
+          <div class="h1-1 flex-1 border-r border-orange-400 text-center">
+            
+          </div>
+          <div class="p-1 flex-1 text text-center "> </div>
+        </div>
+
+      </div>
+
+      <!-- Section 8: e Estate Real Oasis D -->
+      <div class="border border-orange-400 mb-6">
+        <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
+          <h2 class="mb-2">+965 9961 5530</h2>
+          <h2 class="mb-2">Digital Oasis Real Estate Brokerage (O.P.C)</h2>
+          <div dir="rtl">
+            <h2 class="text-right">
+              شركة الواحة الرقمية لأعمال السمسرة العقارية (ش.ش.و)
+            </h2>
+          </div>
+        </div>
+
+        <div class="flex justify-between gap-2 bg-[#fae2d5] font-medium">
+          <h1 class="h1-1 flex-1 border-r border-orange-400 text-center pr-1">
+            المستأجر (الطرف الثاني)
+          </h1>
+          <h1 class="p-1 flex-1 text text-center border-r border-orange-400  pr-1">C.M No. </h1>
+          </h1>
+          <h1 class="p-1 flex-1 text text-center border-r border-orange-400  pr-1">499566 </h1>
+          </h1>
+          <h1 class="p-1 flex-1 text text-center">رقم السجل التجاري
+
+        </h1>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
