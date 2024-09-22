@@ -102,7 +102,8 @@ const getSingleUser = async (id: string) => {
 const updateUser = async (
   id: string,
   payload: Partial<TUser>,
-): Promise<TUser | null> => { 
+): Promise<TUser | null> => {
+  console.log('payload==========>', payload);
   const user = await User.findById(id);
 
   if (payload?.email) {
@@ -112,8 +113,8 @@ const updateUser = async (
     throw new AppError(httpStatus.BAD_REQUEST, 'Role update is not allowed');
   }
 
-  const result = await User.findByIdAndUpdate(id, payload, { new: true }); 
-
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  console.log('result', result);
   if (result && payload?.image) {
     await deleteFile(user?.image as string);
   }
