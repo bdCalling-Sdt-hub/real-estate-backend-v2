@@ -2,7 +2,13 @@ import { Error, Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
 import config from '../../config';
 import bcrypt from 'bcrypt';
-import { gender, monthlyIncome, REGISTER_WITH, role, USER_ROLE } from './user.constant';
+import {
+  gender,
+  monthlyIncome,
+  REGISTER_WITH,
+  role,
+  USER_ROLE,
+} from './user.constant';
 const userSchema = new Schema<TUser>(
   {
     // username: {
@@ -11,6 +17,10 @@ const userSchema = new Schema<TUser>(
     //   unique: true,
     // },
     name: {
+      type: String,
+      required: true,
+    },
+    nameArabic: {
       type: String,
       required: true,
     },
@@ -150,7 +160,11 @@ const userSchema = new Schema<TUser>(
     },
     registerWith: {
       type: String,
-      enum: [REGISTER_WITH.credential, REGISTER_WITH.apple, REGISTER_WITH.google],
+      enum: [
+        REGISTER_WITH.credential,
+        REGISTER_WITH.apple,
+        REGISTER_WITH.google,
+      ],
       default: 'credential',
     },
     balance: {

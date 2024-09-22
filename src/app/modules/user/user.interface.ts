@@ -21,6 +21,7 @@ export interface TUser {
   id: string;
   username: string;
   name: string;
+  nameArabic: string;
   email: string;
   phoneCode: string;
   phoneNumber: string;
@@ -36,7 +37,7 @@ export interface TUser {
   image?: string;
   role: 'admin' | 'user' | 'host' | 'super_admin' | 'sub_admin';
   totalProperties?: number;
-  registerWith: 'credential' | "google" | "apple";
+  registerWith: 'credential' | 'google' | 'apple';
   bankInfo: {
     country: string;
     bankName: string;
