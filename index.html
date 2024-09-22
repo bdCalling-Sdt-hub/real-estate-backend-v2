@@ -47,6 +47,9 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Signature Date
             </h1>
+            <h1 >
+              {{signatureDate}}
+            </h1>
            
             <p class="border-l border-orange-400 w-32 text-end">
               تاريخ الإنعقاد
@@ -55,6 +58,8 @@
           <div class="flex justify-between flex-1">
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Contract No.
+            </h1>
+              {{contractNo}}
             </h1>
             <p class="border-l border-orange-400 w-32 text-end">رقم العقد</p>
           </div>
@@ -67,6 +72,9 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               End Date
             </h1>
+              </h1>
+              {{endDate}}
+            </h1>
             <p class="border-l border-orange-400 w-32 text-end">
               تاريخ نهاية العقد
             </p>
@@ -74,6 +82,9 @@
           <div class="flex justify-between flex-1">
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Start Date
+            </h1>
+               </h1>
+              {{startDate}}
             </h1>
             <p class="border-l border-orange-400 w-32 text-end">
               تاريخ بداية العقد
@@ -110,6 +121,9 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Full Name
             </h1>
+            <h1>
+            {{landlordName}}
+            </h1>
             <p class="border-l border-orange-400 w-32 text-end">الاسم الكامل</p>
           </div>
         </div>
@@ -121,6 +135,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Civil ID No
             </h1>
+             <h1>{{landorldId}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">ي الرقم</p>
           </div>
         </div>
@@ -132,10 +147,12 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Phone No.
             </h1>
+             <h1>{{landlordPhone}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">رقم الهاتف</p>
           </div>
           <div class="flex justify-between flex-1">
             <h1 class="border-r border-orange-400 w-32">Nationality</h1>
+              <h1>{{landlordNationality}}</h1>
             <p class="border-l border-orange-400 w-[137px] text-end">الجنسية</p>
           </div>
         </div>
@@ -157,6 +174,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Full Name
             </h1>
+            <h1>{{tenatName}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">الاسم الكامل</p>
           </div>
         </div>
@@ -168,6 +186,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Civil ID No
             </h1>
+                    <h1>{{tenantId}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">الرقم المدني</p>
           </div>
         </div>
@@ -179,12 +198,14 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Phone No.
             </h1>
+                            <h1>{{tenantPhone}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">رقم الهاتف</p>
           </div>
           <div class="flex justify-between flex-1">
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Nationality
             </h1>
+            <h1>{{tenantNationality}}</h1>
             <p class="border-l border-orange-400 w-[137px] text-end">الجنسية</p>
           </div>
         </div>
@@ -206,6 +227,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Property Type
             </h1>
+             <h1>{{propertyType}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">نوع العقار</p>
           </div>
         </div>
@@ -215,6 +237,7 @@
             class="flex justify-between flex-1 border-r border-orange-400 px-2"
           >
             <h1 class="border-r border-orange-400 w-32 font-medium">Address</h1>
+                <h1>{{address}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">عنوان العقار</p>
           </div>
         </div>
@@ -226,6 +249,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               PACI No.
             </h1>
+            <h1>{{paciNo}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">
               الرقم اﻵلي للعنوان
             </p>
@@ -249,12 +273,14 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Rent Amount
             </h1>
+               <h1>{{amount}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">
               For each month
             </p>
           </div>
           <div class="flex justify-between flex-1">
             <h1 class="border-r border-orange-400 w-32">عن كل شهر</h1>
+               <h1>{{amount}}</h1>
             <p class="border-l border-orange-400 w-[137px] text-end">
               قيمة اﻹيجار
             </p>
@@ -268,10 +294,12 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Due on the
             </h1>
+             
             <p class="text-center">The 1<sup>st</sup> of each month</p>
           </div>
           <div class="flex justify-between flex-1">
             <h1 class="text-center">اليوم الأول من كل شهر</h1>
+
             <p class="border-l border-orange-400 w-[137px] text-end">
               يُستحق في
             </p>
@@ -302,6 +330,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Deposit <span class="text-sm font-normal">(if any)</span>
             </h1>
+              <h1>{{deposite}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">
               التأمين (إن وجد)
             </p>
@@ -342,6 +371,7 @@
       <div class="border border-orange-400 mb-6">
         <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
           <h2 class="mb-2">6 Important Notes</h2>
+           
           <div dir="rtl">
             <h2 class="text-right">6 ملاحظات هامة</h2>
           </div>
@@ -476,6 +506,7 @@
       <div class="border border-orange-400 mb-6">
         <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
           <h2 class="mb-2">6 Signatures</h2>
+           <img src={{tenantSignature}} alt="">
           <div dir="rtl">
             <h2 class="text-right">6 التوقيعات</h2>
           </div>

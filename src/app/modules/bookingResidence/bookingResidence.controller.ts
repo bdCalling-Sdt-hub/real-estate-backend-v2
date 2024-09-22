@@ -90,6 +90,17 @@ const deleteBookingResidence = catchAsync(
     });
   },
 );
+const generateContractPdf = catchAsync(async (req: Request, res: Response) => {
+  const result = await BookingResidenceService.generateContractPdf(
+    req.params.id,
+  );
+  sendResponse(req, res, {
+    statusCode: 200,
+    success: true,
+    message: 'Booking residence deleted successfully',
+    data: result,
+  });
+});
 
 export const BookingResidenceController = {
   createBookingResidence,
@@ -99,4 +110,5 @@ export const BookingResidenceController = {
   canceledBooking,
   approvedBooking,
   deleteBookingResidence,
+  generateContractPdf,
 };

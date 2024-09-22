@@ -62,13 +62,13 @@ router.delete(
 );
 router.get(
   '/:id',
-  auth(
-    USER_ROLE.admin,
-    USER_ROLE.sub_admin,
-    USER_ROLE.super_admin,
-    USER_ROLE.user,
-    USER_ROLE.landlord,
-  ),
+  // auth(
+  //   USER_ROLE.admin,
+  //   USER_ROLE.sub_admin,
+  //   USER_ROLE.super_admin,
+  //   USER_ROLE.user,
+  //   USER_ROLE.landlord,
+  // ),
   BookingResidenceController.getBookingResidenceById,
 );
 
@@ -76,6 +76,11 @@ router.get(
   '/',
   // auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
   BookingResidenceController.getAllBookingResidence,
+);
+router.get(
+  '/generate-contract/:id',
+  // auth(USER_ROLE.admin, USER_ROLE.sub_admin, USER_ROLE.super_admin),
+  BookingResidenceController.generateContractPdf,
 );
 
 export const BookingResidenceRoutes = router;
