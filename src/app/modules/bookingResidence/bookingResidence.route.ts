@@ -79,13 +79,13 @@ router.get(
 );
 router.get(
   '/generate-contract/:id',
-  auth(
-    USER_ROLE.admin,
-    USER_ROLE.sub_admin,
-    USER_ROLE.super_admin,
-    USER_ROLE.user,
-    USER_ROLE.landlord,
-  ),
+  // auth(
+  //   USER_ROLE.admin,
+  //   USER_ROLE.sub_admin,
+  //   USER_ROLE.super_admin,
+  //   USER_ROLE.user,
+  //   USER_ROLE.landlord,
+  // ),
   BookingResidenceController.generateContractPdf,
 );
 

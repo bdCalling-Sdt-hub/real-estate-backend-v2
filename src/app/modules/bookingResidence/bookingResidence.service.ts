@@ -260,6 +260,8 @@ const deleteBookingResidence = async (
 };
 
 // get contract details
+// Ensure puppeteer is required
+
 const generateContractPdf = async (bookingId: string) => {
   try {
     // Fetch booking and contract data
@@ -301,8 +303,12 @@ const generateContractPdf = async (bookingId: string) => {
     const template = Handlebars.compile(htmlTemplate);
     const renderedHtml = template(result);
 
-    // Launch Puppeteer to render HTML to an image
-    const browser = await puppeteer.launch();
+    // Launch Puppeteer in headless mode
+    const browser = await puppeteer.launch({
+      headless: true, // Ensure that Puppeteer runs in headless mode
+      args: ['--no-sandbox', '--disable-setuid-sandbox'], // Add these for compatibility on some Linux servers
+    });
+
     const page = await browser.newPage();
     await page.setViewport({ width: 1550, height: 1600 }); // Adjusted height for better aspect ratio
     await page.setContent(renderedHtml, { waitUntil: 'networkidle0' });
@@ -315,7 +321,6 @@ const generateContractPdf = async (bookingId: string) => {
     await browser.close();
 
     // Get the image dimensions to fit into the PDF correctly
-
     const pdfDoc = await PDFDocument.create();
 
     // Get image dimensions from the screenshot
