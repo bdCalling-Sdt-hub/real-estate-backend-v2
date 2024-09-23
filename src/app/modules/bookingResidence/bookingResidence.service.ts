@@ -8,6 +8,7 @@ import puppeteer from 'puppeteer';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import { uploadToS3 } from '../../utils/s3';
+import BookingDocuments from '../bookingDocuments/bookingDocuments.models';
 import { notificationServices } from '../notification/notification.service';
 import { IResidence } from '../residence/residence.interface';
 import Residence from '../residence/residence.models';
@@ -260,26 +261,33 @@ const deleteBookingResidence = async (
 const generateContractPdf = async (bookingId: string) => {
   try {
     // Simulate fetching data (replace this with actual database call)
+    const oneBooking = await BookingResidence.findOne({ _id: bookingId });
+    console.log(oneBooking);
     const booking: any = await BookingResidence.findById(bookingId).populate(
       'author residence user',
     );
-    console.log(booking);
+
+    const contract = await BookingDocuments.findOne({ booking: bookingId });
     const result = {
+      contractId: booking?.contractId,
       signatureDate: moment(booking?.createdAt).format('YYYY-MM-DD'),
-      contractNo: booking?.contractNo,
       startDate: moment(booking?.startDate).format('YYYY-MM-DD'),
       endDate: moment(booking?.endDate).format('YYYY-MM-DD'),
       landlordName: booking?.author?.nameArabic,
       // landorldId: booking?.author,
       landlordPhone: booking?.author?.phoneNumber,
       landlordNationality: booking?.author?.nationality,
+      tenantId: contract?.user?.civilId,
+      landlordId: contract?.landlord?.civilId,
       tenatName: booking?.user?.nameArabic,
-      tenantPhone: booking?.user?.nameArabic,
+      tenantPhone: booking?.user?.phoneNumber,
       // tenantId: booking?.tenantId,
       tenantNationality: booking?.user?.nationality,
       propertyType: booking?.residence?.residenceType,
       address: formatAddress(booking?.residence?.address),
       amount: booking?.totalPrice,
+      tenantSignature: contract?.user?.signature,
+      landlordSignature: contract?.landlord?.signature,
       deposite: booking?.address?.deposit,
     };
 

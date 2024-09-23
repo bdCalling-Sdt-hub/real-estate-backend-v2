@@ -59,8 +59,8 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Contract No.
             </h1>
-              {{contractNo}}
-            </h1>
+           {{contractId}}
+             </h1>
             <p class="border-l border-orange-400 w-32 text-end">رقم العقد</p>
           </div>
         </div>
@@ -135,7 +135,7 @@
             <h1 class="border-r border-orange-400 w-32 font-medium">
               Civil ID No
             </h1>
-             <h1>{{landorldId}}</h1>
+             <h1>{{landlordId}}</h1>
             <p class="border-l border-orange-400 w-32 text-end">ي الرقم</p>
           </div>
         </div>
@@ -506,7 +506,8 @@
       <div class="border border-orange-400 mb-6">
         <div class="flex justify-between bg-[#e97132] text-white text-lg px-2">
           <h2 class="mb-2">6 Signatures</h2>
-           <img src={{tenantSignature}} alt="">
+  
+       
           <div dir="rtl">
             <h2 class="text-right">6 التوقيعات</h2>
           </div>
@@ -516,14 +517,17 @@
           <h1 class="h1-1 flex-1 border-r border-orange-400 text-center">
             المستأجر (الطرف الثاني)
           </h1>
-          <h1 class="p-1 flex-1 text text-center">المؤجر (الطرف الأول)</h1>
+          <h1 class="p-1 flex-1  text text-center">المؤجر (الطرف الأول)</h1>
         </div>
+    
 
+        
         <div class="flex justify-between gap-2  font-medium min-h-28">
-          <div class="h1-1 flex-1 border-r border-orange-400 text-center">
-            
+          <div class="h1-1 flex-1 flex justify-center items-center border-r border-orange-400 text-center">
+             <img class="w-[100px]" src={{tenantSignature}} alt="">
           </div>
-          <div class="p-1 flex-1 text text-center "> </div>
+          <div class="p-1 flex-1 flex  items-center justify-center text text-center ">
+                 <img  class="w-[100px]" src={{landlordSignature}}> </div>
         </div>
 
       </div>
