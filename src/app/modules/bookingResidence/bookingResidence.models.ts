@@ -12,7 +12,7 @@ const BookingResidenceSchema = new Schema<IBookingResidence>(
       required: true,
     },
 
-    contractNo: {
+    contractId: {
       type: String,
       required: true,
     },
