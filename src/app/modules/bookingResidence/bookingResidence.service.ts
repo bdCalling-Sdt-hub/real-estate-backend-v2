@@ -8,13 +8,13 @@ import Residence from '../residence/residence.models';
 import { IResidence } from '../residence/residence.interface';
 import Review from '../review/review.models';
 import { notificationServices } from '../notification/notification.service';
-import { User } from '../user/user.model'; 
+import { User } from '../user/user.model';
 import { generateRandomString } from '../user/user.utils';
 
 const createBookingResidence = async (
   payload: IBookingResidence,
 ): Promise<IBookingResidence> => {
-  payload.contractNo = await generateRandomString(8);
+  payload.contractId = await generateRandomString(10);
   const residence: IResidence | null = await Residence.findById(
     payload.residence,
   );
