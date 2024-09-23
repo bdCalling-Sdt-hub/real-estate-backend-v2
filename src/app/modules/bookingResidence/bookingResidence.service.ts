@@ -4,6 +4,7 @@ import Handlebars from 'handlebars';
 import httpStatus from 'http-status';
 import moment from 'moment';
 import path from 'path';
+import { PDFDocument } from 'pdf-lib';
 import puppeteer from 'puppeteer';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
@@ -14,12 +15,14 @@ import { IResidence } from '../residence/residence.interface';
 import Residence from '../residence/residence.models';
 import Review from '../review/review.models';
 import { User } from '../user/user.model';
+import { generateRandomString } from '../user/user.utils';
 import { formatAddress } from './bookingResidence';
 import { IBookingResidence } from './bookingResidence.interface';
 import BookingResidence from './bookingResidence.models';
 const createBookingResidence = async (
   payload: IBookingResidence,
 ): Promise<IBookingResidence> => {
+  payload.contractId = await generateRandomString(8);
   const residence: IResidence | null = await Residence.findById(
     payload.residence,
   );
@@ -257,78 +260,90 @@ const deleteBookingResidence = async (
 };
 
 // get contract details
-
 const generateContractPdf = async (bookingId: string) => {
   try {
-    // Simulate fetching data (replace this with actual database call)
-    const oneBooking = await BookingResidence.findOne({ _id: bookingId });
-    console.log(oneBooking);
-    const booking: any = await BookingResidence.findById(bookingId).populate(
-      'author residence user',
-    );
+    // Fetch booking and contract data
+    const booking: any = await BookingResidence.findById(bookingId)
+      .select('contractId author residence user startDate endDate createdAt')
+      .populate('author residence user');
+
+    if (!booking) throw new Error(`Booking with ID ${bookingId} not found`);
 
     const contract = await BookingDocuments.findOne({ booking: bookingId });
+    if (!contract)
+      throw new Error(`Contract for booking ${bookingId} not found`);
+
+    // Prepare the result object
     const result = {
-      contractId: booking?.contractId,
-      signatureDate: moment(booking?.createdAt).format('YYYY-MM-DD'),
-      startDate: moment(booking?.startDate).format('YYYY-MM-DD'),
-      endDate: moment(booking?.endDate).format('YYYY-MM-DD'),
-      landlordName: booking?.author?.nameArabic,
-      // landorldId: booking?.author,
-      landlordPhone: booking?.author?.phoneNumber,
-      landlordNationality: booking?.author?.nationality,
-      tenantId: contract?.user?.civilId,
-      landlordId: contract?.landlord?.civilId,
-      tenatName: booking?.user?.nameArabic,
-      tenantPhone: booking?.user?.phoneNumber,
-      // tenantId: booking?.tenantId,
-      tenantNationality: booking?.user?.nationality,
-      propertyType: booking?.residence?.residenceType,
-      address: formatAddress(booking?.residence?.address),
-      amount: booking?.totalPrice,
-      tenantSignature: contract?.user?.signature,
-      landlordSignature: contract?.landlord?.signature,
-      deposite: booking?.address?.deposit,
+      contractId: booking.contractId,
+      signatureDate: moment(booking.createdAt).format('YYYY-MM-DD'),
+      startDate: moment(booking.startDate).format('YYYY-MM-DD'),
+      endDate: moment(booking.endDate).format('YYYY-MM-DD'),
+      landlordName: booking.author.nameArabic,
+      landlordPhone: booking.author.phoneNumber,
+      landlordNationality: booking.author.nationality,
+      tenantId: contract.user.civilId,
+      landlordId: contract.landlord.civilId,
+      tenantName: booking.user.nameArabic,
+      tenantPhone: booking.user.phoneNumber,
+      tenantNationality: booking.user.nationality,
+      propertyType: booking.residence.residenceType,
+      address: formatAddress(booking.residence.address),
+      amount: booking.totalPrice,
+      tenantSignature: contract.user.signature,
+      landlordSignature: contract.landlord.signature,
+      deposit: booking.residence.deposit,
     };
 
-    // Read HTML template
-    const templatePath = path.join(__dirname, '../../../../index.html'); // Adjust as per your folder structure
+    // Read HTML template and compile with Handlebars
+    const templatePath = path.join(__dirname, '../../../../index.html');
     const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
-
-    // Compile HTML using Handlebars
     const template = Handlebars.compile(htmlTemplate);
     const renderedHtml = template(result);
 
-    // Launch Puppeteer and take a screenshot
+    // Launch Puppeteer to render HTML to an image
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-
-    // Set a custom viewport size to increase the width
-    await page.setViewport({
-      width: 1200, // Set the desired width (increase as needed)
-      height: 800, // Set a suitable height (it will scroll if the content is larger)
-    });
-
+    await page.setViewport({ width: 1550, height: 1600 }); // Adjusted height for better aspect ratio
     await page.setContent(renderedHtml, { waitUntil: 'networkidle0' });
 
-    // Take a full-page screenshot
-    const screenshotBuffer = await page.screenshot({ fullPage: true });
-
+    // Capture a screenshot of the rendered HTML without extra margins
+    const screenshotBuffer = await page.screenshot({
+      fullPage: true,
+      omitBackground: true, // Removes background color
+    });
     await browser.close();
 
-    // Construct the S3 upload params
-    const fileName = `images/contract-${bookingId}.png`; // Customize the file path for S3
-    const file = {
-      file: screenshotBuffer, // The image buffer
-      fileName, // The S3 file path
-    };
+    // Get the image dimensions to fit into the PDF correctly
 
-    // Upload the image to S3 using the utility function
+    const pdfDoc = await PDFDocument.create();
+
+    // Get image dimensions from the screenshot
+    const image = await pdfDoc.embedPng(screenshotBuffer);
+    const imageWidth = image.width;
+    const imageHeight = image.height;
+
+    // Create a PDF page that matches the image dimensions, with no extra margins
+    const page1 = pdfDoc.addPage([imageWidth, imageHeight]);
+
+    // Draw the image on the PDF page without any margins
+    page1.drawImage(image, {
+      x: 0, // Start at the very edge of the PDF page
+      y: 0, // Start at the bottom
+      width: imageWidth, // Match the image width to the page
+      height: imageHeight, // Match the image height to the page
+    });
+
+    const pdfBytes = await pdfDoc.save();
+
+    // Upload the PDF to S3
+    const fileName = `contracts/contract-${bookingId}.pdf`;
+    const file = { file: pdfBytes, fileName };
     const s3Url = await uploadToS3(file);
 
-    return s3Url; // Return the S3 URL after uploading the image
+    return s3Url; // Return the S3 URL for the PDF
   } catch (error) {
-    console.error('Error generating and uploading image:', error);
+    console.error('Error generating and uploading PDF:', error);
     throw error;
   }
 };

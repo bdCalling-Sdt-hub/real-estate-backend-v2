@@ -5,6 +5,7 @@ export interface IBookingResidence {
   payload: any;
   _id?: string;
   residence: ObjectId;
+  contractId: string;
   user: ObjectId;
   startDate: Date;
   endDate: Date;
@@ -19,7 +20,6 @@ export interface IBookingResidence {
     adult: number;
   };
 }
-
 
 export type IBookingResidenceModel = Model<
   IBookingResidence,

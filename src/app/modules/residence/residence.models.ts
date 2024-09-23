@@ -24,7 +24,7 @@ const residenceSchema = new Schema<IResidence>({
   propertyName: {
     type: String,
     required: true,
-  },
+  }, 
   squareFeet: {
     type: String,
     required: true,

@@ -27,7 +27,7 @@ export interface IResidence {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   toObject: any;
   _id?: ObjectId;
-  averageRating: number | null;
+  averageRating: number | null; 
   images: IFile[];
   videos: IFile[] | null | [];
   category: ObjectId;

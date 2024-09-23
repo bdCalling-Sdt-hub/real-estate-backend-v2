@@ -31,7 +31,7 @@ const userSchema = new Schema<TUser>(
     },
     image: {
       type: String,
-      default: `https://${config.aws.bucket}.s3.${config.aws.region}.amazonaws.com/profile.jpeg`,
+      default: "",
     },
     phoneNumber: {
       type: String,
