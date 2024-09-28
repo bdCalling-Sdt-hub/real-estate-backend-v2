@@ -68,7 +68,7 @@ const verifyOtp = async (token: string, otp: string | number) => {
   return { user: updateUser, token: jwtToken };
 };
 
-const resendOtp = async (email: string, type?: string) => { 
+const resendOtp = async (email: string, type?: string) => {
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -110,11 +110,31 @@ const resendOtp = async (email: string, type?: string) => {
   await sendEmail(
     user?.email,
     'Your One Time OTP',
-    `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #4CAF50;">Your One Time OTP</h2>
-      <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
-        <p style="font-size: 16px;">Your OTP is: <strong>${otp}</strong></p>
-        <p style="font-size: 14px; color: #666;">This OTP is valid until: ${expiresAt.toLocaleString()}</p>
+    `<div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+          <h2 style="margin: 0; font-size: 24px;">Your One Time OTP - Mostaajer</h2>
+          <p style="font-size: 16px; margin: 5px 0;">رمز التحقق لمرة واحدة - مستأجر</p>
+        </div>
+
+        <div style="padding: 20px; text-align: left;">
+          <p style="font-size: 16px; color: #333;">
+            <strong>Your OTP is:</strong> ${otp} <br> 
+            <strong>رمز التحقق الخاص بك هو:</strong> ${otp}
+          </p>
+
+          <p style="font-size: 16px; color: #333; margin-top: 20px;">
+            <strong>This OTP is valid until:</strong> ${expiresAt.toLocaleString()} <br> 
+            <strong>هذا الرمز صالح حتى:</strong> ${expiresAt.toLocaleString()}
+          </p>
+
+          <p style="font-size: 14px; color: #999; margin-top: 20px;">Please use this OTP within the validity period. Do not share it with anyone.</p>
+          <p style="font-size: 14px; color: #999; margin-top: 5px;">يرجى استخدام هذا الرمز خلال الفترة الصالحة. لا تشاركها مع أي شخص.</p>
+        </div>
+
+        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+          <p style="font-size: 14px; margin: 0;">Thank you for using Mostaajer / شكرًا لاستخدامك مستأجر</p>
+        </div>
       </div>
     </div>`,
   );

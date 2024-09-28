@@ -44,16 +44,36 @@ const insertSubAdminIntoDb = async (
 
   await sendEmail(
     result?.email,
-    'New User Created - REAL-STATE',
-    `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #4CAF50;">Create a account in Real-State</h2>
-      <div style="background-color: #f2f2f2; padding: 20px; border-radius: 5px;">
-        <p style="font-size: 16px;">A your account has been created with the following credentials:</p>
-        <p style="font-size: 16px;"><strong>Email:</strong> ${result?.email}</p>
-        <p style="font-size: 16px;"><strong>Password:</strong> ${payload.password}</p>
-        <p style="font-size: 14px; color: #666;">Please advise the user to log in and change their password immediately.</p>
+    'New User Created - Mostaajer / تم إنشاء مستخدم جديد - مستأجر',
+    `
+    <div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+          <h2 style="margin: 0; font-size: 24px;">New User Created - Mostaajer</h2>
+          <p style="font-size: 16px; margin: 5px 0;">تم إنشاء مستخدم جديد - مستأجر</p>
+        </div>
+
+        <div style="padding: 20px; text-align: left;">
+          <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+            Your account has been created with the following credentials: <br> 
+            تم إنشاء حسابك باستخدام بيانات الاعتماد التالية:
+          </p>
+          
+          <div style="border: 1px solid #eee; border-radius: 8px; padding: 15px; background-color: #fafafa;">
+            <p style="margin: 0; font-size: 16px;"><strong>Email / البريد الإلكتروني:</strong> ${payload?.email}</p>
+            <p style="margin: 0; font-size: 16px;"><strong>Password / كلمة المرور:</strong> ${payload?.password}</p>
+          </div>
+
+          <p style="font-size: 14px; color: #999; margin-top: 20px;">Please keep this information safe and do not share your password with anyone.</p>
+          <p style="font-size: 14px; color: #999; margin-top: 5px;">يرجى الحفاظ على هذه المعلومات ولا تشارك كلمة المرور الخاصة بك مع أي شخص.</p>
+        </div>
+
+        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+          <p style="font-size: 14px; margin: 0;">Thank you for using Mostaajer / شكرًا لاستخدامك مستأجر</p>
+        </div>
       </div>
-    </div>`,
+    </div>
+    `,
   );
 
   return result;
@@ -103,7 +123,6 @@ const updateUser = async (
   id: string,
   payload: Partial<TUser>,
 ): Promise<TUser | null> => {
-  console.log('payload==========>', payload);
   const user = await User.findById(id);
 
   if (payload?.email) {
@@ -223,22 +242,6 @@ const requestIdVerify = async (userId: string, payload: Partial<TUser>) => {
   return result;
 };
 
-//verification accept
-// const acceptIdVerify = async(userId:string)=>{
-//   const result = await User.findByIdAndUpdate(userId, {
-//     isVerified: true,
-//     verifyRequest: 'accepted',
-//   });
-
-//   if (!result) {
-//     throw new AppError(httpStatus.BAD_REQUEST, 'accept your id verification');
-//   }
-
-//   return result;
-// }
-
-//verification reject
-
 const rejectIdVerificationRequest = async (userId: string, payload: any) => {
   const result = await User.findByIdAndUpdate(
     userId,
@@ -317,32 +320,6 @@ const rejectIdVerificationRequest = async (userId: string, payload: any) => {
   return result;
 };
 
-// const signInWithGoogle = async (payload: Partial<TUser>) => {
-
-//     const user = await User.isUserExist(payload.email as string);
-
-//     if (user) {
-//       throw new AppError(
-//         httpStatus.FORBIDDEN,
-//         'User already exists with this email',
-//       );
-//     }
-
-//     const userExistByUsername = await User.IsUserExistUserName(
-//       payload.username as string,
-//     );
-
-//     if (userExistByUsername) {
-//       throw new AppError(
-//         httpStatus.FORBIDDEN,
-//         'Username already exists. Try another username',
-//       );
-//     }
-//   const result = await User.create(payload);
-//   if (!result) {
-//     throw new AppError(httpStatus.BAD_REQUEST, 'User creation Failed');
-//   }
-// };
 export const userServices = {
   insertSubAdminIntoDb,
   getme,
