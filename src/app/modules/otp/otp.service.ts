@@ -109,7 +109,7 @@ const resendOtp = async (email: string, type?: string) => {
 
   await sendEmail(
     user?.email,
-    'Your One Time OTP',
+    'Your One Time OTP - Mostaajer / رمز التحقق لمرة واحدة - مستأجر',
     `<div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
       <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
         <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
