@@ -11,6 +11,8 @@ import { deleteManyFromS3 } from '../../utils/s3';
 import { sendEmail } from '../../utils/mailSender';
 import { notificationServices } from '../notification/notification.service';
 import { generateRandomString } from './user.utils';
+import path from 'path';
+import fs from 'fs';
 
 // Insert sub-admin into the database
 const insertSubAdminIntoDb = async (
@@ -42,39 +44,53 @@ const insertSubAdminIntoDb = async (
     throw new AppError(httpStatus.BAD_REQUEST, 'user creating failed');
   }
 
+  const otpEmailPath = path.join(
+    __dirname,
+    '../../../../public/view/create_user_mail.html',
+  );
+
   await sendEmail(
     result?.email,
     'New User Created - Mostaajer / تم إنشاء مستخدم جديد - مستأجر',
-    `
-    <div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
-      <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
-        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
-          <h2 style="margin: 0; font-size: 24px;">New User Created - Mostaajer</h2>
-          <p style="font-size: 16px; margin: 5px 0;">تم إنشاء مستخدم جديد - مستأجر</p>
-        </div>
-
-        <div style="padding: 20px; text-align: left;">
-          <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-            Your account has been created with the following credentials: <br> 
-            تم إنشاء حسابك باستخدام بيانات الاعتماد التالية:
-          </p>
-          
-          <div style="border: 1px solid #eee; border-radius: 8px; padding: 15px; background-color: #fafafa;">
-            <p style="margin: 0; font-size: 16px;"><strong>Email / البريد الإلكتروني:</strong> ${payload?.email}</p>
-            <p style="margin: 0; font-size: 16px;"><strong>Password / كلمة المرور:</strong> ${payload?.password}</p>
-          </div>
-
-          <p style="font-size: 14px; color: #999; margin-top: 20px;">Please keep this information safe and do not share your password with anyone.</p>
-          <p style="font-size: 14px; color: #999; margin-top: 5px;">يرجى الحفاظ على هذه المعلومات ولا تشارك كلمة المرور الخاصة بك مع أي شخص.</p>
-        </div>
-
-        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
-          <p style="font-size: 14px; margin: 0;">Thank you for using Mostaajer / شكرًا لاستخدامك مستأجر</p>
-        </div>
-      </div>
-    </div>
-    `,
+    fs
+      .readFileSync(otpEmailPath, 'utf8')
+      .replace('{{email}}', payload?.email as string)
+      .replace('{{password}}', payload.password as string),
   );
+
+  // await sendEmail(
+  //   result?.email,
+  //   'New User Created - Mostaajer / تم إنشاء مستخدم جديد - مستأجر',
+  //   `
+  //   <div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
+  //     <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
+  //       <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+  //         <h2 style="margin: 0; font-size: 24px;">New User Created - Mostaajer</h2>
+  //         <p style="font-size: 16px; margin: 5px 0;">تم إنشاء مستخدم جديد - مستأجر</p>
+  //       </div>
+
+  //       <div style="padding: 20px; text-align: left;">
+  //         <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+  //           Your account has been created with the following credentials: <br>
+  //           تم إنشاء حسابك باستخدام بيانات الاعتماد التالية:
+  //         </p>
+
+  //         <div style="border: 1px solid #eee; border-radius: 8px; padding: 15px; background-color: #fafafa;">
+  //           <p style="margin: 0; font-size: 16px;"><strong>Email / البريد الإلكتروني:</strong> ${payload?.email}</p>
+  //           <p style="margin: 0; font-size: 16px;"><strong>Password / كلمة المرور:</strong> ${payload?.password}</p>
+  //         </div>
+
+  //         <p style="font-size: 14px; color: #999; margin-top: 20px;">Please keep this information safe and do not share your password with anyone.</p>
+  //         <p style="font-size: 14px; color: #999; margin-top: 5px;">يرجى الحفاظ على هذه المعلومات ولا تشارك كلمة المرور الخاصة بك مع أي شخص.</p>
+  //       </div>
+
+  //       <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+  //         <p style="font-size: 14px; margin: 0;">Thank you for using Mostaajer / شكرًا لاستخدامك مستأجر</p>
+  //       </div>
+  //     </div>
+  //   </div>
+  //   `,
+  // );
 
   return result;
 };
@@ -270,53 +286,69 @@ const rejectIdVerificationRequest = async (userId: string, payload: any) => {
     description: payload?.reason,
   });
 
-  const emailContent = `
- <div
-      style="
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff;
-        border: 1px solid #dddddd;
-        border-radius: 5px;
-      "
-    >
-      <h2 style="color: #ff0000">ID Verification Rejected</h2>
-      <div
-        style="
-          background-color: #f2f2f2;
-          padding: 20px;
-          border-radius: 5px;
-          margin-top: 20px;
-        "
-      >
-        <p style="font-size: 16px">Dear ${result?.name || 'User'},</p>
-        <p style="font-size: 16px">
-          Your ID verification request has been rejected for the following
-          reason:
-        </p>
-        <p style="font-size: 16px; font-weight: bold; color: #ff0000">
-          ${payload?.reason}
-        </p>
-        <p style="font-size: 16px">
-          If you believe this is a mistake, please contact our support team for
-          further assistance and resend request.
-        </p>
-      </div>
-      <div style="margin-top: 20px">
-        <p style="font-size: 14px; color: #666">Best regards,</p>
-        <p style="font-size: 14px; color: #666">The Support Team</p>
-      </div>
-    </div>
-  `;
+ const otpEmailPath = path.join(
+   __dirname,
+   '../../../../public/view/reject_id_verify.html',
+ );
 
-  await sendEmail(
-    // 'boroxar723@padvn.com',
-    result?.email,
-    'Your ID Verification Rejected',
-    emailContent,
-  );
+ await sendEmail(
+   result?.email,
+   'Your ID Verification Rejected',
+   fs
+     .readFileSync(otpEmailPath, 'utf8')
+     .replace('{{name}}', result?.name)
+     .replace('{{rejectionReason}}', payload?.reason),
+ );
+
+
+
+//   const emailContent = `
+//  <div
+//       style="
+//         font-family: Arial, sans-serif;
+//         max-width: 600px;
+//         margin: 0 auto;
+//         padding: 20px;
+//         background-color: #ffffff;
+//         border: 1px solid #dddddd;
+//         border-radius: 5px;
+//       "
+//     >
+//       <h2 style="color: #ff0000">ID Verification Rejected</h2>
+//       <div
+//         style="
+//           background-color: #f2f2f2;
+//           padding: 20px;
+//           border-radius: 5px;
+//           margin-top: 20px;
+//         "
+//       >
+//         <p style="font-size: 16px">Dear ${result?.name || 'User'},</p>
+//         <p style="font-size: 16px">
+//           Your ID verification request has been rejected for the following
+//           reason:
+//         </p>
+//         <p style="font-size: 16px; font-weight: bold; color: #ff0000">
+//           ${payload?.reason}
+//         </p>
+//         <p style="font-size: 16px">
+//           If you believe this is a mistake, please contact our support team for
+//           further assistance and resend request.
+//         </p>
+//       </div>
+//       <div style="margin-top: 20px">
+//         <p style="font-size: 14px; color: #666">Best regards,</p>
+//         <p style="font-size: 14px; color: #666">The Support Team</p>
+//       </div>
+//     </div>
+//   `;
+
+  // await sendEmail(
+  //   // 'boroxar723@padvn.com',
+  //   result?.email,
+  //   'Your ID Verification Rejected',
+  //   emailContent,
+  // );
   return result;
 };
 

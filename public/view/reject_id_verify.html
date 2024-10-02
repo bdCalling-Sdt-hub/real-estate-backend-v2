@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ID Verification Rejection</title>
+    <style>
+      /* General styles */
+      body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #fef4e6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        text-align: center;
+        background-color: #f39200;
+        padding: 20px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+      }
+      .header img {
+        max-width: 120px;
+      }
+      .content {
+        text-align: left;
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #444;
+      }
+      .content h1 {
+        font-size: 24px;
+        color: #f39200;
+        margin-bottom: 10px;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 20px;
+        background-color: #f39200;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-top: 20px;
+        text-align: center;
+      }
+      .button:hover {
+        background-color: #e67e00;
+      }
+      .footer {
+        font-size: 14px;
+        color: #777;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      .reason-box {
+        background-color: #fff5f5;
+        color: #d9534f;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+        font-size: 16px;
+        border: 1px solid #d9534f;
+      }
+      /* Responsive styles */
+      @media (max-width: 600px) {
+        .email-container {
+          padding: 10px;
+        }
+        .content h1 {
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Email Header -->
+      <div class="header">
+        <img
+          src="http://159.223.184.53:9005/image/logo/logo.png"
+          alt="Mostaajer Logo"
+        />
+      </div>
+
+      <!-- Email Content -->
+      <div class="content">
+        <h1>ID Verification Rejected</h1>
+        <p>Dear {{name}},</p>
+        <p>
+          We regret to inform you that your ID verification has been rejected
+          due to the following reason:
+        </p>
+        <p>مرحباً،</p>
+        <p>نأسف لإبلاغك أن عملية التحقق من هويتك قد تم رفضها للسبب التالي:</p>
+        <div class="reason-box">{{rejectionReason}}</div>
+        <p>
+          Please submit a new ID document that meets our requirements. Click the
+          button below to re-upload your document.
+        </p>
+        <p>
+          يرجى تقديم وثيقة هوية جديدة تلبي متطلباتنا. انقر على الزر أدناه لإعادة
+          تحميل المستند الخاص بك.
+        </p>
+
+        <p>
+          If you have any questions, feel free to reach out to our support team.
+        </p>
+        <p>إذا كان لديك أي أسئلة، لا تتردد في التواصل مع فريق الدعم لدينا.</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>Thank you for using Mostaajer! / شكراً لاستخدامكم مستأجر!</p>
+      </div>
+    </div>
+  </body>
+</html>
