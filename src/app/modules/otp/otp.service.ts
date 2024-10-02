@@ -160,7 +160,7 @@ const resendOtp = async (email: string, type?: string) => {
   // const integratedNumber = '96599615330';
 
   const phoneNumber = user?.phoneCode + user?.phoneNumber;
-   
+
   const phoneNumbers = [phoneNumber];
   const languageCode = 'ar';
   const OTPCode = otp.toString();
@@ -169,11 +169,11 @@ const resendOtp = async (email: string, type?: string) => {
       {
         mobiles: phoneNumber,
         otp: OTPCode,
-        // Add more variables as needed
       },
     ],
   };
   if (type === 'whatsapp') {
+    console.log('Please select');
     await sendWhatsAppMessage(
       // integratedNumber,
       phoneNumbers,
