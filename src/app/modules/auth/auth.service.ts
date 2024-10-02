@@ -310,7 +310,8 @@ const forgotPassword = async (email: string) => {
     fs
       .readFileSync(otpEmailPath, 'utf8')
       .replace('{{otp}}', otp)
-      .replace('{{expiry}}', expiresAt.toLocaleString()),
+      .replace('{{expiry}}', expiresAt.toLocaleString())
+      .replace('{{expiry2}}', expiresAt.toLocaleString()),
   );
 
   // await sendEmail(
