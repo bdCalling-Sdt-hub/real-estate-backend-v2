@@ -16,6 +16,8 @@ import { sendEmail } from '../../utils/mailSender';
 import bcrypt from 'bcrypt';
 import { TUser } from '../user/user.interface';
 import { REGISTER_WITH, USER_ROLE } from '../user/user.constant';
+import path from 'path';
+import fs from 'fs';
 
 // Login
 const login = async (payload: Tlogin) => {
@@ -297,13 +299,27 @@ const forgotPassword = async (email: string) => {
     },
   });
 
-  await sendEmail(
-    email,
-    'Your reset password OTP is:',
-    `<div><h5>Your OTP is: ${otp}</h5>
-    <p>Valid until: ${expiresAt.toLocaleString()}</p>
-    </div>`,
+  const otpEmailPath = path.join(
+    __dirname,
+    '../../../../public/view/forgot_password.html',
   );
+
+  await sendEmail(
+    user?.email,
+    'our reset password OTP',
+    fs
+      .readFileSync(otpEmailPath, 'utf8')
+      .replace('{{otp}}', otp)
+      .replace('{{expiry}}', expiresAt.toLocaleString()),
+  );
+
+  // await sendEmail(
+  //   email,
+  //   'Your reset password OTP is:',
+  //   `<div><h5>Your OTP is: ${otp}</h5>
+  //   <p>Valid until: ${expiresAt.toLocaleString()}</p>
+  //   </div>`,
+  // );
 
   return { email, token };
 };

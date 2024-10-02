@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Email</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fef4e6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        padding-bottom: 20px;
+      }
+      .header img {
+        max-width: 150px;
+      }
+      .content {
+        text-align: center;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .otp-code {
+        font-size: 24px;
+        font-weight: bold;
+        color: #f39200;
+        margin: 10px 0;
+      }
+      .footer {
+        font-size: 12px;
+        color: #777;
+        text-align: center;
+        padding-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Email Header -->
+      <div class="header">
+        <img
+          src="http://159.223.184.53:9005/image/logo/logo.png"
+          alt="Mostaajer Logo"
+        />
+      </div>
+
+      <!-- Email Content -->
+      <div class="content">
+        <p><strong>Your One Time OTP - Mostaajer</strong></p>
+        <p>رمز التحقق لمرة واحدة - مستأجر</p>
+        <p>Your OTP is:</p>
+        <p class="otp-code">{{otp}}</p>
+        <p>رمز التحقق الخاص بك هو:</p>
+        <p class="otp-code">{{otp}}</p>
+        <p>This OTP is valid until: {{expiry}}</p>
+        <p>هذا الرمز صالح حتى: {{expiry}}</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>Thank you for using Mostaajer! / شكراً لاستخدامكم مستأجر!</p>
+      </div>
+    </div>
+  </body>
+</html>

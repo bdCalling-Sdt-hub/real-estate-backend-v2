@@ -7,6 +7,8 @@ import { sendEmail } from '../../utils/mailSender';
 import { generateOtp } from '../../utils/otpGenerator';
 import { sendMobileSms, sendWhatsAppMessage } from '../../utils/smsSender';
 import { User } from '../user/user.model';
+import path from 'path';
+import fs from 'fs';
 
 const verifyOtp = async (token: string, otp: string | number) => {
   if (!token) {
@@ -107,39 +109,57 @@ const resendOtp = async (email: string, type?: string) => {
     expiresIn: '3m',
   });
 
-  await sendEmail(
-    user?.email,
-    'Your One Time OTP - Mostaajer / رمز التحقق لمرة واحدة - مستأجر',
-    `<div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
-      <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
-        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
-          <h2 style="margin: 0; font-size: 24px;">Your One Time OTP - Mostaajer</h2>
-          <p style="font-size: 16px; margin: 5px 0;">رمز التحقق لمرة واحدة - مستأجر</p>
-        </div>
+    const otpEmailPath = path.join(
+      __dirname,
+      '../../../../public/view/otp_temp.html',
+    );
 
-        <div style="padding: 20px; text-align: left;">
-          <p style="font-size: 16px; color: #333;">
-            <strong>Your OTP is:</strong> ${otp} <br> 
-            <strong>رمز التحقق الخاص بك هو:</strong> ${otp}
-          </p>
+    await sendEmail(
+      user?.email,
+      'Your One Time OTP - Mostaajer / رمز التحقق لمرة واحدة - مستأجر',
+      fs
+        .readFileSync(otpEmailPath, 'utf8')
+        .replace('{{otp}}', otp)
+        .replace('{{expiry}}', expiresAt.toLocaleString()),
+    );
 
-          <p style="font-size: 16px; color: #333; margin-top: 20px;">
-            <strong>This OTP is valid until:</strong> ${expiresAt.toLocaleString()} <br> 
-            <strong>هذا الرمز صالح حتى:</strong> ${expiresAt.toLocaleString()}
-          </p>
 
-          <p style="font-size: 14px; color: #999; margin-top: 20px;">Please use this OTP within the validity period. Do not share it with anyone.</p>
-          <p style="font-size: 14px; color: #999; margin-top: 5px;">يرجى استخدام هذا الرمز خلال الفترة الصالحة. لا تشاركها مع أي شخص.</p>
-        </div>
 
-        <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
-          <p style="font-size: 14px; margin: 0;">Thank you for using Mostaajer / شكرًا لاستخدامك مستأجر</p>
-        </div>
-      </div>
-    </div>`,
-  );
+  // await sendEmail(
+  //   user?.email,
+  //   'Your One Time OTP - Mostaajer / رمز التحقق لمرة واحدة - مستأجر',
+  //   `<div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f7f7; padding: 20px;">
+  //     <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); overflow: hidden;">
+  //       <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+  //         <h2 style="margin: 0; font-size: 24px;">Your One Time OTP - Mostaajer</h2>
+  //         <p style="font-size: 16px; margin: 5px 0;">رمز التحقق لمرة واحدة - مستأجر</p>
+  //       </div>
+
+  //       <div style="padding: 20px; text-align: left;">
+  //         <p style="font-size: 16px; color: #333;">
+  //           <strong>Your OTP is:</strong> ${otp} <br> 
+  //           <strong>رمز التحقق الخاص بك هو:</strong> ${otp}
+  //         </p>
+
+  //         <p style="font-size: 16px; color: #333; margin-top: 20px;">
+  //           <strong>This OTP is valid until:</strong> ${expiresAt.toLocaleString()} <br> 
+  //           <strong>هذا الرمز صالح حتى:</strong> ${expiresAt.toLocaleString()}
+  //         </p>
+
+  //         <p style="font-size: 14px; color: #999; margin-top: 20px;">Please use this OTP within the validity period. Do not share it with anyone.</p>
+  //         <p style="font-size: 14px; color: #999; margin-top: 5px;">يرجى استخدام هذا الرمز خلال الفترة الصالحة. لا تشاركها مع أي شخص.</p>
+  //       </div>
+
+  //       <div style="background-color: #00466a; padding: 20px; text-align: center; color: white;">
+  //         <p style="font-size: 14px; margin: 0;">Thank you for using Mostaajer / شكرًا لاستخدامك مستأجر</p>
+  //       </div>
+  //     </div>
+  //   </div>`,
+  // );
 
   // const integratedNumber = '96599615330';
+  
+  
   const phoneNumber = user?.phoneCode + user?.phoneNumber;
 
   const phoneNumbers = [phoneNumber];
