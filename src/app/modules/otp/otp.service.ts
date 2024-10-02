@@ -159,7 +159,7 @@ const resendOtp = async (email: string, type?: string) => {
 
   // const integratedNumber = '96599615330';
 
-  const phoneNumber = user?.phoneNumber;
+  const phoneNumber = user?.phoneCode + user?.phoneNumber;
 
   const phoneNumbers = [phoneNumber];
   const languageCode = 'ar';
