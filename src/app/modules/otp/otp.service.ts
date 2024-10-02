@@ -172,17 +172,15 @@ const resendOtp = async (email: string, type?: string) => {
       },
     ],
   };
-  if (type === 'whatsapp') {
-    console.log('Please select');
+ 
     await sendWhatsAppMessage(
       // integratedNumber,
       phoneNumbers,
       languageCode,
       OTPCode,
     );
-  } else {
     await sendMobileSms(smsOptions);
-  }
+ 
 
   return { token };
 };
