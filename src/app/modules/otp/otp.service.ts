@@ -159,7 +159,7 @@ const resendOtp = async (email: string, type?: string) => {
 
   // const integratedNumber = '96599615330';
 
-  const phoneNumber = user?.phoneCode + user?.phoneNumber;
+  const phoneNumber = user?.phoneNumber;
 
   const phoneNumbers = [phoneNumber];
   const languageCode = 'ar';
@@ -172,15 +172,14 @@ const resendOtp = async (email: string, type?: string) => {
       },
     ],
   };
- 
-    await sendWhatsAppMessage(
-      // integratedNumber,
-      phoneNumbers,
-      languageCode,
-      OTPCode,
-    );
-    await sendMobileSms(smsOptions);
- 
+
+  await sendWhatsAppMessage(
+    // integratedNumber,
+    phoneNumbers,
+    languageCode,
+    OTPCode,
+  );
+  await sendMobileSms(smsOptions);
 
   return { token };
 };
