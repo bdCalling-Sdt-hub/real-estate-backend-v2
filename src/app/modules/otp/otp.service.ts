@@ -109,21 +109,21 @@ const resendOtp = async (email: string, type?: string) => {
     expiresIn: '3m',
   });
 
-    const otpEmailPath = path.join(
-      __dirname,
-      '../../../../public/view/otp_temp.html',
-    );
+  const otpEmailPath = path.join(
+    __dirname,
+    '../../../../public/view/otp_temp.html',
+  );
 
-    await sendEmail(
-      user?.email,
-      'Your One Time OTP - Mostaajer / رمز التحقق لمرة واحدة - مستأجر',
-      fs
-        .readFileSync(otpEmailPath, 'utf8')
-        .replace('{{otp}}', otp)
-        .replace('{{expiry}}', expiresAt.toLocaleString()),
-    );
-
-
+  await sendEmail(
+    user?.email,
+    'Your One Time OTP - Mostaajer / رمز التحقق لمرة واحدة - مستأجر',
+    fs
+      .readFileSync(otpEmailPath, 'utf8')
+      .replace('{{otp}}', otp)
+      .replace('{{expiry}}', expiresAt.toLocaleString())
+      .replace('{{otp2}}', otp)
+      .replace('{{expiry2}}', expiresAt.toLocaleString()),
+  );
 
   // await sendEmail(
   //   user?.email,
@@ -137,12 +137,12 @@ const resendOtp = async (email: string, type?: string) => {
 
   //       <div style="padding: 20px; text-align: left;">
   //         <p style="font-size: 16px; color: #333;">
-  //           <strong>Your OTP is:</strong> ${otp} <br> 
+  //           <strong>Your OTP is:</strong> ${otp} <br>
   //           <strong>رمز التحقق الخاص بك هو:</strong> ${otp}
   //         </p>
 
   //         <p style="font-size: 16px; color: #333; margin-top: 20px;">
-  //           <strong>This OTP is valid until:</strong> ${expiresAt.toLocaleString()} <br> 
+  //           <strong>This OTP is valid until:</strong> ${expiresAt.toLocaleString()} <br>
   //           <strong>هذا الرمز صالح حتى:</strong> ${expiresAt.toLocaleString()}
   //         </p>
 
@@ -158,8 +158,7 @@ const resendOtp = async (email: string, type?: string) => {
   // );
 
   // const integratedNumber = '96599615330';
-  
-  
+
   const phoneNumber = user?.phoneCode + user?.phoneNumber;
 
   const phoneNumbers = [phoneNumber];
@@ -170,11 +169,11 @@ const resendOtp = async (email: string, type?: string) => {
       {
         mobiles: phoneNumber,
         otp: OTPCode,
-        // Add more variables as needed
       },
     ],
   };
   if (type === 'whatsapp') {
+    console.log('Please select');
     await sendWhatsAppMessage(
       // integratedNumber,
       phoneNumbers,
