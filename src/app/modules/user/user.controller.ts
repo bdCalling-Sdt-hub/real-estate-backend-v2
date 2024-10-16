@@ -248,14 +248,14 @@ const requestIdVerify = catchAsync(async (req: Request, res: Response) => {
     if (selfie?.length) {
       req.body.documents.selfie = await uploadToS3({
         file: selfie[0],
-        fileName: `images/user/selfie/${req.body.email}`,
+        fileName: `images/user/selfie/${Math.floor(10000000 + Math.random() * 90000000)}`,
       });
     }
 
     if (document?.length) {
       const imgsArray = document.map(image => ({
         file: image,
-        path: `images/user/documents`,
+        path: `images/user/documents/${Math.floor(10000000 + Math.random() * 90000000)}`,
       }));
 
       req.body.documents.documents = await uploadManyToS3(imgsArray);
